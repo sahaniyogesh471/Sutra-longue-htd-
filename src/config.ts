@@ -18,3 +18,7 @@ export const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 
 export const isProd = process.env.NODE_ENV === 'production';
+
+/** Session cookie `Secure` flag. Defaults on in production (HTTPS behind the
+ * preview proxy); set SESSION_SECURE=false to test over plain HTTP. */
+export const SESSION_SECURE = process.env.SESSION_SECURE === undefined ? isProd : process.env.SESSION_SECURE === 'true';

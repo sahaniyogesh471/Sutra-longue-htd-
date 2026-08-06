@@ -235,6 +235,24 @@ export interface PublicContent {
   i18nJson: string;
 }
 
+/** Shared page locals used by the public templates (home + menu + preview). */
+export function pageLocals(view: 'index' | 'menu', c: PublicContent, extra: Record<string, unknown> = {}) {
+  return {
+    ...c,
+    title:
+      view === 'menu'
+        ? `${c.s('restaurant.name')} | Full Digital Menu`
+        : `${c.s('restaurant.name')} | ${c.s('restaurant.cuisine')}, ${c.s('contact.city')}`,
+    description:
+      view === 'menu'
+        ? `${c.s('restaurant.name')} full digital menu — group platters, snacks & pizza, cocktails & hookah. Live prices. Order on WhatsApp or reserve your table in ${c.s('contact.city')}.`
+        : `${c.s('restaurant.name')} in ${c.address} — ${c.s('restaurant.tagline')} Reserve your table today.`,
+    pageCss: view === 'menu' ? '<link rel="stylesheet" href="css/menu.css?v=1" />' : '',
+    ...extra,
+    preview: extra.preview ?? false,
+  };
+}
+
 export function buildMenuGroups(bestsellers: Dish[]): MenuGroup[] {
   const order = ['Platters', 'Snacks & Pizza', 'Cocktails & Hookah'];
   const subs: Record<string, string> = {

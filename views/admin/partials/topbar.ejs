@@ -1,0 +1,29 @@
+<div class="topbar">
+  <div class="topbar-title">
+    <h1><%= pageTitle %></h1>
+    <span class="crumb"><%= crumb %></span>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn btn-ghost btn-small" type="button" data-action="undo" title="Undo the last publish / revision">
+      <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg>
+      Undo
+    </button>
+    <button class="btn btn-ghost btn-small" type="button" data-action="redo" title="Redo the undone change">
+      <svg class="ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 15-6.7L21 13"/></svg>
+      Redo
+    </button>
+    <a class="btn btn-ghost btn-small" href="/" target="_blank" rel="noopener">View website</a>
+  </div>
+</div>
+
+<div class="draft-bar <%= draft.count > 0 ? 'is-dirty' : '' %>" id="draftBar" data-count="<%= draft.count %>">
+  <div class="draft-info">
+    <span class="draft-dot" aria-hidden="true"></span>
+    <span id="draftLabel"><%= draft.count > 0 ? draft.count + ' unpublished change' + (draft.count === 1 ? '' : 's') : 'All changes published' %></span>
+  </div>
+  <div class="draft-actions">
+    <button class="btn btn-ghost btn-small" type="button" data-action="discard" <%= draft.count > 0 ? '' : 'disabled' %>>Discard drafts</button>
+    <a class="btn btn-ghost btn-small" href="/admin/preview" target="_blank" rel="noopener">Preview draft</a>
+    <button class="btn btn-gold btn-small" type="button" data-action="publish" <%= draft.count > 0 ? '' : 'disabled' %>>Publish changes</button>
+  </div>
+</div>

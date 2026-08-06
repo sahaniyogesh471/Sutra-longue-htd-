@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head'); %>
+</head>
+<body>
+<div class="admin-shell">
+  <%- include('partials/sidebar'); %>
+  <main class="main">
+    <%- include('partials/topbar'); %>
+
+    <div class="card">
+      <div class="card-head">
+        <h3>Gallery</h3>
+        <label class="btn btn-gold btn-small upload-label">
+          Upload image
+          <input type="file" accept="image/*" data-gallery-upload hidden>
+        </label>
+      </div>
+      <p class="muted" style="margin:0 0 14px;">Drag images to reorder. The featured image appears first on the website.</p>
+      <div class="gallery-grid" data-table="gallery">
+        <% items.forEach(function (g) { %>
+          <div class="gallery-tile state-<%= g.draftState %>" draggable="true"
+               data-row="<%= g.id ?? g.draft_id %>" data-kind="gallery"
+               data-id="<%= g.id || '' %>" data-draft-id="<%= g.draft_id || '' %>">
+            <div class="gallery-img">
+              <img src="<%= g.image_url %>" alt="<%= g.alt %>" loading="lazy">
+              <% if (Number(g.is_featured) === 1) { %><span class="badge-featured">Featured</span><% } %>
+              <% if (g.draftState === 'deleted') { %><span class="badge-overlay">Will be removed</span><% } %>
+              <span class="grip" title="Drag to reorder">⠿</span>
+            </div>
+            <div class="gallery-meta">
+              <span class="cell-sub"><%= g.alt || 'No alt text' %> · <%= g.draftState %></span>
+            </div>
+            <div class="gallery-actions">
+              <% if (g.draftState !== 'deleted') { %>
+                <button class="btn btn-ghost btn-tiny" type="button" data-edit="<%= g.id ?? g.draft_id %>">Edit</button>
+                <% if (Number(g.is_featured) !== 1) { %>
+                  <button class="btn btn-ghost btn-tiny" type="button" data-feature="<%= g.id ?? g.draft_id %>">Set featured</button>
+                <% } %>
+                <button class="btn btn-ghost btn-tiny" type="button" data-toggle="<%= g.id ?? g.draft_id %>"><%= Number(g.is_visible) === 1 ? 'Hide' : 'Show' %></button>
+              <% } %>
+              <% if (g.id) { %>
+                <button class="btn btn-ghost btn-tiny" type="button" data-restore-row="<%= g.id %>" title="Restore original values">Restore</button>
+              <% } %>
+              <button class="btn btn-danger btn-tiny" type="button" data-delete="<%= g.id ?? g.draft_id %>">Delete</button>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+      <% if (items.length === 0) { %>
+        <div class="empty">
+          <h4>No gallery images yet.</h4>
+          <p class="muted">Upload your first photo to get started.</p>
+        </div>
+      <% } %>
+    </div>
+  </main>
+</div>
+
+<script id="admin-data" type="application/json"><%- JSON.stringify({ items: items }).replace(/</g, '\\u003c') %></script>
+<%- include('partials/foot'); %>

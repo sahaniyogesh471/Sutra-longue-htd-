@@ -1,6 +1,6 @@
 import session from 'express-session';
 import type { Request, Response, NextFunction } from 'express';
-import { ADMIN_PASSWORD, ADMIN_USERNAME, SESSION_SECRET, isProd } from './config.js';
+import { ADMIN_PASSWORD, ADMIN_USERNAME, SESSION_SECRET, SESSION_SECURE } from './config.js';
 import { getDb } from './db/index.js';
 import { SqliteSessionStore } from './lib/session-store.js';
 import { generatePassword, hashPassword } from './lib/password.js';
@@ -19,7 +19,7 @@ export function sessionMiddleware() {
     cookie: {
       httpOnly: true,
       sameSite: 'lax',
-      secure: isProd,
+      secure: SESSION_SECURE,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     },
   });

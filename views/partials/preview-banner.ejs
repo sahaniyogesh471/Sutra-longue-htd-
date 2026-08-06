@@ -1,0 +1,14 @@
+<% if (preview) { %>
+  <div class="preview-banner" role="note">
+    <span class="preview-dot"></span>
+    <span>Draft preview &mdash; the live website still shows published content.</span>
+    <span class="preview-links">
+      <% if (preview === 'menu') { %>
+        <a href="/admin/preview">Preview homepage</a>
+      <% } else { %>
+        <a href="/admin/preview/menu">Preview menu page</a>
+      <% } %>
+      <a href="/admin">Back to admin</a>
+    </span>
+  </div>
+<% } %>

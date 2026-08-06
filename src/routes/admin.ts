@@ -4,6 +4,16 @@ import { requireAuth } from '../auth.js';
 import { getDb } from '../db/index.js';
 import { verifyPassword } from '../lib/password.js';
 import { getCsrfToken } from '../lib/security.js';
+import { apiRouter } from './api.js';
+import { adminDishes, adminReviews, adminGallery } from '../lib/admin-lists.js';
+import {
+  effectiveSettings,
+  effectiveHours,
+  draftStatus,
+  listRevisions,
+} from '../lib/publish.js';
+import { ALL_SETTING_KEYS } from '../lib/settings-defs.js';
+import { buildPublicContent, pageLocals } from '../content.js';
 
 export const adminRouter = Router();
 
@@ -67,6 +77,9 @@ adminRouter.post('/logout', (req, res) => {
 
 adminRouter.use(requireAuth);
 
+/* ---- JSON API (all mutations require an authenticated session) ---- */
+adminRouter.use('/api', apiRouter);
+
 /** Opening status computed in Asia/Kathmandu from the hours table. */
 function openingNow(db: ReturnType<typeof getDb>) {
   const now = new Date();
@@ -98,28 +111,37 @@ function openingNow(db: ReturnType<typeof getDb>) {
   };
 }
 
+/** Shared locals for authenticated CMS pages. */
+function pageBase(req: Parameters<typeof getCsrfToken>[0], res: { locals: { admin?: unknown } }, opts: {
+  title: string;
+  crumb: string;
+  active: string;
+}) {
+  const db = getDb();
+  return {
+    csrf: getCsrfToken(req),
+    admin: res.locals.admin,
+    activeNav: opts.active,
+    pageTitle: opts.title,
+    crumb: opts.crumb,
+    draft: draftStatus(db),
+  };
+}
+
 adminRouter.get('/', (req, res) => {
   const db = getDb();
   const count = (t: string) => (db.prepare(`SELECT COUNT(*) AS c FROM ${t}`).get() as { c: number }).c;
   const countVisible = (t: string) =>
     (db.prepare(`SELECT COUNT(*) AS c FROM ${t} WHERE is_visible = 1`).get() as { c: number }).c;
 
-  const draftPending =
-    count('settings_draft') +
-    count('dishes_draft') +
-    count('reviews_draft') +
-    count('gallery_draft') +
-    count('opening_hours_draft');
-
   const recentChanges = db
-    .prepare('SELECT id, kind, action, created_at FROM revisions ORDER BY id DESC LIMIT 6')
+    .prepare('SELECT id, kind, action, created_at, created_by FROM revisions ORDER BY id DESC LIMIT 6')
     .all();
 
   const baselineReady = count('settings_baseline') > 0;
 
   res.render('admin/dashboard', {
-    csrf: getCsrfToken(req),
-    admin: res.locals.admin,
+    ...pageBase(req, res, { title: 'Dashboard', crumb: 'Overview of the Sutra Lounge website', active: 'dashboard' }),
     counts: {
       signature: count('dishes') > 0
         ? (db.prepare("SELECT COUNT(*) AS c FROM dishes WHERE type = 'signature'").get() as { c: number }).c
@@ -133,8 +155,75 @@ adminRouter.get('/', (req, res) => {
       media: count('media'),
     },
     opening: openingNow(db),
-    draftPending,
+    draftPending: draftStatus(db).count,
     recentChanges,
     baselineReady,
   });
+});
+
+adminRouter.get('/settings', (req, res) => {
+  const db = getDb();
+  const effective = effectiveSettings(db);
+  const published: Record<string, string | null> = {};
+  for (const r of db.prepare('SELECT key, value FROM settings').all() as { key: string; value: string | null }[]) {
+    published[r.key] = r.value;
+  }
+  const baseline: Record<string, string | null> = {};
+  for (const r of db.prepare('SELECT key, value FROM settings_baseline').all() as { key: string; value: string | null }[]) {
+    baseline[r.key] = r.value;
+  }
+  const dirtyKeys = ALL_SETTING_KEYS.filter((k) => (effective[k] ?? null) !== (published[k] ?? null));
+  res.render('admin/settings', {
+    ...pageBase(req, res, { title: 'Site Settings', crumb: 'Restaurant details, hero, contact & social', active: 'settings' }),
+    settings: Object.fromEntries(ALL_SETTING_KEYS.map((k) => [k, effective[k] ?? null])),
+    published,
+    baseline,
+    dirtyKeys,
+  });
+});
+
+adminRouter.get('/dishes', (req, res) => {
+  res.render('admin/dishes', {
+    ...pageBase(req, res, { title: 'Menu Dishes', crumb: 'Signature dishes & full digital menu', active: 'dishes' }),
+    items: adminDishes(getDb()),
+  });
+});
+
+adminRouter.get('/reviews', (req, res) => {
+  res.render('admin/reviews', {
+    ...pageBase(req, res, { title: 'Reviews', crumb: 'Customer testimonials', active: 'reviews' }),
+    items: adminReviews(getDb()),
+  });
+});
+
+adminRouter.get('/gallery', (req, res) => {
+  res.render('admin/gallery', {
+    ...pageBase(req, res, { title: 'Gallery', crumb: 'Restaurant photography', active: 'gallery' }),
+    items: adminGallery(getDb()),
+  });
+});
+
+adminRouter.get('/hours', (req, res) => {
+  const db = getDb();
+  const baseline = db.prepare('SELECT * FROM opening_hours_baseline ORDER BY day_index').all();
+  res.render('admin/hours', {
+    ...pageBase(req, res, { title: 'Opening Hours', crumb: 'Daily schedule shown on the website', active: 'hours' }),
+    hours: effectiveHours(db),
+    baselineHours: baseline,
+  });
+});
+
+adminRouter.get('/revisions', (req, res) => {
+  res.render('admin/revisions', {
+    ...pageBase(req, res, { title: 'Revision History', crumb: 'Undo, redo & restore previous states', active: 'revisions' }),
+    revisions: listRevisions(getDb(), 100),
+  });
+});
+
+/* ---- Draft preview of the public site ---- */
+adminRouter.get('/preview', (_req, res) => {
+  res.render('index', pageLocals('index', buildPublicContent(getDb(), { draft: true }), { preview: 'home' }));
+});
+adminRouter.get('/preview/menu', (_req, res) => {
+  res.render('menu', pageLocals('menu', buildPublicContent(getDb(), { draft: true }), { preview: 'menu' }));
 });

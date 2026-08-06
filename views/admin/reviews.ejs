@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head'); %>
+</head>
+<body>
+<div class="admin-shell">
+  <%- include('partials/sidebar'); %>
+  <main class="main">
+    <%- include('partials/topbar'); %>
+
+    <div class="card">
+      <div class="card-head">
+        <h3>Reviews</h3>
+        <button class="btn btn-gold btn-small" type="button" data-review-new>Add review</button>
+      </div>
+      <div class="table-wrap">
+        <table class="table" data-table="reviews">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Reviewer</th>
+              <th>Rating</th>
+              <th>Review</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% items.forEach(function (r) { %>
+              <tr class="state-<%= r.draftState %>" data-row="<%= r.id ?? r.draft_id %>" data-kind="reviews" data-id="<%= r.id || '' %>" data-draft-id="<%= r.draft_id || '' %>">
+                <td class="cell-avatar">
+                  <% if (r.image_url) { %><img src="<%= r.image_url %>" alt=""><% } else { %><span class="avatar-empty"><%= (r.name || '?').charAt(0) %></span><% } %>
+                </td>
+                <td>
+                  <strong><%= r.name %></strong>
+                  <span class="cell-sub"><%= r.draftState %></span>
+                </td>
+                <td><span class="stars" aria-label="<%= r.rating %> star rating">★<%= r.rating %>/5</span></td>
+                <td class="cell-text"><%= r.text %></td>
+                <td>
+                  <% if (r.draftState === 'deleted') { %>
+                    <span class="pill pill-danger">Will be removed</span>
+                  <% } else if (Number(r.is_visible) === 1) { %>
+                    <span class="pill pill-ok">Visible</span>
+                  <% } else { %>
+                    <span class="pill">Hidden</span>
+                  <% } %>
+                </td>
+                <td class="cell-actions">
+                  <% if (r.draftState !== 'deleted') { %>
+                    <button class="btn btn-ghost btn-tiny" type="button" data-edit="<%= r.id ?? r.draft_id %>">Edit</button>
+                  <% } %>
+                  <button class="btn btn-ghost btn-tiny" type="button" data-toggle="<%= r.id ?? r.draft_id %>"><%= Number(r.is_visible) === 1 ? 'Hide' : 'Show' %></button>
+                  <% if (r.id) { %>
+                    <button class="btn btn-ghost btn-tiny" type="button" data-restore-row="<%= r.id %>" title="Restore original values">Restore</button>
+                  <% } %>
+                  <button class="btn btn-danger btn-tiny" type="button" data-delete="<%= r.id ?? r.draft_id %>">Delete</button>
+                </td>
+              </tr>
+            <% }); %>
+            <% if (items.length === 0) { %>
+              <tr><td colspan="6" class="empty">
+                <h4>No reviews added yet.</h4>
+                <p class="muted">Add your first review.</p>
+              </td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script id="admin-data" type="application/json"><%- JSON.stringify({ items: items }).replace(/</g, '\\u003c') %></script>
+<%- include('partials/foot'); %>

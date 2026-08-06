@@ -289,11 +289,10 @@ export function restoreOriginalRow(db: DB, kind: Kind, id: number): boolean {
       is_visible,
       sort_order: Number(draftInput.sort_order ?? 0),
     });
-    });
+  }
   }
   return true;
 }
-
 /* ---------------- Snapshots & revisions ---------------- */
 function captureSnapshot(db: DB): SiteSnapshot {
   return {
@@ -379,6 +378,23 @@ function restoreToRevision(db: DB, id: number, by: string | undefined): void {
   void by;
 }
 
+/**
+ * Restores the whole site to the exact state captured by a historical
+ * revision, then moves the undo/redo pointer onto that revision so further
+ * undo/redo navigation stays correct.
+ */
+export function restoreRevision(db: DB, id: number, by?: string): boolean {
+  const rev = getRevisionById(db, id);
+  if (!rev) return false;
+  const tx = db.transaction(() => {
+    applySnapshot(db, JSON.parse(rev.snapshot) as SiteSnapshot);
+    setPointer(db, id);
+  });
+  tx();
+  void by;
+  return true;
+}
+
 /* ---------------- Publish / discard / undo / redo / reset ---------------- */
 
 function clearDrafts(db: DB): void {
@@ -420,8 +436,6 @@ export function publishAll(db: DB, by?: string): { published: string[]; count: n
         const info = insertDish.run(d);
         const newId = Number(info.lastInsertRowid);
         db.prepare('UPDATE dishes_draft SET row_id = ? WHERE draft_id = ?').run(newId, d.draft_id);
-        db.prepare('INSERT INTO dishes_baseline (baseline_ref, type, name, description, price, category, badge, image_url, is_featured, sort_order, captured_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime(\'now\'))')
-          .run(newId, d.type, d.name, d.description, d.price, d.category, d.badge, d.image_url, d.is_featured ?? 0, d.sort_order ?? 0);
       }
     }
     if (dishDrafts.length) applied.push('dishes');
@@ -445,8 +459,6 @@ export function publishAll(db: DB, by?: string): { published: string[]; count: n
         const info = insertReview.run(d);
         const newId = Number(info.lastInsertRowid);
         db.prepare('UPDATE reviews_draft SET row_id = ? WHERE draft_id = ?').run(newId, d.draft_id);
-        db.prepare('INSERT INTO reviews_baseline (baseline_ref, name, text, rating, image_url, sort_order, captured_at) VALUES (?, ?, ?, ?, ?, ?, datetime(\'now\'))')
-          .run(newId, d.name, d.text, d.rating, d.image_url, d.sort_order ?? 0);
       }
     }
     if (reviewDrafts.length) applied.push('reviews');
@@ -470,8 +482,6 @@ export function publishAll(db: DB, by?: string): { published: string[]; count: n
         const info = insertGallery.run(d);
         const newId = Number(info.lastInsertRowid);
         db.prepare('UPDATE gallery_draft SET row_id = ? WHERE draft_id = ?').run(newId, d.draft_id);
-        db.prepare('INSERT INTO gallery_baseline (baseline_ref, image_url, alt, is_featured, sort_order, captured_at) VALUES (?, ?, ?, ?, ?, datetime(\'now\'))')
-          .run(newId, d.image_url, d.alt, d.is_featured ?? 0, d.sort_order ?? 0);
       }
     }
     if (galleryDrafts.length) applied.push('gallery');
@@ -572,9 +582,15 @@ export function resetAll(db: DB, by?: string): { ok: boolean } {
 
 export function draftStatus(db: DB): { count: number; details: { kind: Kind; count: number }[] } {
   const kinds: Kind[] = ['settings', 'dishes', 'reviews', 'gallery', 'hours'];
+  const TABLE: Record<Kind, string> = {
+    settings: 'settings_draft',
+    dishes: 'dishes_draft',
+    reviews: 'reviews_draft',
+    gallery: 'gallery_draft',
+    hours: 'opening_hours_draft',
+  };
   const details = kinds.map((kind) => {
-    const table = `${kind}_draft`;
-    const c = (db.prepare(`SELECT COUNT(*) AS c FROM ${table}`).get() as { c: number }).c;
+    const c = (db.prepare(`SELECT COUNT(*) AS c FROM ${TABLE[kind]}`).get() as { c: number }).c;
     return { kind, count: c };
   });
   return { count: details.reduce((n, d) => n + d.count, 0), details };

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head'); %>
+</head>
+<body>
+<div class="admin-shell">
+  <%- include('partials/sidebar'); %>
+  <main class="main">
+    <%- include('partials/topbar'); %>
+
+    <div class="card">
+      <div class="card-head">
+        <h3>Menu dishes</h3>
+        <button class="btn btn-gold btn-small" type="button" data-dish-new>Add dish</button>
+      </div>
+      <div class="table-wrap">
+        <table class="table" data-table="dishes">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Dish</th>
+              <th>Type</th>
+              <th>Price</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% items.forEach(function (d) { %>
+              <tr class="state-<%= d.draftState %>" data-row="<%= d.id ?? d.draft_id %>" data-kind="dishes" data-id="<%= d.id || '' %>" data-draft-id="<%= d.draft_id || '' %>">
+                <td class="cell-thumb">
+                  <% if (d.image_url) { %><img src="<%= d.image_url %>" alt="" loading="lazy"><% } else { %><span class="thumb-empty"></span><% } %>
+                </td>
+                <td>
+                  <div class="cell-title">
+                    <strong><%= d.name %></strong>
+                    <% if (d.badge) { %><span class="pill pill-gold"><%= d.badge %></span><% } %>
+                    <% if (Number(d.is_featured) === 1) { %><span class="pill pill-gold">Featured</span><% } %>
+                  </div>
+                  <span class="cell-sub"><%= d.draftState %></span>
+                </td>
+                <td><span class="pill"><%= d.type %></span></td>
+                <td><%= d.price || '—' %></td>
+                <td><%= d.category || '—' %></td>
+                <td>
+                  <% if (d.draftState === 'deleted') { %>
+                    <span class="pill pill-danger">Will be removed</span>
+                  <% } else if (Number(d.is_visible) === 1) { %>
+                    <span class="pill pill-ok">Visible</span>
+                  <% } else { %>
+                    <span class="pill">Hidden</span>
+                  <% } %>
+                </td>
+                <td class="cell-actions">
+                  <% if (d.draftState !== 'deleted') { %>
+                    <button class="btn btn-ghost btn-tiny" type="button" data-edit="<%= d.id ?? d.draft_id %>">Edit</button>
+                  <% } %>
+                  <button class="btn btn-ghost btn-tiny" type="button" data-toggle="<%= d.id ?? d.draft_id %>"><%= Number(d.is_visible) === 1 ? 'Hide' : 'Show' %></button>
+                  <% if (d.id) { %>
+                    <button class="btn btn-ghost btn-tiny" type="button" data-restore-row="<%= d.id %>" title="Restore original values">Restore</button>
+                  <% } %>
+                  <button class="btn btn-danger btn-tiny" type="button" data-delete="<%= d.id ?? d.draft_id %>">Delete</button>
+                </td>
+              </tr>
+            <% }); %>
+            <% if (items.length === 0) { %>
+              <tr><td colspan="7" class="empty">
+                <h4>No dishes added yet.</h4>
+                <p class="muted">Add your first menu item.</p>
+              </td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script id="admin-data" type="application/json"><%- JSON.stringify({ items: items }).replace(/</g, '\\u003c') %></script>
+<%- include('partials/foot'); %>

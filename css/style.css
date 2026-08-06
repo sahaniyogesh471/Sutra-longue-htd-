@@ -1071,3 +1071,37 @@ html[data-theme="light"] .bs-cat { background: rgba(255,255,255,.72); color: #8a
   .qv-body { padding: 22px 20px 24px; }
   .qv-head h3 { font-size: 23px; }
 }
+
+/* ============================================================
+   Draft preview banner (shown only inside the admin preview)
+   ============================================================ */
+.preview-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 9px 16px;
+  background: #231a0d;
+  border-bottom: 1px solid rgba(217, 184, 119, .35);
+  color: #ecd8a4;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Manrope', -apple-system, sans-serif;
+  flex-wrap: wrap;
+}
+.preview-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #d9b877;
+  box-shadow: 0 0 0 4px rgba(217, 184, 119, .2);
+}
+.preview-banner a { color: #ecd8a4; text-decoration: underline; margin: 0 6px; }
+.preview-banner .preview-links { display: inline-flex; align-items: center; }
+body:has(.preview-banner) .header { top: 40px; }
+body:has(.preview-banner) .menu-hero { padding-top: 84px; }

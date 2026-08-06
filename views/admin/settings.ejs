@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head'); %>
+</head>
+<body>
+<div class="admin-shell">
+  <%- include('partials/sidebar'); %>
+  <main class="main">
+    <%- include('partials/topbar'); %>
+
+    <% function textField(key, label, req, placeholder) { %>
+      <div class="field" data-field-wrap="<%= key %>">
+        <label for="<%= key %>"><%= label %><% if (req) { %> <span class="req">*</span><% } %>
+          <button class="link-restore" type="button" data-restore="<%= key %>" <%= baseline[key] != null ? '' : 'disabled' %>>Restore original</button>
+        </label>
+        <input id="<%= key %>" name="<%= key %>" type="text" value="<%= settings[key] || '' %>" data-field="<%= key %>" placeholder="<%= placeholder || '' %>" <%= req ? 'required' : '' %>>
+        <p class="field-error" data-error="<%= key %>"></p>
+      </div>
+    <% } %>
+    <% function areaField(key, label, rows, req) { %>
+      <div class="field" data-field-wrap="<%= key %>">
+        <label for="<%= key %>"><%= label %><% if (req) { %> <span class="req">*</span><% } %>
+          <button class="link-restore" type="button" data-restore="<%= key %>" <%= baseline[key] != null ? '' : 'disabled' %>>Restore original</button>
+        </label>
+        <textarea id="<%= key %>" name="<%= key %>" rows="<%= rows %>" data-field="<%= key %>" <%= req ? 'required' : '' %>><%= settings[key] || '' %></textarea>
+        <p class="field-error" data-error="<%= key %>"></p>
+      </div>
+    <% } %>
+
+    <form id="settingsForm" class="stack" data-section="settings">
+      <div class="card">
+        <h3>Restaurant details</h3>
+        <% ['restaurant.name','restaurant.cuisine','restaurant.tagline'].forEach(function (k) { textField(k, { 'restaurant.name':'Restaurant name','restaurant.cuisine':'Cuisine type','restaurant.tagline':'Tagline' }[k], true); }); %>
+        <% areaField('restaurant.description', 'Short description', 3, true); %>
+        <% areaField('restaurant.about', 'About text', 7, true); %>
+      </div>
+
+      <div class="card">
+        <h3>Hero content</h3>
+        <% textField('hero.heading', 'Hero heading', true); %>
+        <% areaField('hero.subheading', 'Hero subheading', 3, true); %>
+        <% textField('hero.video', 'Hero video URL (YouTube)', false); %>
+        <div class="field" data-field-wrap="hero.image">
+          <label for="hero.image">Hero image
+            <button class="link-restore" type="button" data-restore="hero.image" <%= baseline['hero.image'] != null ? '' : 'disabled' %>>Restore original</button>
+          </label>
+          <div class="input-row">
+            <input id="hero.image" name="hero.image" type="text" value="<%= settings['hero.image'] || '' %>" data-field="hero.image">
+            <button class="btn btn-ghost btn-small" type="button" data-upload-input="hero.image">Upload image</button>
+          </div>
+          <div class="img-preview">
+            <% if (settings['hero.image']) { %>
+              <img src="<%= settings['hero.image'] %>" alt="Hero image preview" data-preview="hero.image">
+            <% } else { %>
+              <span class="muted">No hero image set — the site uses gallery photos.</span>
+            <% } %>
+          </div>
+          <p class="field-error" data-error="hero.image"></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Contact information</h3>
+        <% textField('contact.phone', 'Phone number', true); %>
+        <% textField('contact.whatsapp', 'WhatsApp number (digits only, incl. country code)', true); %>
+        <% textField('contact.email', 'Email address', true); %>
+        <% textField('contact.address', 'Address', true); %>
+        <% textField('contact.city', 'City / area', true); %>
+        <% textField('contact.maps_url', 'Google Maps link', false); %>
+      </div>
+
+      <div class="card">
+        <h3>Social links</h3>
+        <p class="muted">Optional — leave blank to hide a link.</p>
+        <% textField('social.facebook', 'Facebook', false); %>
+        <% textField('social.instagram', 'Instagram', false); %>
+        <% textField('social.tiktok', 'TikTok', false); %>
+        <% textField('social.youtube', 'YouTube', false); %>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-ghost" type="button" data-submit="draft">Save draft</button>
+        <button class="btn btn-gold" type="button" data-submit="publish">Save draft &amp; publish</button>
+      </div>
+    </form>
+
+    <div class="card card-danger">
+      <h3>Danger zone</h3>
+      <p class="muted">Reset the entire website back to the protected ORIGINAL baseline content. This is irreversible through normal editing.</p>
+      <button class="btn btn-danger btn-small" type="button" data-action="reset">Reset entire website</button>
+    </div>
+  </main>
+</div>
+<%- include('partials/foot'); %>

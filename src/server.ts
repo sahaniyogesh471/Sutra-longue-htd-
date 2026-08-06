@@ -2,28 +2,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import express, { type Request, type Response } from 'express';
 import compression from 'compression';
-import { ROOT, PORT, isProd } from './config.js';
+import { ROOT, PORT, DATA_DIR, isProd } from './config.js';
 import { getDb, initSchema } from './db/index.js';
 import { seedAll } from './db/seed.js';
 import { ensureAdminUser, sessionMiddleware } from './auth.js';
 import { csrfProtect, securityHeaders } from './lib/security.js';
 import { adminRouter } from './routes/admin.js';
-import { buildPublicContent, type PublicContent } from './content.js';
-
-function pageLocals(view: 'index' | 'menu', c: PublicContent) {
-  return {
-    ...c,
-    title:
-      view === 'menu'
-        ? `${c.s('restaurant.name')} | Full Digital Menu`
-        : `${c.s('restaurant.name')} | ${c.s('restaurant.cuisine')}, ${c.s('contact.city')}`,
-    description:
-      view === 'menu'
-        ? `${c.s('restaurant.name')} full digital menu — group platters, snacks & pizza, cocktails & hookah. Live prices. Order on WhatsApp or reserve your table in ${c.s('contact.city')}.`
-        : `${c.s('restaurant.name')} in ${c.address} — ${c.s('restaurant.tagline')} Reserve your table today.`,
-    pageCss: view === 'menu' ? '<link rel="stylesheet" href="css/menu.css?v=1" />' : '',
-  };
-}
+import { buildPublicContent, pageLocals } from './content.js';
 
 export function createApp() {
   const app = express();
@@ -35,8 +20,8 @@ export function createApp() {
 
   app.use(compression());
   app.use(securityHeaders);
-  app.use(express.json({ limit: '1mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+  app.use(express.json({ limit: '2mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 
   // ---- Session + CSRF (admin area) ----
   const sendFile = (file: string) => (_req: Request, res: Response) => {
@@ -51,6 +36,7 @@ export function createApp() {
   app.use(sessionMiddleware());
   app.use('/admin', csrfProtect, adminRouter);
   app.get('/admin.css', sendFile('views/admin/admin.css'));
+  app.get('/admin.js', sendFile('js/admin.js'));
 
   // ---- Public pages (database-driven, published state only) ----
   const renderPublic = (view: 'index' | 'menu') => (_req: Request, res: Response) => {
@@ -64,6 +50,7 @@ export function createApp() {
   app.use('/css', express.static(path.join(ROOT, 'css'), { maxAge: isProd ? '7d' : 0 }));
   app.use('/js', express.static(path.join(ROOT, 'js'), { maxAge: isProd ? '7d' : 0 }));
   app.use('/img', express.static(path.join(ROOT, 'img'), { maxAge: isProd ? '7d' : 0 }));
+  app.use('/uploads', express.static(path.join(DATA_DIR, 'uploads'), { maxAge: isProd ? '30d' : 0 }));
 
   // ---- Health / status ----
   app.get('/api/health', (_req, res) => {

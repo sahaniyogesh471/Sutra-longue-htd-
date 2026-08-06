@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head'); %>
+</head>
+<body>
+<div class="admin-shell">
+  <%- include('partials/sidebar'); %>
+  <main class="main">
+    <%- include('partials/topbar'); %>
+
+    <div class="card">
+      <div class="card-head">
+        <h3>Opening hours</h3>
+        <button class="btn btn-gold btn-small" type="button" data-hours-save>Save hours (draft)</button>
+      </div>
+      <p class="muted" style="margin:0 0 14px;">Set open/closed and times for each day. The website automatically displays the saved schedule. Changes are saved as a draft until you publish.</p>
+
+      <table class="table" data-table="hours">
+        <thead>
+          <tr><th>Day</th><th>Open</th><th>Opening time</th><th>Closing time</th><th>Original</th></tr>
+        </thead>
+        <tbody>
+          <% hours.forEach(function (h) { %>
+            <tr data-day="<%= h.day_index %>">
+              <td><strong><%= h.day_name %></strong></td>
+              <td>
+                <label class="switch">
+                  <input type="checkbox" data-hours-open="<%= h.day_index %>" <%= Number(h.is_open) === 1 ? 'checked' : '' %>>
+                  <span class="track"></span>
+                </label>
+              </td>
+              <td>
+                <input class="input-sm" type="time" data-hours-open-time="<%= h.day_index %>" value="<%= h.open_time || '' %>" <%= Number(h.is_open) === 1 ? '' : 'disabled' %>>
+              </td>
+              <td>
+                <input class="input-sm" type="time" data-hours-close-time="<%= h.day_index %>" value="<%= h.close_time || '' %>" <%= Number(h.is_open) === 1 ? '' : 'disabled' %>>
+              </td>
+              <td class="cell-sub"><%= baselineHours[h.day_index] ? (Number(baselineHours[h.day_index].is_open) === 1 ? (baselineHours[h.day_index].open_time + ' – ' + baselineHours[h.day_index].close_time) : 'Closed') : '' %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+      <p class="field-error" data-error="hours" style="margin-top:10px;"></p>
+    </div>
+  </main>
+</div>
+<%- include('partials/foot'); %>
