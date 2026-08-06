@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sutra Lounge | Premium Multi-Cuisine Resto-Lounge &amp; Bar, Hetauda</title>
+  <meta name="description" content="Sutra Lounge in Hupra, Hetauda-4 — a premium multi-cuisine resto-lounge & bar. Sumptuous food, great music, unforgettable times. Reserve your table today." />
+  <meta name="theme-color" content="#0d0a07" />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230d0a07'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='%23d9b877' font-family='Georgia, serif' font-weight='bold'%3ES%3C/text%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500;1,600&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=4" />
+  <noscript>
+    <style>.reveal { opacity: 1 !important; transform: none !important; } .preloader { display: none !important; }</style>
+  </noscript>
+</head>
+<body>
+
+  <!-- ============ PRELOADER ============ -->
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="preloader-inner">
+      <span class="preloader-mark">S</span>
+      <span class="preloader-name">SUTRA LOUNGE</span>
+      <span class="preloader-line"></span>
+    </div>
+  </div>
+
+  <!-- ============ VIDEO MODAL ============ -->
+  <div class="modal" id="videoModal" role="dialog" aria-modal="true" aria-label="Sutra Lounge tour video">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-box">
+      <button class="modal-close" data-close-modal aria-label="Close video">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="modal-video-wrap">
+        <iframe id="videoFrame" src="" title="Sutra Lounge tour video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ HEADER ============ -->
+  <header class="header" id="header">
+    <div class="container header-inner">
+      <a class="brand" href="#home" aria-label="Sutra Lounge — back to top">
+        <span class="brand-mark">S</span>
+        <span class="brand-text">
+          <strong>SUTRA</strong>
+          <em>LOUNGE</em>
+        </span>
+      </a>
+
+      <nav class="nav" id="nav" aria-label="Primary">
+        <ul class="nav-list">
+          <li><a href="#home" data-i18n="nav.home">Home</a></li>
+          <li><a href="#about" data-i18n="nav.about">About</a></li>
+          <li><a href="#menu" data-i18n="nav.menu">Signature Dishes</a></li>
+          <li><a href="#bestsellers" data-i18n="nav.best">Bestsellers</a></li>
+          <li><a href="#gallery" data-i18n="nav.gallery">Gallery</a></li>
+          <li><a href="#testimonials" data-i18n="nav.reviews">Reviews</a></li>
+          <li><a href="#visit" data-i18n="nav.visit">Visit Us</a></li>
+        </ul>
+        <div class="nav-cta-mobile">
+          <a href="#contact" class="btn btn-gold btn-block" data-i18n="nav.reserve">Reserve a Table</a>
+        </div>
+      </nav>
+
+      <div class="header-tools">
+        <button class="lang-toggle" id="langToggle" type="button" aria-label="Switch language">
+          <span class="lang-label" id="langLabel">NP</span>
+        </button>
+
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M2 12h2.2M19.8 12H22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M19.1 4.9l-1.6 1.6M6.5 17.5l-1.6 1.6"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A8.6 8.6 0 1 1 11.2 3a6.7 6.7 0 0 0 9.8 9.8Z"/></svg>
+        </button>
+
+        <a href="#contact" class="btn btn-gold nav-reserve" data-i18n="nav.reserve">Reserve a Table</a>
+
+        <button class="hamburger" id="hamburger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="home">
+      <div class="hero-media" aria-hidden="true">
+        <div class="hero-slide is-active" style="background-image:url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1920&q=80')"></div>
+      </div>
+      <div class="hero-overlay"></div>
+
+      <div class="container hero-content">
+        <div class="hero-eyebrow">
+          <span class="eyebrow-dot"></span>
+          <span data-i18n="hero.eyebrow">Premium Multi-Cuisine Resto-Lounge &amp; Bar</span>
+          <span class="eyebrow-dot"></span>
+        </div>
+
+        <h1 class="hero-title" data-i18n="hero.title">Sumptuous Food. Great Music. Unforgettable Times.</h1>
+
+        <p class="hero-sub" data-i18n="hero.sub">Hupra's premier dining destination in Hetauda — handcrafted multi-cuisine dishes, wood-fired flavour, hand-mixed cocktails and a lounge soundtrack that keeps the night alive.</p>
+
+        <div class="hero-cta">
+          <a href="#contact" class="btn btn-gold btn-lg" data-i18n="hero.reserve">Reserve a Table</a>
+          <a href="https://wa.me/97757522111" target="_blank" rel="noopener" class="btn btn-ghost btn-lg">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            <span data-i18n="hero.whatsapp">WhatsApp Us</span>
+          </a>
+        </div>
+
+        <div class="hero-meta">
+          <span data-i18n="hero.meta1">Hupra, Hetauda-4 · Makwanpur</span>
+          <span class="hero-meta-sep" aria-hidden="true">•</span>
+          <span data-i18n="hero.meta2">Open Daily 11 AM – 11 PM</span>
+        </div>
+
+        <button class="video-chip" id="openVideo" type="button">
+          <span class="video-chip-play">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </span>
+          <span data-i18n="hero.video">Watch the Sutra Lounge Tour</span>
+        </button>
+      </div>
+
+      <div class="hero-scroll" aria-hidden="true">
+        <span class="hero-scroll-line"></span>
+        <span data-i18n="hero.scroll">Scroll</span>
+      </div>
+    </section>
+
+    <!-- ============ ABOUT ============ -->
+    <section class="section about" id="about">
+      <div class="container about-grid">
+        <div class="about-visual reveal">
+          <div class="about-img-main">
+            <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80" alt="Elegantly plated dinner at Sutra Lounge" loading="lazy" />
+          </div>
+          <div class="about-img-accent">
+            <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=800&q=80" alt="Warm candlelit tables at the lounge" loading="lazy" />
+          </div>
+          <div class="about-badge">
+            <strong>11</strong>
+            <span data-i18n="about.badge">Years of flavour, craft &amp; music</span>
+          </div>
+        </div>
+
+        <div class="about-copy">
+          <p class="section-kicker" data-i18n="about.kicker">Our Story</p>
+          <h2 class="section-title" data-i18n="about.title">Where Hetauda comes to slow down &amp; savour</h2>
+          <p class="about-lead" data-i18n="about.lead">Sutra Lounge was born from a simple belief — that great evenings are built on three things: sumptuous food, great music and unforgettable times.</p>
+          <p class="about-body" data-i18n="about.body">Set in the heart of Hupra, our kitchen blends Nepali soul with international craft. Momos are folded by hand each morning, dough is stretched for the clay oven every afternoon, and the bar shakes to order through the night. Whether it is a family dinner, a celebration or a quiet date, our lounge is designed to make the moment last.</p>
+          <ul class="about-points">
+            <li data-i18n="about.p1">Hand-finished signature recipes from our head chef</li>
+            <li data-i18n="about.p2">Fresh ingredients sourced daily from local Hetauda markets</li>
+            <li data-i18n="about.p3">Live music, curated playlists and a buzzing lounge vibe</li>
+          </ul>
+          <div class="about-cta">
+            <a href="#menu" class="btn btn-outline-gold" data-i18n="about.cta">Explore Our Signature Dishes</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SIGNATURE DISHES ============ -->
+    <section class="section menu" id="menu">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="section-kicker" data-i18n="menu.kicker">From Our Kitchen</p>
+          <h2 class="section-title" data-i18n="menu.title">Signature Dishes Worth the Trip</h2>
+          <p class="section-sub" data-i18n="menu.sub">The plates that put Sutra Lounge on the map — each one a signature you will not find anywhere else in Hetauda.</p>
+        </div>
+
+        <div class="dish-grid">
+          <article class="dish-card reveal">
+            <div class="dish-media">
+              <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=800&q=80" alt="Sutra Fusion Mo:Mo Platter" loading="lazy" />
+              <span class="dish-tag" data-i18n="menu.tag1">Most Loved</span>
+            </div>
+            <div class="dish-body">
+              <h3 data-i18n="menu.d1.name">Sutra Fusion Mo:Mo Platter</h3>
+              <p data-i18n="menu.d1.desc">Hand-folded Nepali momos reinvented — steamed, pan-fried and tossed in our signature Sutra glaze, served with three house dips.</p>
+              <div class="dish-foot">
+                <span class="dish-price" data-i18n="menu.d1.note">Chef's recommendation</span>
+                <a href="#contact" class="dish-link" data-i18n="menu.order">Reserve to Taste</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="dish-card reveal">
+            <div class="dish-media">
+              <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80" alt="Crispy Chilli Chicken & Sizzlers" loading="lazy" />
+              <span class="dish-tag" data-i18n="menu.tag2">Crowd Favourite</span>
+            </div>
+            <div class="dish-body">
+              <h3 data-i18n="menu.d2.name">Crispy Chilli Chicken &amp; Sizzlers</h3>
+              <p data-i18n="menu.d2.desc">Crackling-crisp chilli chicken and flame-kissed sizzlers, brought to your table smoking hot on a cast-iron plate.</p>
+              <div class="dish-foot">
+                <span class="dish-price" data-i18n="menu.d2.note">Served sizzling</span>
+                <a href="#contact" class="dish-link" data-i18n="menu.order">Reserve to Taste</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="dish-card reveal">
+            <div class="dish-media">
+              <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80" alt="Artisan Clay-Oven Pizzas" loading="lazy" />
+              <span class="dish-tag" data-i18n="menu.tag3">Wood-Fired</span>
+            </div>
+            <div class="dish-body">
+              <h3 data-i18n="menu.d3.name">Artisan Clay-Oven Pizzas</h3>
+              <p data-i18n="menu.d3.desc">Hand-tossed dough, slow-simmered tomato sauce and blistered char from our clay oven — street-crisp, never floppy.</p>
+              <div class="dish-foot">
+                <span class="dish-price" data-i18n="menu.d3.note">Baked to order</span>
+                <a href="#contact" class="dish-link" data-i18n="menu.order">Reserve to Taste</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="dish-card reveal">
+            <div class="dish-media">
+              <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=800&q=80" alt="Custom Handcrafted Mocktails & Cocktails" loading="lazy" />
+              <span class="dish-tag" data-i18n="menu.tag4">Bar Craft</span>
+            </div>
+            <div class="dish-body">
+              <h3 data-i18n="menu.d4.name">Custom Handcrafted Mocktails &amp; Cocktails</h3>
+              <p data-i18n="menu.d4.desc">Bespoke bar creations muddled fresh and shaken to order — zero-proof signatures for families, premium pours after dark.</p>
+              <div class="dish-foot">
+                <span class="dish-price" data-i18n="menu.d4.note">Mixed to your taste</span>
+                <a href="#contact" class="dish-link" data-i18n="menu.order">Reserve to Taste</a>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="menu-note reveal">
+          <span data-i18n="menu.note">Craving something specific? Our full multi-cuisine menu spans Nepali, Chinese, Continental and more.</span>
+          <a href="https://wa.me/97757522111?text=Hi%20Sutra%20Lounge%2C%20please%20share%20your%20full%20menu." target="_blank" rel="noopener" class="link-arrow" data-i18n="menu.full">Get the full menu on WhatsApp</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BESTSELLERS ============ -->
+    <section class="section bestsellers" id="bestsellers">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="section-kicker" data-i18n="bestsellers.kicker">Our Popular Selections</p>
+          <h2 class="section-title" data-i18n="bestsellers.title">Sutra Lounge Favorites</h2>
+          <p class="section-sub" data-i18n="bestsellers.sub">Handcrafted signatures, group platters, and lounge classics.</p>
+        </div>
+
+        <div class="bs-tabs" id="bsFilters" role="tablist" aria-label="Bestsellers categories"></div>
+
+        <div class="bs-grid" id="bsGrid" aria-live="polite"></div>
+
+        <div class="bs-cta reveal">
+          <a href="/menu.html" class="btn btn-gold btn-lg" data-i18n="bestsellers.cta">Explore Full Digital Menu</a>
+          <p class="bs-cta-note" data-i18n="bestsellers.ctaNote">Live prices · Updated every week</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WHY CHOOSE US ============ -->
+    <section class="section why" id="why">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="section-kicker" data-i18n="why.kicker">The Sutra Difference</p>
+          <h2 class="section-title" data-i18n="why.title">Why Hetauda Chooses Sutra Lounge</h2>
+        </div>
+
+        <div class="why-grid">
+          <article class="why-card reveal">
+            <span class="why-icon">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7.5-4.6-9.5-9A5.5 5.5 0 0 1 12 6.6 5.5 5.5 0 0 1 21.5 12c-2 4.4-9.5 9-9.5 9Z"/></svg>
+            </span>
+            <h3 data-i18n="why.c1.title">Fresh, Honest Ingredients</h3>
+            <p data-i18n="why.c1.desc">Markets sourced daily in Hetauda — fresh vegetables, quality meats and hand-ground spices in every single dish.</p>
+          </article>
+
+          <article class="why-card reveal">
+            <span class="why-icon">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 3h7M12 3v6M7 9h10a4 4 0 0 1 4 4v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5a4 4 0 0 1 4-4ZM8.5 14h.01M12 14h.01M15.5 14h.01"/></svg>
+            </span>
+            <h3 data-i18n="why.c2.title">Chef-Approved Flavours</h3>
+            <p data-i18n="why.c2.desc">Signature recipes crafted by our head chef, tested and perfected until every plate leaves the kitchen flawless.</p>
+          </article>
+
+          <article class="why-card reveal">
+            <span class="why-icon">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            </span>
+            <h3 data-i18n="why.c3.title">Music That Sets the Mood</h3>
+            <p data-i18n="why.c3.desc">From easy lounge sets to live nights, our soundtrack is curated so your conversation and your evening flow just right.</p>
+          </article>
+
+          <article class="why-card reveal">
+            <span class="why-icon">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 11a5 5 0 0 0-10 0M12 6.5V4.2M5 11h14v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7ZM9.5 21v-2.4"/></svg>
+            </span>
+            <h3 data-i18n="why.c4.title">Warm, Family-Friendly Service</h3>
+            <p data-i18n="why.c4.desc">Couples, families and friends alike — our team treats every guest like the only table in the house, from greeting to goodbye.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIDEO SHOWCASE ============ -->
+    <section class="section video-section" id="video">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="section-kicker" data-i18n="video.kicker">Sutra Lounge Tour</p>
+          <h2 class="section-title" data-i18n="video.title">Step Inside the Lounge</h2>
+          <p class="section-sub" data-i18n="video.sub">A taste of the atmosphere, the music and the nights — see why Hetauda loves Sutra Lounge.</p>
+        </div>
+
+        <div class="video-frame reveal">
+          <iframe src="https://www.youtube.com/embed/2sRGneKpy_k?rel=0" title="Sutra Lounge tour video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ GALLERY ============ -->
+    <section class="section gallery" id="gallery">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="section-kicker" data-i18n="gallery.kicker">A Taste of the Experience</p>
+          <h2 class="section-title" data-i18n="gallery.title">Inside Sutra Lounge</h2>
+          <p class="section-sub" data-i18n="gallery.sub">Plates, pours and the ambience that makes the evening — a glimpse of what is waiting for you.</p>
+        </div>
+      </div>
+
+      <div class="gallery-grid reveal">
+        <button class="gallery-item gallery-tall" type="button" data-full="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=80">
+          <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=75" alt="Assorted dishes served family style" loading="lazy" />
+          <span class="gallery-hint"></span>
+        </button>
+        <button class="gallery-item" type="button" data-full="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=80">
+          <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=75" alt="Warm interior of the lounge" loading="lazy" />
+          <span class="gallery-hint"></span>
+        </button>
+        <button class="gallery-item gallery-tall" type="button" data-full="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1600&q=80">
+          <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=75" alt="Fresh, colourful signature bowl" loading="lazy" />
+          <span class="gallery-hint"></span>
+        </button>
+        <button class="gallery-item" type="button" data-full="https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=1600&q=80">
+          <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=900&q=75" alt="Handcrafted mojito cocktail" loading="lazy" />
+          <span class="gallery-hint"></span>
+        </button>
+        <button class="gallery-item" type="button" data-full="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1600&q=80">
+          <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=75" alt="Fine dining table setting" loading="lazy" />
+          <span class="gallery-hint"></span>
+        </button>
+        <button class="gallery-item gallery-tall" type="button" data-full="https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=1600&q=80">
+          <img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=900&q=75" alt="Decadent dessert plate" loading="lazy" />
+          <span class="gallery-hint"></span>
+        </button>
+        <button class="gallery-item" type="button" data-full="https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1600&q=80">
+          <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=900&q=75" alt="Candlelit lounge seating" loading="lazy" />
+          <span class="gallery-hint"></span>
+        </button>
+        <button class="gallery-item" type="button" data-full="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1600&q=80">
+          <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=900&q=75" alt="Colourful fusion platter" loading="lazy" />
+          <span class="gallery-hint"></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============ TESTIMONIALS ============ -->
+    <section class="section testimonials" id="testimonials">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="section-kicker" data-i18n="reviews.kicker">Guest Stories</p>
+          <h2 class="section-title" data-i18n="reviews.title">Loved by Hetauda</h2>
+        </div>
+
+        <div class="review-grid">
+          <article class="review-card reveal">
+            <div class="review-stars" aria-label="5 out of 5 stars">
+              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            </div>
+            <p class="review-text" data-i18n="reviews.r1.text">The Sutra Fusion Mo:Mo Platter is unlike anything else in Hetauda. Warm service, great music, and an evening we are still talking about.</p>
+            <div class="review-author">
+              <span class="review-avatar"><img src="img/avatar-rs.jpg?v=2" alt="Portrait of Rabina Shrestha" loading="lazy" /></span>
+              <div>
+                <strong>Rabina Shrestha</strong>
+                <span data-i18n="reviews.r1.tag">Dinner with family</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="review-card reveal">
+            <div class="review-stars" aria-label="5 out of 5 stars">
+              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            </div>
+            <p class="review-text" data-i18n="reviews.r2.text">Best sizzlers in town, without a doubt. The clay-oven pizza tastes like it was flown in from Kathmandu's top kitchens.</p>
+            <div class="review-author">
+              <span class="review-avatar"><img src="img/avatar-pa.jpg?v=2" alt="Portrait of Prakash Adhikari" loading="lazy" /></span>
+              <div>
+                <strong>Prakash Adhikari</strong>
+                <span data-i18n="reviews.r2.tag">Weekend regular</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="review-card reveal">
+            <div class="review-stars" aria-label="5 out of 5 stars">
+              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            </div>
+            <p class="review-text" data-i18n="reviews.r3.text">Perfect for a family dinner or a date night. The staff treated us like guests, not customers — and the mocktails were superb.</p>
+            <div class="review-author">
+              <span class="review-avatar"><img src="img/avatar-sg.jpg?v=2" alt="Portrait of Sunita Gurung" loading="lazy" /></span>
+              <div>
+                <strong>Sunita Gurung</strong>
+                <span data-i18n="reviews.r3.tag">Date night</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="review-card reveal">
+            <div class="review-stars" aria-label="5 out of 5 stars">
+              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            </div>
+            <p class="review-text" data-i18n="reviews.r4.text">The lounge transforms into a proper party spot after dark. Great vibe, great drinks, and the crispy chilli chicken is addictive.</p>
+            <div class="review-author">
+              <span class="review-avatar"><img src="img/avatar-as.jpg?v=2" alt="Portrait of Aayush Shrestha" loading="lazy" /></span>
+              <div>
+                <strong>Aayush Shrestha</strong>
+                <span data-i18n="reviews.r4.tag">Night out with friends</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VISIT US ============ -->
+    <section class="section visit" id="visit">
+      <div class="container visit-grid">
+        <div class="visit-copy reveal">
+          <p class="section-kicker" data-i18n="visit.kicker">Find Us</p>
+          <h2 class="section-title" data-i18n="visit.title">In the Heart of Hupra, Hetauda</h2>
+          <p class="section-sub" data-i18n="visit.sub">Easy to reach, easy to park, hard to leave. Drop by for lunch, an evening sizzler, or a night of cocktails and music.</p>
+
+          <div class="visit-info">
+            <div class="visit-row">
+              <span class="visit-ico">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              </span>
+              <div>
+                <strong data-i18n="visit.addrTitle">Address</strong>
+                <span data-i18n="visit.addr">Hupra, Hetauda-4, Makwanpur, Nepal</span>
+              </div>
+            </div>
+            <div class="visit-row">
+              <span class="visit-ico">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              </span>
+              <div>
+                <strong data-i18n="visit.hoursTitle">Opening Hours</strong>
+                <span data-i18n="visit.hours">Monday – Sunday · 11:00 AM – 11:00 PM</span>
+                <span class="visit-note" data-i18n="visit.hoursNote">Open every single day — no off days</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="visit-cta">
+            <a href="https://share.google/4oidZH9ykv71zNlzV" target="_blank" rel="noopener" class="btn btn-gold">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 15 12 9 6"/></svg>
+              <span data-i18n="visit.directions">Get Directions on Google Maps</span>
+            </a>
+            <a href="#contact" class="btn btn-outline-gold" data-i18n="visit.reserve">Reserve a Table</a>
+          </div>
+        </div>
+
+        <div class="visit-map reveal">
+          <iframe src="https://maps.google.com/maps?q=Hupra%2C%20Hetauda-4%2C%20Makwanpur%2C%20Nepal&t=&z=14&ie=UTF8&iwloc=&output=embed" title="Sutra Lounge location map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RESERVATION / CONTACT ============ -->
+    <section class="section reserve" id="contact">
+      <div class="container">
+        <div class="reserve-panel">
+          <div class="reserve-info">
+            <p class="section-kicker" data-i18n="contact.kicker">Reservations</p>
+            <h2 class="section-title" data-i18n="contact.title">Book Your Table Tonight</h2>
+            <p class="section-sub" data-i18n="contact.sub">Tables fill fast on weekends. Send a request and our team will confirm on WhatsApp — or call us and we will sort it in a minute.</p>
+
+            <div class="contact-cards">
+              <a class="contact-card" href="tel:057522111">
+                <span class="contact-ico">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2Z"/></svg>
+                </span>
+                <span class="contact-meta">
+                  <small data-i18n="contact.callLabel">Call us</small>
+                  <strong>057-522111</strong>
+                </span>
+              </a>
+
+              <a class="contact-card" href="https://wa.me/97757522111" target="_blank" rel="noopener">
+                <span class="contact-ico contact-wa">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                </span>
+                <span class="contact-meta">
+                  <small data-i18n="contact.waLabel">WhatsApp</small>
+                  <strong>+977 057-522111</strong>
+                </span>
+              </a>
+
+              <a class="contact-card" href="mailto:sutralonguehtd@gmail.com">
+                <span class="contact-ico">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="m3.5 7 8.5 6 8.5-6"/></svg>
+                </span>
+                <span class="contact-meta">
+                  <small data-i18n="contact.emailLabel">Write to us</small>
+                  <strong>sutralonguehtd@gmail.com</strong>
+                </span>
+              </a>
+            </div>
+
+            <div class="contact-social">
+              <span data-i18n="contact.socialLabel">Follow the flavour</span>
+              <div class="social-row">
+                <a href="https://www.facebook.com/SutraLounge/" target="_blank" rel="noopener" aria-label="Facebook">
+                  <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M13.5 21v-7h2.4l.4-2.8h-2.8V9.3c0-.8.3-1.4 1.4-1.4h1.5V5.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.4-3.7 3.8v2H8v2.8h2.5v7h3Z"/></svg>
+                </a>
+                <a href="https://www.instagram.com/sutraloungehetauda/" target="_blank" rel="noopener" aria-label="Instagram">
+                  <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg>
+                </a>
+                <a href="https://www.tiktok.com/@sutralounge" target="_blank" rel="noopener" aria-label="TikTok">
+                  <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M16.6 4c.4 1.8 1.7 3.1 3.4 3.4v2.7c-1.3 0-2.5-.4-3.4-1v6.1c0 3.1-2.3 5.3-5.2 5.3-2.7 0-5-2.2-5-5 0-3.1 2.7-5.3 5.7-5 0 1-.1 1.9-.5 2.8-.2.6.1 1.3.8 1.5.7.3 1.4 0 1.7-.7.2-.4.2-.9.2-1.3V4h2.3Z"/></svg>
+                </a>
+                <a href="https://youtu.be/2sRGneKpy_k" target="_blank" rel="noopener" aria-label="YouTube">
+                  <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <form class="reserve-form" id="reserveForm" novalidate>
+            <h3 data-i18n="contact.formTitle">Request a Reservation</h3>
+            <div class="form-row">
+              <div class="form-field">
+                <label for="fName" data-i18n="contact.fName">Full name</label>
+                <input type="text" id="fName" name="name" autocomplete="name" required />
+              </div>
+              <div class="form-field">
+                <label for="fPhone" data-i18n="contact.fPhone">Phone number</label>
+                <input type="tel" id="fPhone" name="phone" inputmode="tel" autocomplete="tel" placeholder="98XXXXXXXX" required />
+              </div>
+            </div>
+            <div class="form-row cols-3">
+              <div class="form-field">
+                <label for="fDate" data-i18n="contact.fDate">Date</label>
+                <input type="date" id="fDate" name="date" required />
+              </div>
+              <div class="form-field">
+                <label for="fTime" data-i18n="contact.fTime">Time</label>
+                <input type="time" id="fTime" name="time" required />
+              </div>
+              <div class="form-field">
+                <label for="fGuests" data-i18n="contact.fGuests">Guests</label>
+                <select id="fGuests" name="guests">
+                  <option value="1">1</option>
+                  <option value="2" selected>2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6+">6+</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-field">
+              <label for="fNote" data-i18n="contact.fNote">Special requests <span class="label-opt" data-i18n="contact.optional">(optional)</span></label>
+              <textarea id="fNote" name="note" rows="3" placeholder="Birthday, window seat, high chair, mocktail preferences…"></textarea>
+            </div>
+            <button type="submit" class="btn btn-gold btn-block btn-lg">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              <span data-i18n="contact.submit">Send Reservation via WhatsApp</span>
+            </button>
+            <p class="form-alt" data-i18n-html="contact.alt">Prefer to talk? Call <a href="tel:057522111">057-522111</a> — we answer every call.</p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a class="brand brand-footer" href="#home" aria-label="Sutra Lounge">
+            <span class="brand-mark">S</span>
+            <span class="brand-text">
+              <strong>SUTRA</strong>
+              <em>LOUNGE</em>
+            </span>
+          </a>
+          <p data-i18n="footer.tag">Premium multi-cuisine resto-lounge &amp; bar. Sumptuous food, great music, unforgettable times.</p>
+        </div>
+
+        <nav class="footer-col" aria-label="Footer navigation">
+          <h4 data-i18n="footer.explore">Explore</h4>
+          <ul>
+            <li><a href="#about" data-i18n="nav.about">About</a></li>
+            <li><a href="#menu" data-i18n="nav.menu">Signature Dishes</a></li>
+            <li><a href="#bestsellers" data-i18n="nav.best">Bestsellers</a></li>
+            <li><a href="#gallery" data-i18n="nav.gallery">Gallery</a></li>
+            <li><a href="#testimonials" data-i18n="nav.reviews">Reviews</a></li>
+          </ul>
+        </nav>
+
+        <div class="footer-col">
+          <h4 data-i18n="footer.contact">Contact</h4>
+          <ul class="footer-contact">
+            <li><a href="tel:057522111">057-522111</a></li>
+            <li><a href="mailto:sutralonguehtd@gmail.com">sutralonguehtd@gmail.com</a></li>
+            <li data-i18n="footer.addr">Hupra, Hetauda-4, Makwanpur, Nepal</li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4 data-i18n="footer.hours">Opening Hours</h4>
+          <ul>
+            <li data-i18n="footer.hoursLine">Mon – Sun · 11:00 AM – 11:00 PM</li>
+          </ul>
+          <div class="social-row social-row-footer">
+            <a href="https://www.facebook.com/SutraLounge/" target="_blank" rel="noopener" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M13.5 21v-7h2.4l.4-2.8h-2.8V9.3c0-.8.3-1.4 1.4-1.4h1.5V5.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.4-3.7 3.8v2H8v2.8h2.5v7h3Z"/></svg>
+            </a>
+            <a href="https://www.instagram.com/sutraloungehetauda/" target="_blank" rel="noopener" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg>
+            </a>
+            <a href="https://www.tiktok.com/@sutralounge" target="_blank" rel="noopener" aria-label="TikTok">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M16.6 4c.4 1.8 1.7 3.1 3.4 3.4v2.7c-1.3 0-2.5-.4-3.4-1v6.1c0 3.1-2.3 5.3-5.2 5.3-2.7 0-5-2.2-5-5 0-3.1 2.7-5.3 5.7-5 0 1-.1 1.9-.5 2.8-.2.6.1 1.3.8 1.5.7.3 1.4 0 1.7-.7.2-.4.2-.9.2-1.3V4h2.3Z"/></svg>
+            </a>
+            <a href="https://youtu.be/2sRGneKpy_k" target="_blank" rel="noopener" aria-label="YouTube">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p data-i18n="footer.rights">© 2026 Sutra Lounge. All rights reserved.</p>
+        <p data-i18n="footer.love">Made with flavour in Hetauda</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ MOBILE ACTION BAR ============ -->
+  <div class="mobile-bar" id="mobileBar">
+    <a href="tel:057522111" class="mobile-bar-btn">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2Z"/></svg>
+      <span data-i18n="mobile.call">Call</span>
+    </a>
+    <a href="https://wa.me/97757522111" target="_blank" rel="noopener" class="mobile-bar-btn">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      <span data-i18n="mobile.wa">WhatsApp</span>
+    </a>
+    <a href="#contact" class="mobile-bar-btn mobile-bar-cta">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 10h10M7 14h7"/></svg>
+      <span data-i18n="mobile.reserve">Reserve</span>
+    </a>
+  </div>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
+    <button class="lightbox-close" data-close-lightbox aria-label="Close">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <figure class="lightbox-figure">
+      <img id="lightboxImg" src="" alt="" />
+      <figcaption id="lightboxCaption"></figcaption>
+    </figure>
+  </div>
+
+  <!-- ============ BESTSELLERS QUICK VIEW MODAL ============ -->
+  <div class="modal" id="qvModal" role="dialog" aria-modal="true" aria-label="Bestseller quick view">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-box modal-box--qv">
+      <button class="modal-close" data-close-modal aria-label="Close quick view">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="qv-media">
+        <img id="qvImg" src="" alt="" />
+      </div>
+      <div class="qv-body">
+        <div class="qv-head">
+          <h3 id="qvName"></h3>
+          <span class="qv-price" id="qvPrice"></span>
+        </div>
+        <span class="qv-badge" id="qvBadge"></span>
+        <p class="qv-desc" id="qvDesc"></p>
+        <a id="qvOrder" href="#" target="_blank" rel="noopener" class="btn btn-gold qv-order">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span data-bs-label="bestsellers.order"></span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <button class="to-top" id="toTop" type="button" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+
+  <script src="js/main.js?v=4"></script>
+</body>
+</html>

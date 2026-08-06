@@ -1,0 +1,1094 @@
+Sutra Lounge — Production Restaurant Website + Admin CMS
+
+You are an expert senior full-stack engineer, UI/UX designer, database architect, security engineer, and conversion-focused restaurant website developer.
+
+Your job is to build a complete, production-quality restaurant website and secure admin CMS for Sutra Lounge.
+
+Do not create a generic SaaS dashboard or generic restaurant template.
+
+The result must look and behave like a real premium restaurant website and a professional custom CMS created specifically for Sutra Lounge.
+
+---
+
+1. PROJECT OBJECTIVE
+
+Build two connected applications:
+
+1. A premium public-facing Sutra Lounge restaurant website.
+2. A secure admin dashboard that allows the restaurant administrator to manage website content without editing code.
+
+Every important piece of public website content must be database-driven.
+
+Changes made from the admin panel must appear on the public website after publishing.
+
+---
+
+2. RESTAURANT INFORMATION
+
+Restaurant Name:
+Sutra Lounge
+
+Cuisine:
+Premium Multi-Cuisine Resto-Lounge & Bar
+
+Tagline:
+Sumptuous Food. Great Music. Unforgettable Times.
+
+Location:
+Hupra, Hetauda-4, Makwanpur, Nepal
+
+Phone:
+057522111
+
+WhatsApp:
++977 057-522XXX
+
+Signature Dishes (Homepage “Signature Dishes” — 4 concept dishes, no prices, “Reserve to Taste”):
+
+1. Sutra Fusion Mo Platter — Chef's recommendation
+2. Crispy Chilli Chicken & Sizzlers — Served sizzling
+3. Artisan Clay-Oven Pizzas — Baked to order
+4. Custom Handcrafted Mocktails & Cocktails — Mixed to your taste
+
+Bestsellers / Full Digital Menu (/menu.html — 7 dishes with live prices, orderable on WhatsApp):
+
+Platters:
+
+- Bamboo Biryani — Rs 545 — Chef Special
+- Sutra Momo Platter — Rs 495 — Must Try
+- Grand Indian Platter — Rs 1,495 — Group Size
+
+Snacks & Pizza:
+
+- Peri Peri Chicken Pizza — Rs 795
+- Monster Fries — Rs 495
+
+Cocktails & Hookah:
+
+- Creamy Espresso Martini — Rs 995 — Signature Drink
+- Cloud Hookah — Rs 495 — Lounge Favorite
+
+Total: 11 dish entries across the site (7 bestsellers appear in both homepage section and Full Digital Menu page at /menu.html).
+
+Opening Hours:
+Monday – Sunday: 11:00 AM – 11:00 PM
+
+Use only the provided restaurant information as factual business information.
+
+Do not invent real-world claims such as awards, years of operation, chef names, exact addresses, ratings, prices, certifications, or customer statistics.
+
+If content is needed where no factual information has been provided, use tasteful generic copy that does not make unverifiable factual claims.
+
+---
+
+3. PUBLIC WEBSITE
+
+Create a premium, modern, appetizing, mobile-first restaurant website.
+
+Required sections:
+
+Hero
+
+Include:
+
+- Restaurant name
+- Premium Multi-Cuisine Resto-Lounge & Bar
+- Main tagline
+- Short persuasive introduction
+- Location
+- Reserve Table CTA
+- Call CTA
+- WhatsApp CTA
+
+Use an impressive food/restaurant visual treatment.
+
+---
+
+About
+
+Create an elegant restaurant introduction focused on:
+
+- Dining experience
+- Food quality
+- Atmosphere
+- Hospitality
+- Great music
+- Memorable occasions
+
+Do not invent specific history.
+
+---
+
+Signature Dishes
+
+Display the four provided signature dishes as premium food cards.
+
+Each card should support:
+
+- Image
+- Dish name
+- Description
+- Category
+- Featured badge
+
+This section is price-free and reservation-focused (“Reserve to Taste”).
+
+All content must be editable from the admin panel.
+
+---
+
+Full Digital Menu (/menu.html)
+
+Display the 7 bestsellers with:
+
+- Name
+- Price (live from CMS)
+- Description
+- Category
+- WhatsApp Order CTA
+
+These items must be shared with homepage bestsellers (same database entries, different presentation).
+
+---
+
+Why Choose Us
+
+Create 3–4 polished benefit cards around:
+
+- Quality food
+- Chef-crafted preparation
+- Inviting atmosphere
+- Friendly hospitality
+
+Avoid unsupported claims presented as hard facts.
+
+---
+
+Gallery
+
+Create a premium food and restaurant gallery.
+
+Gallery content must be database-driven.
+
+Support:
+
+- Upload
+- Delete
+- Replace
+- Reorder
+- Hide/show
+- Featured image
+
+---
+
+Reviews
+
+Create a polished testimonial section.
+
+Reviews must be database-driven.
+
+The admin can:
+
+- Add
+- Edit
+- Delete
+- Hide/show
+- Change reviewer name
+- Change rating
+- Change review text
+- Add reviewer image
+- Replace reviewer image
+- Remove reviewer image
+
+Do not present fabricated testimonials as real customer reviews.
+
+If seed/demo testimonials are required for development, clearly structure them as demo content and make them easy to replace/remove.
+
+---
+
+Location
+
+Display:
+
+- Hupra
+- Hetauda-4
+- Makwanpur
+- Nepal
+- Opening hours
+- Google Maps link/location field
+
+Do not fabricate exact GPS coordinates.
+
+---
+
+Contact / Reservation
+
+Include prominent:
+
+- Reserve Table
+- Call Now
+- WhatsApp
+
+The contact information must come from the database.
+
+Do not hardcode phone or WhatsApp values into UI components.
+
+---
+
+4. ADMIN DASHBOARD
+
+Create a secure "/admin" area.
+
+Admin must authenticate before accessing CMS features.
+
+Dashboard should include:
+
+- Website status
+- Dish count
+- Review count
+- Gallery count
+- Current opening status
+- Recent changes
+- Quick actions
+- Preview Website
+- Publish status
+
+Use a polished professional admin interface.
+
+Do not make it visually identical to a generic template.
+
+---
+
+5. RESTAURANT DETAILS CMS
+
+Create a dedicated settings editor.
+
+Editable fields:
+
+- Restaurant name
+- Main tagline
+- Short description
+- About text
+- Hero heading
+- Hero subheading
+- Phone
+- WhatsApp
+- Email
+- Address
+- City/area
+- Google Maps URL
+- Facebook
+- Instagram
+- TikTok
+- Other social links
+
+All fields require proper validation.
+
+Examples:
+
+- Email must be valid
+- URLs must be validated
+- Phone fields must reject clearly invalid values
+- Required fields cannot be accidentally emptied
+- Sanitize user-generated text
+- Prevent XSS
+
+---
+
+6. OPENING HOURS CMS
+
+Create editable opening hours for every day:
+
+Monday
+Tuesday
+Wednesday
+Thursday
+Friday
+Saturday
+Sunday
+
+Each day supports:
+
+- Open/Closed
+- Opening time
+- Closing time
+
+Allow different hours for different days.
+
+Public website should automatically display the saved hours.
+
+---
+
+7. DISH CMS
+
+Create complete CRUD management.
+
+Admin can:
+
+- Create dish
+- Edit dish
+- Delete dish
+- Hide/show dish
+- Upload image
+- Replace image
+- Edit name
+- Edit price
+- Edit description
+- Select category
+- Mark featured
+- Change display order
+
+Use a proper confirmation dialog before destructive deletion.
+
+Never immediately delete without confirmation.
+
+---
+
+8. REVIEW CMS
+
+Complete CRUD.
+
+Fields:
+
+- Reviewer name
+- Review text
+- Rating
+- Reviewer image
+- Visibility
+- Display order
+
+Support:
+
+- Add
+- Edit
+- Delete
+- Hide/show
+- Replace photo
+- Remove photo
+
+---
+
+9. REVIEWER PHOTO SYSTEM
+
+Implement a reusable reviewer profile-image editor.
+
+Admin uploads the person's photo.
+
+The website automatically presents it using the same consistent circular profile-photo design.
+
+The admin should NOT need to manually edit the image in an external editor.
+
+Provide only simple adjustments:
+
+- Zoom
+- Move left
+- Move right
+- Move up
+- Move down
+- Reset crop
+
+Keep:
+
+- Same circular shape
+- Same dimensions
+- Same visual treatment
+- Same border/style
+- Same profile-picture pattern
+
+Do not perform unnecessary AI face modification or identity-changing beautification.
+
+The purpose is consistent cropping and positioning.
+
+---
+
+10. GALLERY CMS
+
+Create complete gallery management.
+
+Admin can:
+
+- Upload image
+- Delete image
+- Replace image
+- Reorder image
+- Hide/show image
+- Select featured image
+
+Use drag-and-drop ordering if practical.
+
+Optimize images for web performance.
+
+Do not unnecessarily destroy the original uploaded file.
+
+---
+
+11. HERO IMAGE CMS
+
+Admin can:
+
+- Upload hero image
+- Replace hero image
+- Preview hero image
+- Restore original hero image
+
+Maintain responsive image behavior across desktop and mobile.
+
+---
+
+12. ORIGINAL / CURRENT DATA ARCHITECTURE
+
+This is a critical requirement.
+
+Implement two separate content states:
+
+ORIGINAL BASELINE
+
+The initial Sutra Lounge website content.
+
+This baseline must be protected from normal editing.
+
+Normal admin changes must NEVER overwrite the baseline.
+
+CURRENT / PUBLISHED
+
+The currently active website content.
+
+Example:
+
+Original phone:
+057-522XXX
+
+Admin changes current phone:
+057-523XXX
+
+Public website shows:
+057-523XXX
+
+Original baseline remains:
+057-522XXX
+
+---
+
+13. RESTORE ORIGINAL
+
+Provide a Restore Original action for appropriate individual fields/sections.
+
+Example:
+
+Current:
+057-523XXX
+
+Original:
+057-522XXX
+
+Click:
+
+Restore Original
+
+Result:
+
+Current becomes:
+057-522XXX
+
+Apply the same concept to:
+
+- Business details
+- Tagline
+- About
+- Hero content
+- Hero image
+- Gallery items where baseline exists
+- Other CMS-managed content
+
+Before restoring, show a confirmation where appropriate.
+
+---
+
+14. DRAFT / PREVIEW / PUBLISH
+
+Do not force every admin edit to immediately become live.
+
+Implement:
+
+Edit
+↓
+Save Draft
+↓
+Preview
+↓
+Publish
+
+Admin should be able to preview the website with draft changes before publishing.
+
+The public website should only display published content.
+
+Clearly distinguish:
+
+- Draft
+- Published
+- Unsaved changes
+
+---
+
+15. UNDO / REDO
+
+Implement real revision history.
+
+Store changes in a revision system.
+
+A revision should contain enough information to restore previous state.
+
+Support:
+
+- Undo
+- Redo
+- Revision history
+- Restore previous revision
+
+Do not implement fake UI-only undo buttons.
+
+Changes must remain correct after page reload.
+
+---
+
+16. WHOLE WEBSITE RESET
+
+Add a dangerous admin action:
+
+Reset Entire Website
+
+This must restore the complete current/published website to the protected ORIGINAL BASELINE.
+
+Reset should restore all baseline-managed content including:
+
+- Restaurant information
+- Tagline
+- Description
+- About
+- Hero content
+- Hero image
+- Signature dishes (homepage)
+- Menu items (/menu.html)
+- Reviews
+- Reviewer images
+- Gallery
+- Social links
+- Opening hours
+- Contact information
+
+Before reset, show a serious warning.
+
+Require explicit confirmation.
+
+Prefer requiring the administrator to type:
+
+RESET
+
+before allowing the operation.
+
+Never accidentally trigger this action.
+
+The reset should be transactional and safe.
+
+---
+
+17. DATABASE DESIGN
+
+Use a normalized and maintainable database architecture.
+
+At minimum create logical structures for:
+
+- Admin users
+- Site settings
+- Baseline/original content
+- Draft content
+- Published content
+- Dishes (with type: signature / bestseller)
+- Reviews
+- Gallery/media
+- Opening hours
+- Revisions
+- Uploaded media metadata
+
+Every record should have appropriate:
+
+- ID
+- Created timestamp
+- Updated timestamp
+- Ordering where needed
+- Visibility where needed
+
+Use relational integrity.
+
+Do not store everything as one giant unstructured JSON blob unless there is a strong architectural reason.
+
+---
+
+18. MEDIA STORAGE
+
+Do not store large image binaries directly inside ordinary database fields.
+
+Use a proper storage abstraction.
+
+Store metadata in the database.
+
+Support:
+
+- Image upload
+- Image replacement
+- Image deletion
+- Image URL/reference
+- Alt text
+- Ordering
+- Visibility
+
+Optimize images for responsive delivery.
+
+---
+
+19. SECURITY
+
+Security is mandatory.
+
+Implement:
+
+- Secure admin authentication
+- Password hashing
+- Session protection
+- Authorization checks
+- Server-side validation
+- Input sanitization
+- XSS protection
+- CSRF protection where applicable
+- Rate limiting for authentication endpoints
+- Secure file upload validation
+- File type validation
+- File size limits
+- Authorization on every admin mutation
+- No sensitive credentials exposed to frontend
+- Environment variables for secrets
+- No hardcoded API keys
+- Safe database queries
+- Secure logout
+
+Never trust frontend-only validation.
+
+Every mutation must also be validated server-side.
+
+---
+
+20. RESPONSIVE DESIGN
+
+The public website must be excellent on:
+
+- Android phones
+- iPhones
+- Tablets
+- Laptops
+- Desktop monitors
+
+Admin dashboard must also be responsive, but prioritize desktop/tablet productivity while keeping mobile usable.
+
+Test layouts around:
+
+- 320px
+- 375px
+- 390px
+- 768px
+- 1024px
+- 1440px+
+
+Avoid horizontal scrolling.
+
+---
+
+21. DESIGN SYSTEM
+
+Public website:
+
+Premium restaurant aesthetic.
+
+Use:
+
+- Deep charcoal
+- Warm gold
+- Burgundy/deep wine accents
+- Warm ivory
+- Elegant typography
+- Large food imagery
+- Sophisticated spacing
+- Soft shadows
+- Premium cards
+- Refined hover effects
+
+Avoid:
+
+- SaaS-looking hero
+- Excessive gradients
+- Cheap-looking glassmorphism
+- Cartoonish UI
+- Overly bright colors
+- Generic stock-template appearance
+
+The website should feel like a premium local restaurant brand.
+
+---
+
+22. CONVERSION OPTIMIZATION
+
+The site should encourage:
+
+1. Table reservations
+2. Phone calls
+3. WhatsApp messages
+4. Physical visits
+
+Use strong CTA placement throughout the page.
+
+Mobile should have easy access to:
+
+Call
+WhatsApp
+Reserve
+
+Do not use deceptive conversion tactics.
+
+---
+
+23. ACCESSIBILITY
+
+Implement:
+
+- Semantic HTML
+- Proper heading hierarchy
+- Keyboard navigation
+- Visible focus states
+- Accessible buttons
+- Accessible forms
+- Alt text
+- Good color contrast
+- ARIA only where necessary
+
+---
+
+24. SEO
+
+Implement:
+
+- Proper title
+- Meta description
+- Open Graph metadata
+- Semantic headings
+- Restaurant-related structured data where information is actually known
+- Canonical URL configuration
+- Sitemap support
+- Robots configuration
+
+Never invent structured-data values that are not known.
+
+---
+
+25. PERFORMANCE
+
+Optimize for:
+
+- Fast first load
+- Responsive images
+- Lazy loading below-the-fold images
+- Efficient database queries
+- Minimal unnecessary JavaScript
+- Proper caching
+- No layout shifts
+- Good mobile performance
+
+Do not sacrifice usability for flashy animations.
+
+---
+
+26. ERROR HANDLING
+
+Every admin operation needs useful feedback.
+
+Examples:
+
+Success:
+"Dish updated successfully."
+
+Error:
+"Unable to update dish. Please try again."
+
+Upload:
+"Image uploaded successfully."
+
+Validation:
+"Please enter a valid email address."
+
+Reset:
+"Website successfully restored to the original baseline."
+
+Never silently fail.
+
+---
+
+27. EMPTY STATES
+
+Create professional empty states.
+
+Examples:
+
+No dishes:
+
+"No dishes added yet.
+Add your first menu item."
+
+No reviews:
+
+"No reviews added yet."
+
+No gallery:
+
+"No gallery images yet."
+
+Do not show broken cards or blank sections.
+
+---
+
+28. CONFIRMATION DIALOGS
+
+Use confirmation dialogs for destructive operations:
+
+- Delete dish
+- Delete review
+- Delete gallery image
+- Remove image
+- Reset original
+- Reset entire website
+
+Do not use browser "alert()" for the main product UI.
+
+---
+
+29. SEED DATA
+
+Create initial Sutra Lounge seed data based strictly on the supplied information.
+
+Use:
+
+- 4 homepage signature dishes (no prices)
+- 7 menu bestsellers with prices
+- Proper mapping so 7 items appear in both homepage bestsellers and /menu.html
+
+For images, use a clear replaceable demo/media system if actual restaurant assets are unavailable.
+
+For reviews, do not imply invented testimonials are genuine.
+
+Make demo content clearly identifiable during development.
+
+---
+
+30. CODE QUALITY
+
+Write production-quality code.
+
+Requirements:
+
+- TypeScript where supported
+- Strong typing
+- Reusable components
+- Reusable form components
+- Reusable modal/dialog components
+- Reusable image uploader
+- Reusable crop editor
+- Clear service/repository separation
+- Clean API design
+- Good naming
+- No unnecessary duplication
+- No giant monolithic components
+- No dead code
+- No fake functionality
+
+Do not create buttons that appear functional but do nothing.
+
+Every implemented feature must actually work.
+
+---
+
+31. PROJECT EXECUTION RULE
+
+Before coding:
+
+1. Inspect the existing repository.
+2. Identify existing framework.
+3. Identify package manager.
+4. Identify existing database setup.
+5. Identify existing authentication.
+6. Identify reusable components.
+7. Identify current routing.
+8. Identify existing environment variables.
+9. Avoid destroying existing working functionality.
+10. Reuse existing architecture where reasonable.
+
+If the repository is empty, initialize an appropriate production-ready architecture.
+
+Do not unnecessarily replace the existing stack.
+
+---
+
+32. IMPLEMENTATION ORDER
+
+Build in this order:
+
+Step 1
+
+Inspect repository and architecture.
+
+Step 2
+
+Create database schema.
+
+Step 3
+
+Create baseline/default seed data.
+
+Step 4
+
+Implement authentication.
+
+Step 5
+
+Implement public website using database content.
+
+Step 6
+
+Implement admin dashboard.
+
+Step 7
+
+Implement restaurant settings CMS.
+
+Step 8
+
+Implement dish CRUD.
+
+Step 9
+
+Implement reviews CRUD.
+
+Step 10
+
+Implement reviewer image crop/positioning.
+
+Step 11
+
+Implement gallery management.
+
+Step 12
+
+Implement hero image management.
+
+Step 13
+
+Implement draft/preview/publish.
+
+Step 14
+
+Implement revisions.
+
+Step 15
+
+Implement undo/redo.
+
+Step 16
+
+Implement individual Restore Original.
+
+Step 17
+
+Implement Whole Website Reset.
+
+Step 18
+
+Implement validation/security.
+
+Step 19
+
+Optimize performance and SEO.
+
+Step 20
+
+Run full testing and fix all errors.
+
+---
+
+33. TESTING REQUIREMENTS
+
+Before considering the project complete, test:
+
+Public Website
+
+- Mobile
+- Tablet
+- Desktop
+- Navigation
+- CTA buttons
+- Phone links
+- WhatsApp links
+- Gallery
+- Reviews
+- Opening hours
+- Social links
+- Menu page consistency (/menu.html vs homepage bestsellers)
+
+Admin
+
+- Login
+- Logout
+- Unauthorized access
+- Restaurant settings
+- Dish create/edit/delete
+- Review create/edit/delete
+- Reviewer photo upload/crop
+- Gallery upload/delete/replace/reorder
+- Hero image replacement
+- Draft saving
+- Preview
+- Publishing
+- Revision history
+- Undo
+- Redo
+- Restore Original
+- Whole Website Reset
+
+Security
+
+Test unauthorized requests directly against backend APIs.
+
+Do not rely only on hiding buttons in the frontend.
+
+---
+
+34. FINAL ACCEPTANCE CRITERIA
+
+The project is complete only when:
+
+- Public website looks premium and restaurant-specific.
+- Admin panel is secure.
+- Admin can manage restaurant details without code.
+- Admin can manage dishes (signature + menu).
+- Admin can manage reviews.
+- Admin can manage reviewer photos.
+- Admin can manage gallery.
+- Admin can manage hero image.
+- Admin can manage opening hours.
+- Admin can manage contact/social information.
+- Changes can be previewed.
+- Changes can be published.
+- Original baseline remains protected.
+- Individual original content can be restored.
+- Undo/redo works through persistent revisions.
+- Entire website can be safely reset to original baseline.
+- Public website updates from published CMS data.
+- No important CMS value is unnecessarily hardcoded.
+- No fake functionality remains.
+- No obvious security vulnerabilities remain.
+- No console

@@ -1,0 +1,38 @@
+{
+  "name": "sutra-lounge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sutra Lounge — production restaurant website + secure admin CMS",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "db:seed": "tsx src/db/seed.ts",
+    "db:reset": "tsx src/db/reset.ts"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "compression": "^1.8.1",
+    "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.6.2",
+    "express-session": "^1.19.0",
+    "multer": "^2.2.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/compression": "^1.8.1",
+    "@types/ejs": "^3.1.5",
+    "@types/express": "^5.0.6",
+    "@types/express-session": "^1.19.0",
+    "@types/multer": "^2.2.0",
+    "@types/node": "^26.1.2",
+    "tsx": "^4.23.8",
+    "typescript": "^7.0.2"
+  }
+}

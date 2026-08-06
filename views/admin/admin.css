@@ -1,0 +1,122 @@
+/* ============================================================
+   SUTRA LOUNGE — Admin Console
+   Premium brand design (deep charcoal + warm gold)
+   ============================================================ */
+:root {
+  --gold: #c9a35c;
+  --gold-soft: #e6c98a;
+  --gold-deep: #a87e37;
+  --grad-gold: linear-gradient(135deg, #ecd8a4 0%, #c9a35c 45%, #9a6f2e 100%);
+  --bg: #0d0a07;
+  --bg-soft: #14100b;
+  --surface: #1a140e;
+  --surface-2: #221a11;
+  --border: rgba(220, 190, 130, .14);
+  --border-strong: rgba(220, 190, 130, .28);
+  --text: #f4ead9;
+  --text-soft: #cbbda6;
+  --text-mute: #94846a;
+  --danger: #e0604f;
+  --ok: #7fbf7f;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --radius: 14px;
+  --shadow: 0 18px 40px -18px rgba(0, 0, 0, .5);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--text); font-family: var(--font-sans); font-size: 15px; line-height: 1.55; }
+a { color: var(--gold); text-decoration: none; }
+a:hover { color: var(--gold-soft); }
+
+/* ---------- Login ---------- */
+.login-wrap { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: radial-gradient(900px 400px at 50% -60px, rgba(201,163,92,.14), transparent 70%), var(--bg); }
+.login-card { width: min(400px, 100%); background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 40px 36px; box-shadow: var(--shadow); }
+.login-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.login-brand .mark { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--grad-gold); color: #1d1406; font-family: var(--font-serif); font-size: 24px; font-weight: 800; transform: rotate(-4deg); }
+.login-brand strong { font-family: var(--font-serif); font-size: 20px; letter-spacing: 3px; }
+.login-brand em { font-style: normal; font-size: 9px; letter-spacing: 5px; color: var(--gold); display: block; }
+.login-card h1 { font-family: var(--font-serif); font-size: 24px; margin: 18px 0 4px; }
+.login-card p.sub { color: var(--text-mute); font-size: 13.5px; margin-bottom: 24px; }
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 12.5px; font-weight: 700; letter-spacing: .5px; color: var(--text-soft); margin-bottom: 6px; }
+.field input {
+  width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border-strong);
+  background: rgba(0,0,0,.28); color: var(--text); font-size: 15px; outline: none; transition: border-color .2s;
+}
+.field input:focus { border-color: var(--gold); }
+.alert { padding: 12px 14px; border-radius: 10px; font-size: 13.5px; margin-bottom: 16px; }
+.alert-error { background: rgba(224,96,79,.12); border: 1px solid rgba(224,96,79,.4); color: #f2a49a; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; cursor: pointer; border-radius: 10px; font-family: var(--font-sans); font-weight: 700; font-size: 14px; padding: 12px 20px; transition: transform .15s, filter .15s, background .2s; }
+.btn:hover { transform: translateY(-1px); }
+.btn-gold { background: var(--grad-gold); color: #1d1406; }
+.btn-gold:hover { filter: brightness(1.06); }
+.btn-block { width: 100%; }
+.btn-ghost { background: transparent; border: 1px solid var(--border-strong); color: var(--text-soft); }
+.btn-ghost:hover { border-color: var(--gold); color: var(--text); }
+.btn-danger { background: rgba(224,96,79,.14); border: 1px solid rgba(224,96,79,.45); color: #f2a49a; }
+.btn-small { padding: 8px 14px; font-size: 13px; }
+
+/* ---------- Admin shell ---------- */
+.admin-shell { display: grid; grid-template-columns: 248px 1fr; min-height: 100vh; }
+.sidebar { background: var(--bg-soft); border-right: 1px solid var(--border); padding: 24px 18px; display: flex; flex-direction: column; gap: 4px; position: sticky; top: 0; height: 100vh; }
+.sidebar .brand { display: flex; align-items: center; gap: 10px; padding: 0 8px 18px; border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+.sidebar .brand .mark { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; background: var(--grad-gold); color: #1d1406; font-family: var(--font-serif); font-size: 20px; font-weight: 800; transform: rotate(-4deg); }
+.sidebar .brand strong { font-family: var(--font-serif); letter-spacing: 2px; font-size: 16px; }
+.sidebar .brand em { font-style: normal; font-size: 8px; letter-spacing: 4px; color: var(--gold); display: block; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 10px; color: var(--text-soft); font-weight: 600; font-size: 14px; transition: background .2s, color .2s; }
+.nav-item:hover { background: var(--surface-2); color: var(--text); }
+.nav-item.active { background: rgba(201,163,92,.14); color: var(--gold-soft); }
+.nav-item .ico { width: 18px; height: 18px; flex: none; }
+.sidebar .spacer { flex: 1; }
+.sidebar .user { padding: 14px 8px 0; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-mute); }
+.sidebar .user strong { display: block; color: var(--text-soft); font-size: 13.5px; }
+
+.main { padding: 28px 34px 60px; max-width: 1180px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 26px; flex-wrap: wrap; }
+.topbar h1 { font-family: var(--font-serif); font-size: 26px; }
+.topbar .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.topbar .crumb { color: var(--text-mute); font-size: 13px; }
+
+.grid { display: grid; gap: 16px; }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+.stat-card .stat-label { font-size: 12px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-mute); font-weight: 700; }
+.stat-card .stat-value { font-family: var(--font-serif); font-size: 30px; font-weight: 800; color: var(--gold-soft); margin-top: 4px; }
+.stat-card .stat-hint { font-size: 12.5px; color: var(--text-mute); margin-top: 2px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: .5px; }
+.pill-ok { background: rgba(127,191,127,.14); color: #9fd39f; border: 1px solid rgba(127,191,127,.35); }
+.pill-warn { background: rgba(201,163,92,.14); color: var(--gold-soft); border: 1px solid rgba(201,163,92,.35); }
+.pill-danger { background: rgba(224,96,79,.12); color: #f2a49a; border: 1px solid rgba(224,96,79,.4); }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 24px; }
+.card h3 { font-family: var(--font-serif); font-size: 18px; margin-bottom: 12px; }
+.card .muted { color: var(--text-mute); font-size: 13.5px; }
+.list { list-style: none; }
+.list li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+.list li:last-child { border-bottom: 0; }
+.list .k { color: var(--text-soft); }
+.list .v { color: var(--text); font-weight: 600; text-align: right; }
+
+.quick-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.quick-actions .btn { white-space: nowrap; }
+
+.logout-form { display: inline; }
+.logout-btn { background: transparent; border: 0; color: var(--text-mute); font-size: 13px; cursor: pointer; font-family: var(--font-sans); }
+.logout-btn:hover { color: #f2a49a; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 760px) {
+  .admin-shell { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px; padding: 12px 14px; }
+  .sidebar .brand { border: 0; padding: 0; margin: 0 12px 0 0; }
+  .sidebar .spacer, .sidebar .user { display: none; }
+  .nav-item { padding: 8px 10px; font-size: 13px; }
+  .main { padding: 20px 16px 48px; }
+  .grid-2 { grid-template-columns: 1fr; }
+}

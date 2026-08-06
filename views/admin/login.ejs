@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Login · Sutra Lounge</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+<div class="login-wrap">
+  <form class="login-card" method="post" action="/admin/login">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="login-brand">
+      <div class="mark">S</div>
+      <div>
+        <strong>SUTRA</strong>
+        <em>ADMIN CONSOLE</em>
+      </div>
+    </div>
+    <h1>Welcome back</h1>
+    <p class="sub">Sign in to manage the Sutra Lounge website.</p>
+
+    <% if (error) { %>
+      <div class="alert alert-error"><%= error %></div>
+    <% } %>
+
+    <div class="field">
+      <label for="username">Username</label>
+      <input id="username" name="username" type="text" autocomplete="username" autofocus required>
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+    </div>
+    <button class="btn btn-gold btn-block" type="submit">Sign in</button>
+  </form>
+</div>
+</body>
+</html>
