@@ -237,6 +237,8 @@ export interface PublicContent {
 
 /** Shared page locals used by the public templates (home + menu + preview). */
 export function pageLocals(view: 'index' | 'menu', c: PublicContent, extra: Record<string, unknown> = {}) {
+  const requestHost = String(extra.requestHost ?? '');
+  const canonicalPath = view === 'menu' ? '/menu.html' : '/';
   return {
     ...c,
     title:
@@ -247,7 +249,8 @@ export function pageLocals(view: 'index' | 'menu', c: PublicContent, extra: Reco
       view === 'menu'
         ? `${c.s('restaurant.name')} full digital menu — group platters, snacks & pizza, cocktails & hookah. Live prices. Order on WhatsApp or reserve your table in ${c.s('contact.city')}.`
         : `${c.s('restaurant.name')} in ${c.address} — ${c.s('restaurant.tagline')} Reserve your table today.`,
-    pageCss: view === 'menu' ? '<link rel="stylesheet" href="css/menu.css?v=1" />' : '',
+    pageCss: view === 'menu' ? '<link rel="stylesheet" href="css/menu.css?v=' + (extra.assetsV ?? 1) + '" />' : '',
+    canonical: requestHost ? `https://${requestHost}${canonicalPath}` : '',
     ...extra,
     preview: extra.preview ?? false,
   };

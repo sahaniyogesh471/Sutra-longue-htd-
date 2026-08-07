@@ -31,7 +31,7 @@
             <% items.forEach(function (d) { %>
               <tr class="state-<%= d.draftState %>" data-row="<%= d.id ?? d.draft_id %>" data-kind="dishes" data-id="<%= d.id || '' %>" data-draft-id="<%= d.draft_id || '' %>">
                 <td class="cell-thumb">
-                  <% if (d.image_url) { %><img src="<%= d.image_url %>" alt="" loading="lazy"><% } else { %><span class="thumb-empty"></span><% } %>
+                  <% if (d.image_url) { %><img src="<%= img(d.image_url) %>" alt="" loading="lazy"><% } else { %><span class="thumb-empty"></span><% } %>
                 </td>
                 <td>
                   <div class="cell-title">

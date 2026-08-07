@@ -3,14 +3,70 @@
 <title><%= title %></title>
 <meta name="description" content="<%= description %>" />
 <meta name="theme-color" content="#0d0a07" />
+<% if (typeof noindex !== 'undefined' && noindex) { %>
+<meta name="robots" content="noindex, nofollow" />
+<% } else { %>
+<meta name="robots" content="index, follow" />
+<% } %>
+<% if (canonical) { %>
+<link rel="canonical" href="<%= canonical %>" />
+<% } %>
+
+<!-- Open Graph / Twitter -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="<%= typeof s === 'function' ? s('restaurant.name') : '' %>" />
+<meta property="og:title" content="<%= title %>" />
+<meta property="og:description" content="<%= description %>" />
+<meta property="og:locale" content="en_US" />
+<% if (canonical) { %><meta property="og:url" content="<%= canonical %>" /><% } %>
+<% var ogImage = (typeof heroSlides !== 'undefined' && heroSlides.length) ? heroSlides[0].image : ''; %>
+<% if (ogImage) { %><meta property="og:image" content="<%= ogImage %>" /><% } %>
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="<%= title %>" />
+<meta name="twitter:description" content="<%= description %>" />
+<% if (ogImage) { %><meta name="twitter:image" content="<%= ogImage %>" /><% } %>
 
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230d0a07'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='%23d9b877' font-family='Georgia, serif' font-weight='bold'%3ES%3C/text%3E%3C/svg%3E" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+<link rel="dns-prefetch" href="https://images.unsplash.com" />
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500;1,600&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css?v=5" />
+<link rel="stylesheet" href="css/style.css?v=<%= typeof assetsV !== 'undefined' ? assetsV : 1 %>" />
 <%- pageCss || '' %>
 <noscript>
   <style>.reveal { opacity: 1 !important; transform: none !important; } .preloader { display: none !important; }</style>
 </noscript>
+
+<% if (typeof s === 'function' && (typeof noindex === 'undefined' || !noindex)) { %>
+<script type="application/ld+json">
+<% var phoneDigits = (typeof phone !== 'undefined' && phone && phone.display) ? String(phone.display).replace(/[^\d]/g, '') : ''; %>
+<% var ld = {
+  '@context': 'https://schema.org',
+  '@type': 'Restaurant',
+  name: s('restaurant.name'),
+  description: s('restaurant.description'),
+  servesCuisine: s('restaurant.cuisine'),
+  telephone: phoneDigits,
+  url: canonical || '',
+  image: ogImage || undefined,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: (typeof address !== 'undefined') ? address : '',
+    addressCountry: 'Nepal'
+  },
+  openingHoursSpecification: (typeof hours !== 'undefined' ? hours : []).filter(function (h) { return Number(h.is_open) === 1 && h.open_time && h.close_time; }).map(function (h) {
+    return {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: h.day_name,
+      opens: h.open_time,
+      closes: h.close_time
+    };
+  })
+};
+ld.image = ld.image || undefined;
+ld.url = ld.url || undefined;
+%><%- JSON.stringify(ld).replace(/</g, '\\u003c') %>
+</script>
+<% } %>

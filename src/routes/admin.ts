@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, type Request, type Response, type NextFunction } from 'express';
 import rateLimit from 'express-rate-limit';
 import { requireAuth } from '../auth.js';
 import { getDb } from '../db/index.js';
@@ -79,6 +79,17 @@ adminRouter.use(requireAuth);
 
 /* ---- JSON API (all mutations require an authenticated session) ---- */
 adminRouter.use('/api', apiRouter);
+
+/*
+ * View helper: resolve a stored image path to an absolute URL.
+ * Admin pages render under /admin, so a bare relative path such as
+ * `img/avatar-rs.jpg` would otherwise resolve to /admin/img/... and 404.
+ */
+adminRouter.use((_req: Request, res: Response, next: NextFunction) => {
+  res.locals.img = (url?: string): string =>
+    url && !/^(https?:)?\/\//i.test(url) && !url.startsWith('/') ? `/${url}` : (url ?? '');
+  next();
+});
 
 /** Opening status computed in Asia/Kathmandu from the hours table. */
 function openingNow(db: ReturnType<typeof getDb>) {
@@ -220,10 +231,12 @@ adminRouter.get('/revisions', (req, res) => {
   });
 });
 
-/* ---- Draft preview of the public site ---- */
+/* ---- Draft preview of the public site (never indexed / cached) ---- */
 adminRouter.get('/preview', (_req, res) => {
-  res.render('index', pageLocals('index', buildPublicContent(getDb(), { draft: true }), { preview: 'home' }));
+  res.setHeader('Cache-Control', 'no-store');
+  res.render('index', pageLocals('index', buildPublicContent(getDb(), { draft: true }), { preview: 'home', noindex: true }));
 });
 adminRouter.get('/preview/menu', (_req, res) => {
-  res.render('menu', pageLocals('menu', buildPublicContent(getDb(), { draft: true }), { preview: 'menu' }));
+  res.setHeader('Cache-Control', 'no-store');
+  res.render('menu', pageLocals('menu', buildPublicContent(getDb(), { draft: true }), { preview: 'menu', noindex: true }));
 });

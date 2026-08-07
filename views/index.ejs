@@ -2,6 +2,9 @@
 <html lang="en" data-theme="dark">
 <head>
   <%- include('partials/head', { title: title, description: description, pageCss: pageCss }); %>
+  <% if (heroSlides && heroSlides.length && heroSlides[0].image) { %>
+    <link rel="preload" as="image" href="<%= heroSlides[0].image %>" fetchpriority="high">
+  <% } %>
 </head>
 <body>
 
@@ -616,6 +619,6 @@
   </button>
 
   <%- include('partials/data'); %>
-  <script src="js/main.js?v=5"></script>
+  <script src="js/main.js?v=<%= typeof assetsV !== 'undefined' ? assetsV : 1 %>"></script>
 </body>
 </html>

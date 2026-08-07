@@ -24,7 +24,7 @@
                data-row="<%= g.id ?? g.draft_id %>" data-kind="gallery"
                data-id="<%= g.id || '' %>" data-draft-id="<%= g.draft_id || '' %>">
             <div class="gallery-img">
-              <img src="<%= g.image_url %>" alt="<%= g.alt %>" loading="lazy">
+              <img src="<%= img(g.image_url) %>" alt="<%= g.alt %>" loading="lazy">
               <% if (Number(g.is_featured) === 1) { %><span class="badge-featured">Featured</span><% } %>
               <% if (g.draftState === 'deleted') { %><span class="badge-overlay">Will be removed</span><% } %>
               <span class="grip" title="Drag to reorder">⠿</span>

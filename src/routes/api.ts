@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
+import fs from 'node:fs';
+import rateLimit from 'express-rate-limit';
 import { getDb } from '../db/index.js';
 import {
   effectiveSettings,
@@ -23,7 +25,7 @@ import {
   listRevisions,
   restoreRevision,
 } from '../lib/publish.js';
-import { upload, registerMedia, pruneOrphanMedia } from '../lib/media.js';
+import { upload, registerMedia, pruneOrphanMedia, validateImageFile } from '../lib/media.js';
 import {
   required,
   maxLen,
@@ -42,6 +44,17 @@ import { adminDishes, adminReviews, adminGallery } from '../lib/admin-lists.js';
 import { ALL_SETTING_KEYS, SETTING_RULES } from '../lib/settings-defs.js';
 
 export const apiRouter = Router();
+
+/** Broad general limiter for the whole admin API — stops runaway requests while
+ *  staying well above a human CMS session's needs. */
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 600,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { ok: false, error: 'Too many requests. Please try again later.' },
+});
+apiRouter.use(apiLimiter);
 
 const ADMIN = (res: Response) => (res.locals.admin as { display_name?: string } | undefined)?.display_name ?? 'admin';
 
@@ -571,6 +584,16 @@ apiRouter.post('/upload', (req, res) => {
     }
     if (!req.file) {
       fail(res, 400, 'No file received. Please choose an image to upload.');
+      return;
+    }
+    // Never trust the browser-supplied MIME type — verify the real file signature.
+    if (!validateImageFile(req.file.path, req.file.mimetype)) {
+      try {
+        fs.rmSync(req.file.path, { force: true });
+      } catch {
+        /* best effort cleanup */
+      }
+      fail(res, 400, 'Upload rejected: the file is not a valid image.');
       return;
     }
     const db = getDb();

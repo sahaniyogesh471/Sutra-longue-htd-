@@ -30,7 +30,7 @@
             <% items.forEach(function (r) { %>
               <tr class="state-<%= r.draftState %>" data-row="<%= r.id ?? r.draft_id %>" data-kind="reviews" data-id="<%= r.id || '' %>" data-draft-id="<%= r.draft_id || '' %>">
                 <td class="cell-avatar">
-                  <% if (r.image_url) { %><img src="<%= r.image_url %>" alt=""><% } else { %><span class="avatar-empty"><%= (r.name || '?').charAt(0) %></span><% } %>
+                  <% if (r.image_url) { %><img src="<%= img(r.image_url) %>" alt=""><% } else { %><span class="avatar-empty"><%= (r.name || '?').charAt(0) %></span><% } %>
                 </td>
                 <td>
                   <strong><%= r.name %></strong>

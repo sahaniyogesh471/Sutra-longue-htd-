@@ -20,6 +20,8 @@ export function sessionMiddleware() {
       httpOnly: true,
       sameSite: 'lax',
       secure: SESSION_SECURE,
+      path: '/',
+      priority: 'high',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     },
   });

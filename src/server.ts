@@ -26,11 +26,35 @@ export function createApp() {
     } catch {
       res.locals.adminAssetsV = Date.now();
     }
+    try {
+      const css = fs.statSync(path.join(ROOT, 'css', 'style.css')).mtimeMs;
+      const menu = fs.statSync(path.join(ROOT, 'css', 'menu.css')).mtimeMs;
+      const js = fs.statSync(path.join(ROOT, 'js', 'main.js')).mtimeMs;
+      res.locals.assetsV = Math.round(Math.max(css, menu, js));
+    } catch {
+      res.locals.assetsV = Date.now();
+    }
     next();
   });
 
   app.use(compression());
   app.use(securityHeaders);
+
+  // Cache policy: admin pages are private & never cached; public pages are
+  // revalidated on every request (they are database-driven) but may still be
+  // served from a CDN/proxy after revalidation.
+  app.use((req: Request, res: Response, next) => {
+    res.setHeader(
+      'Cache-Control',
+      req.path.startsWith('/admin')
+        ? 'no-store'
+        : 'public, no-cache, must-revalidate'
+    );
+    res.locals.requestHost = req.get('host') ?? '';
+    res.locals.pathname = req.path;
+    next();
+  });
+
   app.use(express.json({ limit: '2mb' }));
   app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 
@@ -50,12 +74,44 @@ export function createApp() {
   app.get('/admin.js', sendFile('js/admin.js'));
 
   // ---- Public pages (database-driven, published state only) ----
-  const renderPublic = (view: 'index' | 'menu') => (_req: Request, res: Response) => {
-    res.render(view, pageLocals(view, buildPublicContent(getDb())));
+  const renderPublic = (view: 'index' | 'menu') => (req: Request, res: Response) => {
+    res.render(view, pageLocals(view, buildPublicContent(getDb()), {
+      requestHost: res.locals.requestHost,
+      assetsV: res.locals.assetsV,
+    }));
   };
   app.get('/', renderPublic('index'));
   app.get('/index.html', (_req, res) => res.redirect(301, '/'));
   app.get('/menu.html', renderPublic('menu'));
+
+  // ---- robots.txt & sitemap.xml (host derived from the request) ----
+  app.get('/robots.txt', (req, res) => {
+    const host = (req.get('host') ?? '').replace(/^www\./, '');
+    const base = `https://${host}`;
+    res.type('text/plain');
+    res.send(
+      `User-agent: *\n` +
+      `Allow: /\n` +
+      `Disallow: /admin\n` +
+      `Disallow: /admin/api\n` +
+      `\n` +
+      `Sitemap: ${base}/sitemap.xml\n`
+    );
+  });
+
+  app.get('/sitemap.xml', (req, res) => {
+    const host = (req.get('host') ?? '').replace(/^www\./, '');
+    const base = `https://${host}`;
+    const urls = ['/', '/menu.html'];
+    const lastmod = new Date().toISOString().slice(0, 10);
+    const body =
+      `<?xml version="1.0" encoding="UTF-8"?>\n` +
+      `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+      urls.map((u) => `  <url><loc>${base}${u}</loc><lastmod>${lastmod}</lastmod><changefreq>weekly</changefreq><priority>${u === '/' ? '1.0' : '0.8'}</priority></url>`).join('\n') +
+      `\n</urlset>\n`;
+    res.type('application/xml');
+    res.send(body);
+  });
 
   // ---- Public static assets (explicit paths only — never expose the repo root) ----
   app.use('/css', express.static(path.join(ROOT, 'css'), { maxAge: isProd ? '7d' : 0 }));
