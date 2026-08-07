@@ -18,6 +18,17 @@ export function createApp() {
   app.set('view engine', 'ejs');
   app.set('views', path.join(ROOT, 'views'));
 
+  app.use((_req: Request, res: Response, next) => {
+    try {
+      const css = fs.statSync(path.join(ROOT, 'views', 'admin', 'admin.css')).mtimeMs;
+      const js = fs.statSync(path.join(ROOT, 'js', 'admin.js')).mtimeMs;
+      res.locals.adminAssetsV = Math.round(Math.max(css, js));
+    } catch {
+      res.locals.adminAssetsV = Date.now();
+    }
+    next();
+  });
+
   app.use(compression());
   app.use(securityHeaders);
   app.use(express.json({ limit: '2mb' }));

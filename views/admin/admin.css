@@ -71,7 +71,7 @@ a:hover { color: var(--gold-soft); }
 .sidebar .user { padding: 14px 8px 0; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-mute); }
 .sidebar .user strong { display: block; color: var(--text-soft); font-size: 13.5px; }
 
-.main { padding: 28px 34px 60px; max-width: 1180px; }
+.main { padding: 28px 34px 60px; max-width: 1180px; min-width: 0; }
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 26px; flex-wrap: wrap; }
 .topbar h1 { font-family: var(--font-serif); font-size: 26px; }
 .topbar .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
@@ -113,12 +113,37 @@ a:hover { color: var(--gold-soft); }
 }
 @media (max-width: 760px) {
   .admin-shell { grid-template-columns: 1fr; }
-  .sidebar { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px; padding: 12px 14px; }
-  .sidebar .brand { border: 0; padding: 0; margin: 0 12px 0 0; }
+  .sidebar { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 14px; }
+  .sidebar .brand { border: 0; padding: 0; margin: 0 8px 0 0; }
   .sidebar .spacer, .sidebar .user { display: none; }
-  .nav-item { padding: 8px 10px; font-size: 13px; }
+  .nav { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; }
+  .nav-item { padding: 8px 11px; font-size: 13px; white-space: nowrap; }
   .main { padding: 20px 16px 48px; }
   .grid-2 { grid-template-columns: 1fr; }
+}
+
+/* ---------- Dashboard responsive ---------- */
+@media (max-width: 700px) {
+  .topbar h1 { font-size: 21px; }
+  .topbar { gap: 10px; margin-bottom: 18px; }
+  .card { padding: 18px 16px; }
+  .card h3 { font-size: 16.5px; }
+  .list li { flex-direction: column; align-items: flex-start; gap: 4px; padding: 12px 0; }
+  .list .v { text-align: left; white-space: normal; word-break: break-word; }
+  .list .k { line-height: 1.45; }
+  .stat-card { padding: 15px 16px; }
+  .stat-card .stat-label { font-size: 11px; letter-spacing: 1px; }
+  .stat-card .stat-value { font-size: 26px; margin-top: 3px; }
+  .stat-card .stat-hint { font-size: 11.5px; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .quick-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .quick-actions .btn { white-space: normal; text-align: center; }
+}
+@media (max-width: 380px) {
+  .grid-4 { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat-card { padding: 13px 14px; }
+  .stat-card .stat-value { font-size: 22px; }
+  .quick-actions { grid-template-columns: 1fr; }
 }
 
 /* ============================================================

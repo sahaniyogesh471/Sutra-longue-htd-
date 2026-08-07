@@ -24,7 +24,9 @@
     const method = o.method || 'POST';
     const headers = { 'X-CSRF-Token': csrf() };
     let body;
-    if (o.body instanceof FormData) {
+    if (method === 'GET' || method === 'HEAD') {
+      body = undefined;
+    } else if (o.body instanceof FormData) {
       body = o.body;
     } else {
       headers['Content-Type'] = 'application/json';
@@ -59,6 +61,107 @@
     return (items || []).find(function (it) {
       return String(it.id) === String(rowKey) || String(it.draft_id) === String(rowKey);
     });
+  }
+
+  /* ---------------- In-place list re-render (no full reload) ---------------- */
+
+  function statusPill(d) {
+    if (d.draftState === 'deleted') return '<span class="pill pill-danger">Will be removed</span>';
+    return Number(d.is_visible) === 1 ? '<span class="pill pill-ok">Visible</span>' : '<span class="pill">Hidden</span>';
+  }
+
+  function rowActions(d, kind) {
+    const key = d.id != null ? d.id : d.draft_id;
+    let h = '';
+    if (d.draftState !== 'deleted') {
+      h += '<button class="btn btn-ghost btn-tiny" type="button" data-edit="' + key + '">Edit</button>';
+    }
+    h += '<button class="btn btn-ghost btn-tiny" type="button" data-toggle="' + key + '">' + (Number(d.is_visible) === 1 ? 'Hide' : 'Show') + '</button>';
+    if (d.id) {
+      h += '<button class="btn btn-ghost btn-tiny" type="button" data-restore-row="' + d.id + '" title="Restore original values">Restore</button>';
+    }
+    h += '<button class="btn btn-danger btn-tiny" type="button" data-delete="' + key + '">Delete</button>';
+    return h;
+  }
+
+  function dishRow(d) {
+    const key = d.id != null ? d.id : d.draft_id;
+    return '<tr class="state-' + d.draftState + '" data-row="' + key + '" data-kind="dishes" data-id="' + (d.id || '') + '" data-draft-id="' + (d.draft_id || '') + '">' +
+      '<td class="cell-thumb">' + (d.image_url ? '<img src="' + esc(d.image_url) + '" alt="" loading="lazy">' : '<span class="thumb-empty"></span>') + '</td>' +
+      '<td><div class="cell-title"><strong>' + esc(d.name) + '</strong>' +
+      (d.badge ? '<span class="pill pill-gold">' + esc(d.badge) + '</span>' : '') +
+      (Number(d.is_featured) === 1 ? '<span class="pill pill-gold">Featured</span>' : '') +
+      '</div><span class="cell-sub">' + d.draftState + '</span></td>' +
+      '<td><span class="pill">' + esc(d.type) + '</span></td>' +
+      '<td>' + esc(d.price || '—') + '</td>' +
+      '<td>' + esc(d.category || '—') + '</td>' +
+      '<td>' + statusPill(d) + '</td>' +
+      '<td class="cell-actions">' + rowActions(d, 'dishes') + '</td></tr>';
+  }
+
+  function reviewRow(r) {
+    const key = r.id != null ? r.id : r.draft_id;
+    return '<tr class="state-' + r.draftState + '" data-row="' + key + '" data-kind="reviews" data-id="' + (r.id || '') + '" data-draft-id="' + (r.draft_id || '') + '">' +
+      '<td class="cell-avatar">' + (r.image_url ? '<img src="' + esc(r.image_url) + '" alt="">' : '<span class="avatar-empty">' + esc(String(r.name || '?').charAt(0)) + '</span>') + '</td>' +
+      '<td><strong>' + esc(r.name) + '</strong><span class="cell-sub">' + r.draftState + '</span></td>' +
+      '<td><span class="stars" aria-label="' + esc(r.rating) + ' star rating">★' + esc(r.rating) + '/5</span></td>' +
+      '<td class="cell-text">' + esc(r.text) + '</td>' +
+      '<td>' + statusPill(r) + '</td>' +
+      '<td class="cell-actions">' + rowActions(r, 'reviews') + '</td></tr>';
+  }
+
+  function galleryTile(g) {
+    const key = g.id != null ? g.id : g.draft_id;
+    return '<div class="gallery-tile state-' + g.draftState + '" draggable="true" data-row="' + key + '" data-kind="gallery" data-id="' + (g.id || '') + '" data-draft-id="' + (g.draft_id || '') + '">' +
+      '<div class="gallery-img"><img src="' + esc(g.image_url) + '" alt="' + esc(g.alt) + '" loading="lazy">' +
+      (Number(g.is_featured) === 1 ? '<span class="badge-featured">Featured</span>' : '') +
+      (g.draftState === 'deleted' ? '<span class="badge-overlay">Will be removed</span>' : '') +
+      '<span class="grip" title="Drag to reorder">⠿</span></div>' +
+      '<div class="gallery-meta"><span class="cell-sub">' + esc(g.alt || 'No alt text') + ' · ' + g.draftState + '</span></div>' +
+      '<div class="gallery-actions">' +
+      (g.draftState !== 'deleted'
+        ? '<button class="btn btn-ghost btn-tiny" type="button" data-edit="' + key + '">Edit</button>' +
+          (Number(g.is_featured) !== 1 ? '<button class="btn btn-ghost btn-tiny" type="button" data-feature="' + key + '">Set featured</button>' : '') +
+          '<button class="btn btn-ghost btn-tiny" type="button" data-toggle="' + key + '">' + (Number(g.is_visible) === 1 ? 'Hide' : 'Show') + '</button>'
+        : '') +
+      (g.id ? '<button class="btn btn-ghost btn-tiny" type="button" data-restore-row="' + g.id + '" title="Restore original values">Restore</button>' : '') +
+      '<button class="btn btn-danger btn-tiny" type="button" data-delete="' + key + '">Delete</button>' +
+      '</div></div>';
+  }
+
+  async function refreshList(kind) {
+    if (['dishes', 'reviews', 'gallery'].indexOf(kind) === -1) return false;
+    const r = await api('/admin/api/' + kind, { method: 'GET' });
+    if (!r.ok || !r.items) return false;
+    const dataEl = document.getElementById('admin-data');
+    if (dataEl) {
+      dataEl.textContent = JSON.stringify({ items: r.items }).replace(/</g, '\\u003c');
+    }
+    const table = document.querySelector('[data-table="' + kind + '"]');
+    if (!table) return false;
+    if (kind === 'gallery') {
+      if (r.items.length === 0) {
+        table.innerHTML = '<div class="empty"><h4>No gallery images yet.</h4><p class="muted">Upload your first photo to get started.</p></div>';
+      } else {
+        table.innerHTML = r.items.map(galleryTile).join('');
+      }
+    } else {
+      const tbody = table.querySelector('tbody');
+      if (!tbody) return false;
+      if (r.items.length === 0) {
+        const cols = kind === 'dishes' ? 7 : 6;
+        tbody.innerHTML = '<tr><td colspan="' + cols + '" class="empty"><h4>No ' + (kind === 'dishes' ? 'dishes' : 'reviews') + ' added yet.</h4><p class="muted">Add your first ' + (kind === 'dishes' ? 'menu item' : 'review') + '.</p></td></tr>';
+      } else {
+        tbody.innerHTML = r.items.map(kind === 'dishes' ? dishRow : reviewRow).join('');
+      }
+    }
+    return true;
+  }
+
+  async function refreshCurrentList() {
+    const table = document.querySelector('[data-table]');
+    if (!table) return false;
+    return refreshList(table.getAttribute('data-table'));
   }
 
   /* ---------------- Modal helpers ---------------- */
@@ -335,7 +438,9 @@
       const r = await api('/admin/api/dishes/save', { body: body });
       if (!r.ok) { showErrors(el, r.errors || { _: r.error }); if (!r.errors) toast(r.error, 'error'); return; }
       toast('Dish saved as draft.');
-      location.reload();
+      m.close();
+      refreshList('dishes');
+      refreshDraftBar();
     });
   }
 
@@ -404,7 +509,9 @@
       const r = await api('/admin/api/reviews/save', { body: body });
       if (!r.ok) { showErrors(el, r.errors || { _: r.error }); if (!r.errors) toast(r.error, 'error'); return; }
       toast('Review saved as draft.');
-      location.reload();
+      m.close();
+      refreshList('reviews');
+      refreshDraftBar();
     });
   }
 
@@ -435,7 +542,9 @@
       const r = await api('/admin/api/gallery/save', { body: body });
       if (!r.ok) { showErrors(el, r.errors || { _: r.error }); if (!r.errors) toast(r.error, 'error'); return; }
       toast('Gallery image saved as draft.');
-      location.reload();
+      m.close();
+      refreshList('gallery');
+      refreshDraftBar();
     });
   }
 
@@ -555,7 +664,8 @@
     const r = await api('/admin/api/' + kind + '/save', { body: body });
     if (!r.ok) { toast(r.error || 'Could not update visibility.', 'error'); return; }
     toast('Visibility updated (draft).');
-    location.reload();
+    refreshList(kind);
+    refreshDraftBar();
   }
 
   async function deleteItem(kind, item) {
@@ -570,7 +680,8 @@
     });
     if (!r.ok) { toast(r.error || 'Could not delete.', 'error'); return; }
     toast(kind.slice(0, -1) + ' marked for deletion.');
-    location.reload();
+    refreshList(kind);
+    refreshDraftBar();
   }
 
   async function restoreRow(kind, item) {
@@ -584,7 +695,8 @@
     const r = await api('/admin/api/' + kind + '/restore', { body: { id: item.id } });
     if (!r.ok) { toast(r.error || 'No original version exists.', 'error'); return; }
     toast('Restored to original (draft).');
-    location.reload();
+    refreshList(kind);
+    refreshDraftBar();
   }
 
   /* ---------------- Gallery reorder ---------------- */
@@ -619,7 +731,8 @@
       const r = await api('/admin/api/gallery/reorder', { body: { order: order } });
       if (!r.ok) { toast(r.error || 'Could not save the new order.', 'error'); return; }
       toast('Gallery order saved.');
-      location.reload();
+      refreshList('gallery');
+      refreshDraftBar();
     });
   }
 
@@ -759,11 +872,20 @@
     });
   }
 
+  async function refreshAfterGlobalAction() {
+    const refreshed = await refreshCurrentList();
+    if (refreshed) {
+      refreshDraftBar();
+    } else {
+      setTimeout(function () { location.reload(); }, 120);
+    }
+  }
+
   async function publishChanges() {
     const r = await api('/admin/api/publish', { body: {} });
     if (!r.ok) { toast(r.error || 'Publish failed.', 'error'); return; }
     toast('Changes published successfully.');
-    setTimeout(function () { location.reload(); }, 400);
+    refreshAfterGlobalAction();
   }
 
   async function discardDrafts() {
@@ -776,21 +898,21 @@
     const r = await api('/admin/api/discard', { body: {} });
     if (!r.ok) { toast(r.error || 'Could not discard drafts.', 'error'); return; }
     toast('Drafts discarded.');
-    location.reload();
+    refreshAfterGlobalAction();
   }
 
   async function undoNow() {
     const r = await api('/admin/api/undo', { body: {} });
     if (!r.ok) { toast(r.error || 'Nothing to undo.', 'error'); return; }
     toast('Undone — previous state restored.');
-    setTimeout(function () { location.reload(); }, 400);
+    refreshAfterGlobalAction();
   }
 
   async function redoNow() {
     const r = await api('/admin/api/redo', { body: {} });
     if (!r.ok) { toast(r.error || 'Nothing to redo.', 'error'); return; }
     toast('Redone — state restored.');
-    setTimeout(function () { location.reload(); }, 400);
+    refreshAfterGlobalAction();
   }
 
   function resetFlow() {
@@ -818,7 +940,7 @@
       if (!r.ok) { err.textContent = r.error || 'Reset failed.'; return; }
       toast('Website successfully restored to the original baseline.');
       m.close();
-      setTimeout(function () { location.reload(); }, 500);
+      refreshAfterGlobalAction();
     });
   }
 
@@ -881,7 +1003,8 @@
           }).then(function (r) {
             if (!r.ok) { toast(r.error || 'Could not set featured image.', 'error'); return; }
             toast('Featured image set (draft).');
-            location.reload();
+            refreshList('gallery');
+            refreshDraftBar();
           });
         }
         return;
@@ -908,7 +1031,8 @@
           const c = await api('/admin/api/gallery/create', { body: { image_url: r.url, alt: '', is_visible: 1 } });
           if (!c.ok) { toast(c.error || 'Could not add the image.', 'error'); return; }
           toast('Image added to the gallery (draft).');
-          location.reload();
+          refreshList('gallery');
+          refreshDraftBar();
         });
       });
       input.click();
