@@ -151,13 +151,19 @@ apiRouter.post('/dishes/save', (req, res) => {
   const errors: VErr = {};
   const name = String(b.name ?? '').trim();
   const desc = String(b.description ?? '').trim();
+  const nameNp = String(b.name_np ?? '').trim();
+  const descNp = String(b.description_np ?? '').trim();
   const type = String(b.type ?? 'bestseller');
   errors.name = required(name) ?? maxLen(name, 120) ?? undefined;
   errors.type = isOneOf(type, DISH_TYPE) ?? undefined;
   errors.description = maxLen(desc, 800) ?? undefined;
+  errors.name_np = maxLen(nameNp, 200) ?? undefined;
+  errors.description_np = maxLen(descNp, 1000) ?? undefined;
   errors.price = isPrice(b.price) ?? undefined;
   errors.category = maxLen(b.category, 60) ?? undefined;
+  errors.category_np = maxLen(b.category_np, 80) ?? undefined;
   errors.badge = maxLen(b.badge, 40) ?? undefined;
+  errors.badge_np = maxLen(b.badge_np, 60) ?? undefined;
   errors.image_url = isUrl(b.image_url, true) ?? undefined;
   errors.sort_order = isIntRange(toInt(b.sort_order), -9999, 9999) ?? undefined;
   const filtered: VErr = {};
@@ -174,9 +180,13 @@ apiRouter.post('/dishes/save', (req, res) => {
     type,
     name,
     description: desc,
+    name_np: nameNp,
+    description_np: descNp,
     price: optStr(b.price, 32),
     category: optStr(b.category, 60),
+    category_np: optStr(b.category_np, 80) ?? '',
     badge: optStr(b.badge, 40),
+    badge_np: optStr(b.badge_np, 60) ?? '',
     image_url: optStr(b.image_url, 500),
     is_featured: boolInt(b.is_featured),
     is_visible: boolInt(b.is_visible),
@@ -186,8 +196,9 @@ apiRouter.post('/dishes/save', (req, res) => {
   if (draftId) {
     // updating an existing new-item draft (not yet published)
     db.prepare(
-      `UPDATE dishes_draft SET type=@type, name=@name, description=@description, price=@price,
-       category=@category, badge=@badge, image_url=@image_url, is_featured=@is_featured,
+      `UPDATE dishes_draft SET type=@type, name=@name, description=@description, name_np=@name_np,
+       description_np=@description_np, price=@price, category=@category, category_np=@category_np,
+       badge=@badge, badge_np=@badge_np, image_url=@image_url, is_featured=@is_featured,
        is_visible=@is_visible, sort_order=@sort_order, updated_at=datetime('now')
        WHERE draft_id=@draft_id`
     ).run({ ...input, draft_id: draftId });

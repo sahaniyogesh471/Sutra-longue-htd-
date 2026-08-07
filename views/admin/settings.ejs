@@ -79,6 +79,21 @@
         <% textField('social.youtube', 'YouTube', false); %>
       </div>
 
+      <div class="card">
+        <h3>Design &amp; brand</h3>
+        <p class="muted">The primary color is used across the public website for buttons, headings, badges and highlights. It appears after the draft is published.</p>
+        <div class="field" data-field-wrap="design.primary_color">
+          <label for="design.primary_color">Primary color
+            <button class="link-restore" type="button" data-restore="design.primary_color" <%= baseline['design.primary_color'] != null ? '' : 'disabled' %>>Restore original</button>
+          </label>
+          <div class="color-row">
+            <input id="design.primary_color" name="design.primary_color" type="text" value="<%= settings['design.primary_color'] || '#c9a35c' %>" data-field="design.primary_color" data-color-text placeholder="#C9A35C">
+            <input type="color" data-color-swatch value="<%= settings['design.primary_color'] || '#c9a35c' %>" aria-label="Pick a primary color">
+          </div>
+          <p class="field-error" data-error="design.primary_color"></p>
+        </div>
+      </div>
+
       <div class="form-actions">
         <button class="btn btn-ghost" type="button" data-submit="draft">Save draft</button>
         <button class="btn btn-gold" type="button" data-submit="publish">Save draft &amp; publish</button>

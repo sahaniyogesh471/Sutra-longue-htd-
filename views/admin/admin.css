@@ -49,6 +49,12 @@ a:hover { color: var(--gold-soft); }
   background: rgba(0,0,0,.28); color: var(--text); font-size: 15px; outline: none; transition: border-color .2s;
 }
 .field input:focus { border-color: var(--gold); }
+.color-row { display: flex; gap: 10px; align-items: center; }
+.color-row input[type="text"] { flex: 1; min-width: 0; }
+.color-row input[type="color"] {
+  width: 48px; height: 48px; flex: none; padding: 4px; cursor: pointer; border-radius: 10px;
+  border: 1px solid var(--border-strong); background: rgba(0,0,0,.28);
+}
 .alert { padding: 12px 14px; border-radius: 10px; font-size: 13.5px; margin-bottom: 16px; }
 .alert-error { background: rgba(224,96,79,.12); border: 1px solid rgba(224,96,79,.4); color: #f2a49a; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; cursor: pointer; border-radius: 10px; font-family: var(--font-sans); font-weight: 700; font-size: 14px; padding: 12px 20px; transition: transform .15s, filter .15s, background .2s; }
@@ -335,4 +341,12 @@ a:hover { color: var(--gold-soft); }
   .topbar-actions { flex-direction: column; align-items: stretch; }
   .topbar-actions .btn { width: 100%; }
 }
+
+/* ---------- Nepali translation fields ---------- */
+.np-collapse { margin: 4px 0 16px; border: 1px solid var(--border); border-radius: 10px; background: rgba(255,255,255,.015); }
+.np-collapse summary { cursor: pointer; list-style: none; padding: 10px 14px; color: var(--gold); font-weight: 600; font-size: 13px; letter-spacing: .04em; user-select: none; }
+.np-collapse summary::-webkit-details-marker { display: none; }
+.np-collapse summary::before { content: '▸'; display: inline-block; margin-right: 8px; transition: transform .18s ease; color: var(--text-mute); }
+.np-collapse[open] summary::before { transform: rotate(90deg); }
+.np-fields { padding: 4px 14px 14px; }
 

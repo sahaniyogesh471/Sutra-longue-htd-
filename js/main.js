@@ -19,13 +19,13 @@
       'hero.reserve': 'Reserve a Table',
       'hero.whatsapp': 'WhatsApp Us',
       'hero.meta1': 'Hupra, Hetauda-4 · Makwanpur',
-      'hero.meta2': 'Open Daily 11 AM – 11 PM',
+      'hero.meta2': 'Open Daily 7 AM – 10 PM',
       'hero.video': 'Watch the Sutra Lounge Tour',
       'hero.scroll': 'Scroll',
 
       'about.kicker': 'Our Story',
       'about.title': "Where Hetauda comes to slow down & savour",
-      'about.badge': 'Days a week · open 11 AM – 11 PM',
+      'about.badge': 'Days a week · open 7 AM – 10 PM',
       'about.lead': 'Sutra Lounge was born from a simple belief — that great evenings are built on three things: sumptuous food, great music and unforgettable times.',
       'about.body': "Set in the heart of Hupra, our kitchen blends Nepali soul with international craft. Momos are folded by hand each morning, dough is stretched for the clay oven every afternoon, and the bar shakes to order through the night. Whether it is a family dinner, a celebration or a quiet date, our lounge is designed to make the moment last.",
       'about.p1': 'Hand-finished signature recipes from our head chef',
@@ -99,7 +99,7 @@
       'visit.title': 'In the Heart of Hupra, Hetauda',
       'visit.sub': 'Easy to reach, easy to park, hard to leave. Drop by for lunch, an evening sizzler, or a night of cocktails and music.',
       'visit.addrTitle': 'Address', 'visit.addr': 'Hupra, Hetauda-4, Makwanpur, Nepal',
-      'visit.hoursTitle': 'Opening Hours', 'visit.hours': 'Monday – Sunday · 11:00 AM – 11:00 PM',
+      'visit.hoursTitle': 'Opening Hours', 'visit.hours': 'Monday – Sunday · 7:00 AM – 10:00 PM',
       'visit.hoursNote': 'Open every single day — no off days',
       'visit.directions': 'Get Directions on Google Maps', 'visit.reserve': 'Reserve a Table',
 
@@ -117,7 +117,7 @@
 
       'footer.tag': 'Premium multi-cuisine resto-lounge & bar. Sumptuous food, great music, unforgettable times.',
       'footer.explore': 'Explore', 'footer.contact': 'Contact', 'footer.hours': 'Opening Hours',
-      'footer.hoursLine': 'Mon – Sun · 11:00 AM – 11:00 PM',
+      'footer.hoursLine': 'Mon – Sun · 7:00 AM – 10:00 PM',
       'footer.addr': 'Hupra, Hetauda-4, Makwanpur, Nepal',
       'footer.rights': '© {{year}} Sutra Lounge. All rights reserved.',
       'footer.love': 'Made with flavour in Hetauda',
@@ -282,6 +282,48 @@
     store.set('sutra-lang', lang);
     updateBsTabLabels();
     updateBsLabels();
+    applyDishTranslations(lang);
+    applyQvLang();
+  }
+
+  /* Dish names / descriptions / badges / categories support bilingual (NP)
+     content stored in the CMS. data-np-* carries the Nepali text; the English
+     text is captured on first run so toggling back always restores it. */
+  const NP_ATTRS = [
+    ['data-np-name', 'data-en-name'],
+    ['data-np-desc', 'data-en-desc'],
+    ['data-np-badge', 'data-en-badge'],
+    ['data-np-cat', 'data-en-cat'],
+  ];
+
+  function applyDishTranslations(lang) {
+    NP_ATTRS.forEach(([npAttr, enAttr]) => {
+      document.querySelectorAll('[' + npAttr + ']').forEach((el) => {
+        if (!el.getAttribute(enAttr)) el.setAttribute(enAttr, el.textContent);
+        if (lang === 'np') {
+          const np = el.getAttribute(npAttr);
+          if (np) el.textContent = np;
+        } else {
+          el.textContent = el.getAttribute(enAttr) || '';
+        }
+      });
+    });
+  }
+
+  function applyQvLang() {
+    const item = qvModal ? qvModal._item : null;
+    if (!item) return;
+    const np = currentLang === 'np';
+    document.getElementById('qvName').textContent = np && item.name_np ? item.name_np : item.name;
+    document.getElementById('qvDesc').textContent = np && item.desc_np ? item.desc_np : item.desc;
+    const badge = document.getElementById('qvBadge');
+    const b = np && item.badge_np ? item.badge_np : (item.badge || '');
+    if (b) {
+      badge.textContent = b;
+      badge.classList.remove('is-empty');
+    } else {
+      badge.classList.add('is-empty');
+    }
   }
 
   langToggle.addEventListener('click', () => {
@@ -600,12 +642,14 @@
       const badge = document.createElement('span');
       badge.className = 'bs-badge';
       badge.textContent = item.badge;
+      badge.dataset.npBadge = item.badge_np || '';
       media.appendChild(badge);
     }
 
     const chip = document.createElement('span');
     chip.className = 'bs-cat';
     chip.textContent = item.catLabel || bsCatLabel[item.cat] || '';
+    chip.dataset.npCat = item.cat_np || '';
     media.appendChild(chip);
 
     card.appendChild(media);
@@ -618,6 +662,7 @@
 
     const title = document.createElement('h3');
     title.textContent = item.name;
+    title.dataset.npName = item.name_np || '';
     const price = document.createElement('span');
     price.className = 'bs-price';
     price.textContent = item.price;
@@ -627,6 +672,7 @@
     const desc = document.createElement('p');
     desc.className = 'bs-desc';
     desc.textContent = item.desc;
+    desc.dataset.npDesc = item.desc_np || '';
 
     const actions = document.createElement('div');
     actions.className = 'bs-actions';
@@ -661,6 +707,7 @@
     const list = bsActive === 'all' ? bsMenu : bsMenu.filter((m) => m.cat === bsActive);
     bsGrid.innerHTML = '';
     list.forEach((item, i) => bsGrid.appendChild(buildBsCard(item, i)));
+    applyDishTranslations(currentLang);
   }
 
   function buildBsTabs() {
@@ -684,6 +731,7 @@
 
   /* ---------- Quick view modal ---------- */
   function openQv(item) {
+    qvModal._item = item;
     document.getElementById('qvImg').src = item.img;
     document.getElementById('qvImg').alt = item.name;
     document.getElementById('qvName').textContent = item.name;
@@ -699,6 +747,7 @@
     document.getElementById('qvOrder').href = bsWaLink(item);
     qvModal.classList.add('is-open');
     document.body.style.overflow = 'hidden';
+    applyQvLang();
   }
 
   function closeQv() {

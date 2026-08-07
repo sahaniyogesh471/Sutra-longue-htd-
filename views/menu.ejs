@@ -81,12 +81,12 @@
                       <img src="<%= dish.image_url %>" alt="<%= dish.name %>" loading="lazy" />
                     <% } %>
                     <% if (dish.badge) { %>
-                      <span class="dish-tag"><%= dish.badge %></span>
+                      <span class="dish-tag" data-np-badge="<%= dish.badge_np %>"><%= dish.badge %></span>
                     <% } %>
                   </div>
                   <div class="dish-body">
-                    <h3><%= dish.name %></h3>
-                    <p><%= dish.description %></p>
+                    <h3 data-np-name="<%= dish.name_np %>"><%= dish.name %></h3>
+                    <p data-np-desc="<%= dish.description_np %>"><%= dish.description %></p>
                     <div class="dish-foot">
                       <% if (dish.price) { %>
                         <span class="dish-price"><%= dish.price %></span>
@@ -238,6 +238,31 @@
         langLabel.textContent = lang === 'np' ? 'EN' : 'NP';
         currentLang = lang;
         try { localStorage.setItem('sutra-lang', lang); } catch (e) { /* noop */ }
+        applyDishLang(lang);
+      }
+
+      /* Dish content is stored bilingually in the CMS. data-np-* carries the
+         Nepali text; the English text is captured on first run so toggling
+         back always restores it. */
+      var dishAttrs = [
+        ['data-np-name', 'data-en-name'],
+        ['data-np-desc', 'data-en-desc'],
+        ['data-np-badge', 'data-en-badge']
+      ];
+
+      function applyDishLang(lang) {
+        dishAttrs.forEach(function (pair) {
+          var npAttr = pair[0], enAttr = pair[1];
+          document.querySelectorAll('[' + npAttr + ']').forEach(function (el) {
+            if (!el.getAttribute(enAttr)) el.setAttribute(enAttr, el.textContent);
+            if (lang === 'np') {
+              var np = el.getAttribute(npAttr);
+              if (np) el.textContent = np;
+            } else {
+              el.textContent = el.getAttribute(enAttr) || '';
+            }
+          });
+        });
       }
 
       langToggle.addEventListener('click', function () {

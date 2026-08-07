@@ -24,9 +24,9 @@ export function adminDishes(db: DB): AdminRow[] {
       id: p.id as number | null,
       draft_id: null,
       draftState: 'published',
-      type: p.type, name: p.name, description: p.description, price: p.price,
-      category: p.category, badge: p.badge, image_url: p.image_url,
-      is_featured: p.is_featured, is_visible: p.is_visible, sort_order: p.sort_order,
+      type: p.type, name: p.name, description: p.description, name_np: p.name_np, description_np: p.description_np,
+      price: p.price, category: p.category, category_np: p.category_np, badge: p.badge, badge_np: p.badge_np,
+      image_url: p.image_url, is_featured: p.is_featured, is_visible: p.is_visible, sort_order: p.sort_order,
     });
   }
 
@@ -44,7 +44,7 @@ export function adminDishes(db: DB): AdminRow[] {
     if (found) {
       const it = result.find((r) => r.id === rowId);
       if (it) {
-        for (const col of ['type', 'name', 'description', 'price', 'category', 'badge', 'image_url', 'is_featured', 'is_visible', 'sort_order']) {
+        for (const col of ['type', 'name', 'description', 'name_np', 'description_np', 'price', 'category', 'category_np', 'badge', 'badge_np', 'image_url', 'is_featured', 'is_visible', 'sort_order']) {
           if (d[col] !== undefined && d[col] !== null) it[col] = d[col];
         }
         it.draftState = 'modified';
@@ -55,7 +55,9 @@ export function adminDishes(db: DB): AdminRow[] {
         draft_id: d.draft_id as number | null,
         draftState: 'new',
         type: d.type ?? 'bestseller', name: d.name ?? '', description: d.description ?? '',
-        price: d.price ?? null, category: d.category ?? null, badge: d.badge ?? null,
+        name_np: d.name_np ?? '', description_np: d.description_np ?? '',
+        price: d.price ?? null, category: d.category ?? null, category_np: d.category_np ?? '',
+        badge: d.badge ?? null, badge_np: d.badge_np ?? '',
         image_url: d.image_url ?? null, is_featured: d.is_featured ?? 0,
         is_visible: d.is_visible ?? 1, sort_order: d.sort_order ?? 0,
       });

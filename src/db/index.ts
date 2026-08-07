@@ -58,6 +58,7 @@ export function migrate(db: DB): void {
   }
 
   backfillDishNp(db);
+  backfillSettings(db);
 }
 
 /**
@@ -88,8 +89,32 @@ function backfillDishNp(db: DB): void {
   }
 }
 
-export function initSchema(db: DB): void {
-  db.exec(SCHEMA_SQL);
+/** New settings keys added after the initial seed — safe to re-run. */
+const DEFAULT_SETTINGS: Record<string, string> = {
+  'design.primary_color': '#c9a35c',
+};
+
+function backfillSettings(db: DB): void {
+  const rows = db.prepare('SELECT key FROM settings').all() as { key: string }[];
+  const existing = new Set(rows.map((r) => r.key));
+  // Fresh databases are handled by the full seed — backfill only applies to
+  // already-seeded databases that were created before these keys existed.
+  const hasRealContent = rows.some((r) => r.key !== 'system.revisionPointer' && !(r.key in DEFAULT_SETTINGS));
+  if (!hasRealContent) return;
+  const ins = db.prepare(
+    "INSERT INTO settings (key, value, updated_at) VALUES (?, ?, datetime('now'))"
+  );
+  const insBase = db.prepare(
+    "INSERT INTO settings_baseline (key, value, captured_at) VALUES (?, ?, datetime('now'))"
+  );
+  for (const [key, value] of Object.entries(DEFAULT_SETTINGS)) {
+    if (existing.has(key)) continue;
+    ins.run(key, value);
+    insBase.run(key, value);
+  }
+}
+
+export function initSchema(db: DB): void {  db.exec(SCHEMA_SQL);
   migrate(db);
 }
 

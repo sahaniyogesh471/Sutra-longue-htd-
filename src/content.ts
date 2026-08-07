@@ -11,9 +11,13 @@ export interface Dish {
   type: 'signature' | 'bestseller';
   name: string;
   description: string;
+  name_np: string;
+  description_np: string;
   price: string | null;
   category: string | null;
+  category_np: string;
   badge: string | null;
+  badge_np: string;
   image_url: string | null;
   is_featured: number;
   sort_order: number;
@@ -68,7 +72,7 @@ export function loadSettings(db: DB): Settings {
 export function loadDishes(db: DB, type?: 'signature' | 'bestseller'): Dish[] {
   const rows = db
     .prepare(
-      `SELECT id, type, name, description, price, category, badge, image_url, is_featured, sort_order
+      `SELECT id, type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, sort_order
        FROM dishes WHERE is_visible = 1 ${type ? 'AND type = ?' : ''}
        ORDER BY sort_order ASC, id ASC`
     )
@@ -188,8 +192,7 @@ export function fullImage(url: string | null): string {
   return url;
 }
 
-/** Normalises a video setting into an embeddable iframe URL. */
-export function embedVideo(url: string | null, autoplay = false): string {
+/** Normalises a video setting into an embeddable iframe URL. */export function embedVideo(url: string | null, autoplay = false): string {
   if (!url) return '';
   let u = url.trim();
   const ytId = (src: string) => {
@@ -202,9 +205,62 @@ export function embedVideo(url: string | null, autoplay = false): string {
   return autoplay ? `${u}${sep}autoplay=1&rel=0` : u;
 }
 
+/* ---------------- Brand theme (primary color) ---------------- */
+
+export const DEFAULT_PRIMARY_COLOR = '#c9a35c';
+
+const HEX_COLOR_RE = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+/** Normalises user input into a 6-digit lowercase hex string, or null if invalid. */
+export function normalizeHexColor(value: string | null | undefined): string | null {
+  const s = (value ?? '').trim();
+  if (!s) return null;
+  const m = s.match(HEX_COLOR_RE);
+  if (!m) return null;
+  let hex = m[1];
+  if (hex.length === 3) hex = hex.split('').map((ch) => ch + ch).join('');
+  return '#' + hex.toLowerCase();
+}
+
+/** Mixes two hex colors, weight 0..1 towards the target. */
+function mixHex(hex: string, target: string, weight: number): string {
+  const c = parseInt(hex.slice(1), 16);
+  const t = parseInt(target.slice(1), 16);
+  const mix = (shift: number) => {
+    const cCh = (c >> shift) & 255;
+    const tCh = (t >> shift) & 255;
+    return Math.round(cCh * (1 - weight) + tCh * weight);
+  };
+  return '#' + [16, 8, 0].map((sh) => mix(sh).toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Generates a <style> override for the public theme tokens based on the
+ * configured primary color. Falls back to the default gold when unset/invalid.
+ */
+export function buildBrandCss(raw: string | null | undefined): string {
+  const hex = normalizeHexColor(raw) ?? DEFAULT_PRIMARY_COLOR;
+  const soft = mixHex(hex, '#ffffff', 0.34);
+  const deep = mixHex(hex, '#000000', 0.32);
+  const gradTop = mixHex(hex, '#ffffff', 0.2);
+  const gradBottom = mixHex(hex, '#000000', 0.45);
+  const gradTextDark = mixHex(hex, '#000000', 0.3);
+  return (
+    '<style>\n:root {\n' +
+    `  --gold: ${hex};\n` +
+    `  --gold-soft: ${soft};\n` +
+    `  --gold-deep: ${deep};\n` +
+    `  --grad-gold: linear-gradient(135deg, ${gradTop} 0%, ${hex} 45%, ${gradBottom} 100%);\n` +
+    `  --grad-gold-text: linear-gradient(120deg, ${soft} 0%, ${hex} 50%, ${gradTextDark} 100%);\n` +
+    `  --shadow-gold: 0 10px 30px -10px ${hex}8c;\n` +
+    '}\n</style>'
+  );
+}
+
 export interface PublicContent {
   settings: Settings;
   s: (k: string, fallback?: string) => string;
+  brandCss: string;
   dishes: Dish[];
   signature: Dish[];
   bestsellers: Dish[];
@@ -349,7 +405,7 @@ export function buildPublicContent(db: DB, opts: { draft?: boolean } = {}): Publ
     'hero.meta2': hoursMetaLabel,
     'about.lead': s('restaurant.description'),
     'about.body': s('restaurant.about'),
-    'about.badge': 'Days a week · open 11 AM – 11 PM',
+    'about.badge': 'Days a week · open 7 AM – 10 PM',
     'visit.addr': address,
     'visit.hours': hoursLabel,
     'footer.tag': `${s('restaurant.cuisine')}. ${s('restaurant.tagline')}.`,
@@ -360,11 +416,15 @@ export function buildPublicContent(db: DB, opts: { draft?: boolean } = {}): Publ
 
   const bs = bestsellers.map((d) => ({
     name: d.name,
+    name_np: d.name_np ?? '',
     price: d.price ?? '',
     cat: BS_CAT_MAP[d.category ?? ''] ?? 'other',
     catLabel: d.category ?? '',
+    cat_np: d.category_np ?? '',
     badge: d.badge ?? null,
+    badge_np: d.badge_np ?? '',
     desc: d.description,
+    desc_np: d.description_np ?? '',
     img: d.image_url ?? '',
   }));
 
@@ -376,6 +436,7 @@ export function buildPublicContent(db: DB, opts: { draft?: boolean } = {}): Publ
   return {
     settings,
     s,
+    brandCss: buildBrandCss(s('design.primary_color')),
     dishes,
     signature,
     bestsellers,

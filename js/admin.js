@@ -417,6 +417,22 @@
         '<div class="field" data-field-wrap="description"><label>Description</label>' +
         '<textarea name="description" rows="3">' + esc(d.description || '') + '</textarea>' +
         '<p class="field-error" data-error="description"></p></div>' +
+        '<details class="np-collapse"><summary>Nepali translation (optional)</summary>' +
+        '<div class="np-fields">' +
+        '<div class="field" data-field-wrap="name_np"><label>Dish name (नेपाली)</label>' +
+        '<input type="text" name="name_np" value="' + esc(d.name_np || '') + '">' +
+        '<p class="field-error" data-error="name_np"></p></div>' +
+        '<div class="field" data-field-wrap="category_np"><label>Category (नेपाली)</label>' +
+        '<input type="text" name="category_np" value="' + esc(d.category_np || '') + '">' +
+        '<p class="field-error" data-error="category_np"></p></div>' +
+        '<div class="field" data-field-wrap="badge_np"><label>Badge (नेपाली)</label>' +
+        '<input type="text" name="badge_np" value="' + esc(d.badge_np || '') + '">' +
+        '<p class="field-error" data-error="badge_np"></p></div>' +
+        '<div class="field" data-field-wrap="description_np"><label>Description (नेपाली)</label>' +
+        '<textarea name="description_np" rows="3">' + esc(d.description_np || '') + '</textarea>' +
+        '<p class="hint">Shown to visitors when they switch the website to Nepali.</p>' +
+        '<p class="field-error" data-error="description_np"></p></div>' +
+        '</div></details>' +
         '<div class="field" data-field-wrap="sort_order"><label>Display order</label>' +
         '<input type="number" name="sort_order" value="' + esc(d.sort_order != null ? d.sort_order : 0) + '">' +
         '<p class="field-error" data-error="sort_order"></p></div>' +
@@ -791,6 +807,25 @@
     const form = document.getElementById('settingsForm');
     if (!form) return;
 
+    function syncSwatches() {
+      form.querySelectorAll('[data-color-text]').forEach(function (text) {
+        const swatch = form.querySelector('[data-color-swatch]');
+        if (swatch) {
+          const v = (text.value || '').trim();
+          swatch.value = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v) ? (/^#/.test(v) ? v : '#' + v) : swatch.value;
+        }
+      });
+    }
+    form.querySelectorAll('[data-color-text]').forEach(function (text) {
+      text.addEventListener('input', syncSwatches);
+    });
+    form.querySelectorAll('[data-color-swatch]').forEach(function (swatch) {
+      swatch.addEventListener('input', function () {
+        const text = form.querySelector('[data-color-text]');
+        if (text) text.value = swatch.value;
+      });
+    });
+
     form.addEventListener('click', function (e) {
       const restore = e.target.closest('[data-restore]');
       if (!restore) return;
@@ -799,6 +834,7 @@
         if (!r.ok) { toast(r.error || 'Could not restore.', 'error'); return; }
         const input = form.querySelector('[data-field="' + key + '"]');
         if (input) input.value = r.value || '';
+        syncSwatches();
         const preview = form.querySelector('[data-preview="' + key + '"]');
         if (preview && r.value) preview.src = r.value;
         toast('Restored to original value.');

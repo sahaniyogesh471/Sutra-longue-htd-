@@ -270,9 +270,13 @@ export function restoreOriginalRow(db: DB, kind: Kind, id: number): boolean {
       type: (draftInput.type as string) ?? 'bestseller',
       name: (draftInput.name as string) ?? '',
       description: (draftInput.description as string) ?? '',
+      name_np: (draftInput.name_np as string) ?? '',
+      description_np: (draftInput.description_np as string) ?? '',
       price: (draftInput.price as string) ?? null,
       category: (draftInput.category as string) ?? null,
+      category_np: (draftInput.category_np as string) ?? '',
       badge: (draftInput.badge as string) ?? null,
+      badge_np: (draftInput.badge_np as string) ?? '',
       image_url: (draftInput.image_url as string) ?? null,
       is_featured: Number(draftInput.is_featured ?? 0),
       is_visible,
@@ -321,10 +325,18 @@ function applySnapshot(db: DB, snap: SiteSnapshot): void {
 
     clear('dishes');
     const insDish = db.prepare(
-      `INSERT INTO dishes (id, type, name, description, price, category, badge, image_url, is_featured, is_visible, sort_order, created_at, updated_at)
-       VALUES (@id, @type, @name, @description, @price, @category, @badge, @image_url, @is_featured, @is_visible, @sort_order, @created_at, datetime('now'))`
+      `INSERT INTO dishes (id, type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, is_visible, sort_order, created_at, updated_at)
+       VALUES (@id, @type, @name, @description, @name_np, @description_np, @price, @category, @category_np, @badge, @badge_np, @image_url, @is_featured, @is_visible, @sort_order, @created_at, datetime('now'))`
     );
-    for (const r of snap.dishes) insDish.run(r);
+    for (const r of snap.dishes) {
+      insDish.run({
+        ...r,
+        name_np: r.name_np ?? '',
+        description_np: r.description_np ?? '',
+        category_np: r.category_np ?? '',
+        badge_np: r.badge_np ?? '',
+      });
+    }
 
     clear('reviews');
     const insReview = db.prepare(
@@ -428,20 +440,27 @@ export function publishAll(db: DB, by?: string): { published: string[]; count: n
     // dishes
     const dishDrafts = db.prepare('SELECT * FROM dishes_draft').all() as Record<string, unknown>[];
     const insertDish = db.prepare(
-      `INSERT INTO dishes (type, name, description, price, category, badge, image_url, is_featured, is_visible, sort_order, created_at, updated_at)
-       VALUES (@type, @name, @description, @price, @category, @badge, @image_url, @is_featured, @is_visible, @sort_order, datetime('now'), datetime('now'))`
+      `INSERT INTO dishes (type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, is_visible, sort_order, created_at, updated_at)
+       VALUES (@type, @name, @description, @name_np, @description_np, @price, @category, @category_np, @badge, @badge_np, @image_url, @is_featured, @is_visible, @sort_order, datetime('now'), datetime('now'))`
     );
     const updateDish = db.prepare(
-      `UPDATE dishes SET type=@type, name=@name, description=@description, price=@price, category=@category, badge=@badge, image_url=@image_url, is_featured=@is_featured, is_visible=@is_visible, sort_order=@sort_order, updated_at=datetime('now') WHERE id=@row_id`
+      `UPDATE dishes SET type=@type, name=@name, description=@description, name_np=@name_np, description_np=@description_np, price=@price, category=@category, category_np=@category_np, badge=@badge, badge_np=@badge_np, image_url=@image_url, is_featured=@is_featured, is_visible=@is_visible, sort_order=@sort_order, updated_at=datetime('now') WHERE id=@row_id`
     );
     const deleteDish = db.prepare('DELETE FROM dishes WHERE id = ?');
     for (const d of dishDrafts) {
-      if (d.op === 'delete') {
-        if (d.row_id) deleteDish.run(d.row_id);
-      } else if (d.row_id) {
-        updateDish.run(d);
+      const norm: Record<string, unknown> = {
+        ...d,
+        name_np: d.name_np ?? '',
+        description_np: d.description_np ?? '',
+        category_np: d.category_np ?? '',
+        badge_np: d.badge_np ?? '',
+      };
+      if (norm.op === 'delete') {
+        if (norm.row_id) deleteDish.run(norm.row_id);
+      } else if (norm.row_id) {
+        updateDish.run(norm);
       } else {
-        const info = insertDish.run(d);
+        const info = insertDish.run(norm);
         const newId = Number(info.lastInsertRowid);
         db.prepare('UPDATE dishes_draft SET row_id = ? WHERE draft_id = ?').run(newId, d.draft_id);
       }
@@ -546,8 +565,8 @@ export function resetAll(db: DB, by?: string): { ok: boolean } {
 
     db.prepare('DELETE FROM dishes').run();
     const insDish = db.prepare(
-      `INSERT INTO dishes (type, name, description, price, category, badge, image_url, is_featured, is_visible, sort_order, created_at, updated_at)
-       VALUES (@type, @name, @description, @price, @category, @badge, @image_url, @is_featured, 1, @sort_order, datetime('now'), datetime('now'))`
+      `INSERT INTO dishes (type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, is_visible, sort_order, created_at, updated_at)
+       VALUES (@type, @name, @description, @name_np, @description_np, @price, @category, @category_np, @badge, @badge_np, @image_url, @is_featured, 1, @sort_order, datetime('now'), datetime('now'))`
     );
     for (const r of db.prepare('SELECT * FROM dishes_baseline').all() as Record<string, unknown>[]) {
       insDish.run(r);

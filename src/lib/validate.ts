@@ -55,6 +55,14 @@ export function isPrice(value: unknown): string | null {
   return PRICE_RE.test(s) ? null : 'Please enter a valid price (e.g. Rs 545).';
 }
 
+const HEX_COLOR_RE = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+export function isHexColor(value: unknown): string | null {
+  const s = typeof value === 'string' ? value.trim() : '';
+  if (!s) return 'Please choose a color.';
+  return HEX_COLOR_RE.test(s) ? null : 'Please enter a valid hex color, e.g. #C9A35C.';
+}
+
 export function isIntRange(value: unknown, min: number, max: number): string | null {
   const n = Number(value);
   if (!Number.isFinite(n) || n < min || n > max) return `Must be between ${min} and ${max}.`;

@@ -138,7 +138,7 @@
           </div>
           <div class="about-badge">
             <strong>7</strong>
-            <span data-i18n="about.badge">Days a week · open 11 AM – 11 PM</span>
+            <span data-i18n="about.badge">Days a week · open 7 AM – 10 PM</span>
           </div>
         </div>
 
@@ -174,15 +174,15 @@
               <div class="dish-media">
                 <img src="<%= dish.image_url %>" alt="<%= dish.name %>" loading="lazy" />
                 <% if (dish.badge) { %>
-                  <span class="dish-tag"><%= dish.badge %></span>
+                  <span class="dish-tag" data-np-badge="<%= dish.badge_np %>"><%= dish.badge %></span>
                 <% } %>
               </div>
               <div class="dish-body">
-                <h3><%= dish.name %></h3>
-                <p><%= dish.description %></p>
+                <h3 data-np-name="<%= dish.name_np %>"><%= dish.name %></h3>
+                <p data-np-desc="<%= dish.description_np %>"><%= dish.description %></p>
                 <div class="dish-foot">
                   <% if (dish.category) { %>
-                    <span class="dish-price"><%= dish.category %></span>
+                    <span class="dish-price" data-np-cat="<%= dish.category_np %>"><%= dish.category %></span>
                   <% } %>
                   <a href="#contact" class="dish-link" data-i18n="menu.order">Reserve to Taste</a>
                 </div>

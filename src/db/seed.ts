@@ -127,6 +127,7 @@ const SETTINGS: Record<string, string> = {
   'social.instagram': 'https://www.instagram.com/sutraloungehetauda/',
   'social.tiktok': 'https://www.tiktok.com/@sutralounge',
   'social.youtube': 'https://youtu.be/2sRGneKpy_k',
+  'design.primary_color': '#c9a35c',
 };
 
 /** Demo reviews — clearly identified, safe to replace/remove. */
@@ -170,13 +171,13 @@ const GALLERY: { image_url: string; alt: string; sort_order: number }[] = [
 ];
 
 const HOURS: { day_index: number; day_name: string; open_time: string; close_time: string }[] = [
-  { day_index: 0, day_name: 'Monday', open_time: '11:00', close_time: '23:00' },
-  { day_index: 1, day_name: 'Tuesday', open_time: '11:00', close_time: '23:00' },
-  { day_index: 2, day_name: 'Wednesday', open_time: '11:00', close_time: '23:00' },
-  { day_index: 3, day_name: 'Thursday', open_time: '11:00', close_time: '23:00' },
-  { day_index: 4, day_name: 'Friday', open_time: '11:00', close_time: '23:00' },
-  { day_index: 5, day_name: 'Saturday', open_time: '11:00', close_time: '23:00' },
-  { day_index: 6, day_name: 'Sunday', open_time: '11:00', close_time: '23:00' },
+  { day_index: 0, day_name: 'Monday', open_time: '07:00', close_time: '22:00' },
+  { day_index: 1, day_name: 'Tuesday', open_time: '07:00', close_time: '22:00' },
+  { day_index: 2, day_name: 'Wednesday', open_time: '07:00', close_time: '22:00' },
+  { day_index: 3, day_name: 'Thursday', open_time: '07:00', close_time: '22:00' },
+  { day_index: 4, day_name: 'Friday', open_time: '07:00', close_time: '22:00' },
+  { day_index: 5, day_name: 'Saturday', open_time: '07:00', close_time: '22:00' },
+  { day_index: 6, day_name: 'Sunday', open_time: '07:00', close_time: '22:00' },
 ];
 
 function seedSettings(db: DB, force: boolean): boolean {
