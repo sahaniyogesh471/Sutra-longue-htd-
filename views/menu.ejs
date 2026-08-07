@@ -3,7 +3,7 @@
 <head>
   <%- include('partials/head', { title: title, description: description, pageCss: pageCss }); %>
 </head>
-<body>
+<body data-rest-name="<%= s('restaurant.name') %>">
 
   <%- include('partials/preview-banner'); %>
 
@@ -29,6 +29,10 @@
           <span>Back to Home</span>
         </a>
 
+        <button class="lang-toggle" id="langToggle" type="button" aria-label="Switch language">
+          <span class="lang-label" id="langLabel">NP</span>
+        </button>
+
         <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle theme">
           <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M2 12h2.2M19.8 12H22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M19.1 4.9l-1.6 1.6M6.5 17.5l-1.6 1.6"/></svg>
           <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A8.6 8.6 0 1 1 11.2 3a6.7 6.7 0 0 0 9.8 9.8Z"/></svg>
@@ -42,16 +46,16 @@
     <section class="menu-hero">
       <div class="container">
         <p class="section-kicker"><%= s('restaurant.name') %> · Hupra, <%= s('contact.city') %></p>
-        <h1 class="section-title">Full Digital Menu</h1>
-        <p class="section-sub">Every signature we are proud of — group platters, wood-fired snacks and lounge drinks. Prices are live and updated from the CMS.</p>
+        <h1 class="section-title" data-i18n="menu.heroTitle">Full Digital Menu</h1>
+        <p class="section-sub" data-i18n="menu.heroSub">Every signature we are proud of — group platters, wood-fired snacks and lounge drinks. Prices are live and updated from the CMS.</p>
         <div class="menu-hero-actions">
           <a href="<%= whatsapp.href %>?text=<%= encodeURIComponent('Hi Sutra Lounge! Please share your complete menu with prices.') %>" target="_blank" rel="noopener" class="btn btn-gold btn-lg">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            Get the Complete Menu on WhatsApp
+            <span data-i18n="menu.waCta">Get the Complete Menu on WhatsApp</span>
           </a>
-          <a href="/#contact" class="btn btn-outline-gold btn-lg">Reserve a Table</a>
+          <a href="/#contact" class="btn btn-outline-gold btn-lg" data-i18n="menu.reserve">Reserve a Table</a>
         </div>
-        <p class="menu-hero-note">Live prices &middot; Updated from the CMS</p>
+        <p class="menu-hero-note" data-i18n="menu.heroNote">Live prices &middot; Updated from the CMS</p>
       </div>
     </section>
 
@@ -87,7 +91,7 @@
                       <% if (dish.price) { %>
                         <span class="dish-price"><%= dish.price %></span>
                       <% } %>
-                      <a href="<%= orderLink(dish.name, dish.price || '') %>" target="_blank" rel="noopener" class="dish-link">Order on WhatsApp</a>
+                      <a href="<%= orderLink(dish.name, dish.price || '') %>" target="_blank" rel="noopener" class="dish-link" data-i18n="menu.orderWa">Order on WhatsApp</a>
                     </div>
                   </div>
                 </article>
@@ -96,21 +100,21 @@
           </div>
         <% }); %>
 
-        <p class="menu-note">This is a curated selection of our most-loved dishes. The complete menu spans Nepali, Chinese, Continental and more — ask for it on WhatsApp and we will send it over.</p>
+        <p class="menu-note" data-i18n="menu.note">This is a curated selection of our most-loved dishes. The complete menu spans Nepali, Chinese, Continental and more — ask for it on WhatsApp and we will send it over.</p>
       </div>
     </section>
 
     <!-- ============ CTA BAND ============ -->
     <section class="menu-cta-band">
       <div class="container">
-        <h2 class="section-title">Craving the Complete List?</h2>
-        <p class="section-sub">Message us on WhatsApp and we will send the full <%= s('restaurant.name') %> menu with prices, or book a table and taste the favourites in person.</p>
+        <h2 class="section-title" data-i18n="menu.ctaTitle">Craving the Complete List?</h2>
+        <p class="section-sub" data-i18n="menu.ctaSub">Message us on WhatsApp and we will send the full {{name}} menu with prices, or book a table and taste the favourites in person.</p>
         <div class="menu-cta-actions">
           <a href="<%= whatsapp.href %>?text=<%= encodeURIComponent('Hi Sutra Lounge! Please share your complete menu with prices.') %>" target="_blank" rel="noopener" class="btn btn-gold btn-lg">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            Get the Complete Menu on WhatsApp
+            <span data-i18n="menu.waCta">Get the Complete Menu on WhatsApp</span>
           </a>
-          <a href="/#contact" class="btn btn-outline-gold btn-lg">Reserve a Table</a>
+          <a href="/#contact" class="btn btn-outline-gold btn-lg" data-i18n="menu.reserve">Reserve a Table</a>
         </div>
       </div>
     </section>
@@ -118,25 +122,25 @@
     <!-- ============ VISIT ============ -->
     <section class="section menu-visit">
       <div class="container">
-        <p class="section-kicker">Visit Us</p>
-        <h2 class="section-title">Find <%= s('restaurant.name') %> in Hupra</h2>
+        <p class="section-kicker" data-i18n="menu.visitKicker">Visit Us</p>
+        <h2 class="section-title" data-i18n="menu.visitTitle">Find <%= s('restaurant.name') %> in Hupra</h2>
         <div class="menu-visit-grid">
           <div class="menu-visit-item">
-            <strong>Address</strong>
+            <strong data-i18n="menu.visitAddr">Address</strong>
             <span><%= address %></span>
           </div>
           <div class="menu-visit-item">
-            <strong>Opening Hours</strong>
+            <strong data-i18n="menu.visitHours">Opening Hours</strong>
             <span><%= hoursLabel %></span>
           </div>
           <div class="menu-visit-item">
-            <strong>Call to Book</strong>
+            <strong data-i18n="menu.visitCall">Call to Book</strong>
             <a href="<%= phone.tel %>"><%= phone.display %></a>
           </div>
         </div>
         <div class="menu-hero-actions">
-          <a href="<%= mapsUrl %>" target="_blank" rel="noopener" class="btn btn-gold">Get Directions on Google Maps</a>
-          <a href="<%= whatsapp.href %>" target="_blank" rel="noopener" class="btn btn-outline-gold">WhatsApp Us</a>
+          <a href="<%= mapsUrl %>" target="_blank" rel="noopener" class="btn btn-gold" data-i18n="menu.directions">Get Directions on Google Maps</a>
+          <a href="<%= whatsapp.href %>" target="_blank" rel="noopener" class="btn btn-outline-gold" data-i18n="menu.waUs">WhatsApp Us</a>
         </div>
       </div>
     </section>
@@ -146,7 +150,7 @@
   <footer class="footer">
     <div class="container">
       <div class="footer-bottom" style="border-top:1px solid rgba(201,163,92,.12); padding-top:28px;">
-        <p>&copy; <span id="year">2026</span> <%= s('restaurant.name') %>. All rights reserved.</p>
+        <p>&copy; <span id="year">2026</span> <span data-i18n="menu.rights">Sutra Lounge. All rights reserved.</span></p>
         <p><%= meta1 %> &middot; <%= hoursMetaLabel %></p>
       </div>
     </div>
@@ -155,6 +159,8 @@
   <script>
     (function () {
       'use strict';
+
+      /* ---------- theme ---------- */
       var stored = null;
       try { stored = localStorage.getItem('sutra-theme'); } catch (e) { /* noop */ }
       document.documentElement.setAttribute('data-theme', stored === 'light' ? 'light' : 'dark');
@@ -168,6 +174,77 @@
 
       var year = document.getElementById('year');
       if (year) year.textContent = String(new Date().getFullYear());
+
+      /* ---------- language ---------- */
+      var restName = document.body.getAttribute('data-rest-name') || 'Sutra Lounge';
+      var I18N = {
+        en: {
+          'menu.heroTitle': 'Full Digital Menu',
+          'menu.heroSub': 'Every signature we are proud of — group platters, wood-fired snacks and lounge drinks. Prices are live and updated from the CMS.',
+          'menu.waCta': 'Get the Complete Menu on WhatsApp',
+          'menu.reserve': 'Reserve a Table',
+          'menu.heroNote': 'Live prices · Updated from the CMS',
+          'menu.orderWa': 'Order on WhatsApp',
+          'menu.note': 'This is a curated selection of our most-loved dishes. The complete menu spans Nepali, Chinese, Continental and more — ask for it on WhatsApp and we will send it over.',
+          'menu.ctaTitle': 'Craving the Complete List?',
+          'menu.ctaSub': 'Message us on WhatsApp and we will send the full {{name}} menu with prices, or book a table and taste the favourites in person.',
+          'menu.visitKicker': 'Visit Us',
+          'menu.visitTitle': 'Find {{name}} in Hupra',
+          'menu.visitAddr': 'Address',
+          'menu.visitHours': 'Opening Hours',
+          'menu.visitCall': 'Call to Book',
+          'menu.directions': 'Get Directions on Google Maps',
+          'menu.waUs': 'WhatsApp Us',
+          'menu.rights': '{{name}}. All rights reserved.'
+        },
+        np: {
+          'menu.heroTitle': 'पूर्ण डिजिटल मेनु',
+          'menu.heroSub': 'हामी गर्व गर्ने हरेक विशेष परिकार — समूह प्लेटर, वुड-फायर्ड स्न्याक्स र लाउन्ज पेय। मूल्यहरू वास्तविक समयमा अपडेट हुन्छन्।',
+          'menu.waCta': 'ह्वाट्सएपमा पूर्ण मेनु लिनुहोस्',
+          'menu.reserve': 'टेबल बुक गर्नुहोस्',
+          'menu.heroNote': 'वास्तविक मूल्य · CMS बाट अपडेट',
+          'menu.orderWa': 'ह्वाट्सएपमा अर्डर गर्नुहोस्',
+          'menu.note': 'यो हाम्रा सबैभन्दा मनपर्ने परिकारहरूको छनोट हो। पूर्ण मेनुमा नेपाली, चिनियाँ, कन्टिनेन्टल र थप समावेश छन् — ह्वाट्सएपमा माग्नुहोस् र हामी पठाइदिनेछौं।',
+          'menu.ctaTitle': 'पूर्ण सूची चाहनुहुन्छ?',
+          'menu.ctaSub': 'ह्वाट्सएपमा सन्देश पठाउनुहोस् — {{name}} को मूल्यसहित पूर्ण मेनु पठाउनेछौं, वा टेबल बुक गरेर रुचाइएका परिकार प्रत्यक्ष चाख्नुहोस्।',
+          'menu.visitKicker': 'हामीलाई भेट्नुहोस्',
+          'menu.visitTitle': 'हुप्रामा {{name}} भेट्नुहोस्',
+          'menu.visitAddr': 'ठेगाना',
+          'menu.visitHours': 'खुल्ने समय',
+          'menu.visitCall': 'बुक गर्न कल गर्नुहोस्',
+          'menu.directions': 'गुगल म्याप्समा बाटो हेर्नुहोस्',
+          'menu.waUs': 'ह्वाट्सएप',
+          'menu.rights': '{{name}}। सर्वाधिकार सुरक्षित।'
+        }
+      };
+
+      var langToggle = document.getElementById('langToggle');
+      var langLabel = document.getElementById('langLabel');
+      var currentLang = null;
+      try { currentLang = localStorage.getItem('sutra-lang'); } catch (e) { /* noop */ }
+      if (currentLang !== 'en' && currentLang !== 'np') currentLang = 'en';
+
+      function applyLang(lang) {
+        var dict = I18N[lang] || I18N.en;
+        document.documentElement.lang = lang;
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+          var key = el.getAttribute('data-i18n');
+          var text = dict[key] || I18N.en[key] || el.textContent;
+          text = text.replace(/\{\{name\}\}/g, restName);
+          text = text.replace(/\{\{year\}\}/g, String(new Date().getFullYear()));
+          el.textContent = text;
+        });
+        langToggle.classList.toggle('is-np', lang === 'np');
+        langLabel.textContent = lang === 'np' ? 'EN' : 'NP';
+        currentLang = lang;
+        try { localStorage.setItem('sutra-lang', lang); } catch (e) { /* noop */ }
+      }
+
+      langToggle.addEventListener('click', function () {
+        applyLang(currentLang === 'en' ? 'np' : 'en');
+      });
+
+      applyLang(currentLang);
     })();
   </script>
 </body>

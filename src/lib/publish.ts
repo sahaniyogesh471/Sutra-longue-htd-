@@ -57,16 +57,20 @@ export function effectiveDishes(db: DB): Record<string, unknown>[] {
   const published = db.prepare('SELECT * FROM dishes').all() as Record<string, unknown>[];
   const drafts = db
     .prepare(
-      'SELECT draft_id, row_id, op, type, name, description, price, category, badge, image_url, is_featured, is_visible, sort_order FROM dishes_draft'
+      'SELECT draft_id, row_id, op, type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, is_visible, sort_order FROM dishes_draft'
     )
     .all() as Record<string, unknown>[];
   return applyDraftRows(published, drafts as never, (d) => ({
     type: d.type ?? 'bestseller',
     name: d.name ?? '',
     description: d.description ?? '',
+    name_np: d.name_np ?? '',
+    description_np: d.description_np ?? '',
     price: d.price ?? null,
     category: d.category ?? null,
+    category_np: d.category_np ?? '',
     badge: d.badge ?? null,
+    badge_np: d.badge_np ?? '',
     image_url: d.image_url ?? null,
     is_featured: d.is_featured ?? 0,
     is_visible: d.is_visible ?? 1,
@@ -137,9 +141,13 @@ export function saveDishDraft(
     type: string;
     name: string;
     description: string;
+    name_np: string;
+    description_np: string;
     price: string | null;
     category: string | null;
+    category_np: string;
     badge: string | null;
+    badge_np: string;
     image_url: string | null;
     is_featured: number;
     is_visible: number;
@@ -147,8 +155,8 @@ export function saveDishDraft(
   }
 ): void {
   db.prepare(
-    `INSERT INTO dishes_draft (row_id, op, type, name, description, price, category, badge, image_url, is_featured, is_visible, sort_order, updated_at)
-     VALUES (@row_id, 'upsert', @type, @name, @description, @price, @category, @badge, @image_url, @is_featured, @is_visible, @sort_order, datetime('now'))`
+    `INSERT INTO dishes_draft (row_id, op, type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, is_visible, sort_order, updated_at)
+     VALUES (@row_id, 'upsert', @type, @name, @description, @name_np, @description_np, @price, @category, @category_np, @badge, @badge_np, @image_url, @is_featured, @is_visible, @sort_order, datetime('now'))`
   ).run(input);
 }
 
@@ -242,7 +250,7 @@ export function restoreOriginalRow(db: DB, kind: Kind, id: number): boolean {
   }
   if (kind === 'dishes' || kind === 'reviews' || kind === 'gallery') {
     const map = {
-      dishes: { base: 'dishes_baseline', cols: ['type', 'name', 'description', 'price', 'category', 'badge', 'image_url', 'is_featured', 'sort_order'] },
+      dishes: { base: 'dishes_baseline', cols: ['type', 'name', 'description', 'name_np', 'description_np', 'price', 'category', 'category_np', 'badge', 'badge_np', 'image_url', 'is_featured', 'sort_order'] },
       reviews: { base: 'reviews_baseline', cols: ['name', 'text', 'rating', 'image_url', 'sort_order'] },
       gallery: { base: 'gallery_baseline', cols: ['image_url', 'alt', 'is_featured', 'sort_order'] },
     } as const;

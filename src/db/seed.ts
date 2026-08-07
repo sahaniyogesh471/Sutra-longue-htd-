@@ -1,4 +1,5 @@
 import { DB, initSchema, getDb, setBaselineSetting, setSetting } from './index.js';
+import { DISH_NP } from './translations.js';
 
 /**
  * ORIGINAL BASELINE — the protected Sutra Lounge content.
@@ -200,21 +201,25 @@ function seedDishes(db: DB, force: boolean): boolean {
   const count = (db.prepare('SELECT COUNT(*) AS c FROM dishes').get() as { c: number }).c;
   if (count > 0 && !force) return false;
   const insertCurrent = db.prepare(
-    `INSERT INTO dishes (type, name, description, price, category, badge, image_url, is_featured, is_visible, sort_order, created_at, updated_at)
-     VALUES (@type, @name, @description, @price, @category, @badge, @image_url, @is_featured, 1, @sort_order, datetime('now'), datetime('now'))`
+    `INSERT INTO dishes (type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, is_visible, sort_order, created_at, updated_at)
+     VALUES (@type, @name, @description, @name_np, @description_np, @price, @category, @category_np, @badge, @badge_np, @image_url, @is_featured, 1, @sort_order, datetime('now'), datetime('now'))`
   );
   const insertBaseline = db.prepare(
-    `INSERT INTO dishes_baseline (baseline_ref, type, name, description, price, category, badge, image_url, is_featured, sort_order, captured_at)
-     VALUES (@id, @type, @name, @description, @price, @category, @badge, @image_url, @is_featured, @sort_order, datetime('now'))`
+    `INSERT INTO dishes_baseline (baseline_ref, type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, sort_order, captured_at)
+     VALUES (@id, @type, @name, @description, @name_np, @description_np, @price, @category, @category_np, @badge, @badge_np, @image_url, @is_featured, @sort_order, datetime('now'))`
   );
   const tx = db.transaction(() => {
     for (const d of DISHES) {
-      const info = insertCurrent.run({
+      const np = DISH_NP[d.name] ?? { name_np: '', description_np: '', category_np: '', badge_np: '' };
+      const row = {
         type: d.type, name: d.name, description: d.description,
-        price: d.price ?? null, category: d.category ?? null, badge: d.badge ?? null,
+        name_np: np.name_np, description_np: np.description_np,
+        price: d.price ?? null, category: d.category ?? null, category_np: np.category_np,
+        badge: d.badge ?? null, badge_np: np.badge_np,
         image_url: d.image_url, is_featured: d.is_featured ?? 0, sort_order: d.sort_order,
-      });
-      insertBaseline.run({ id: Number(info.lastInsertRowid), type: d.type, name: d.name, description: d.description, price: d.price ?? null, category: d.category ?? null, badge: d.badge ?? null, image_url: d.image_url, is_featured: d.is_featured ?? 0, sort_order: d.sort_order });
+      };
+      const info = insertCurrent.run(row);
+      insertBaseline.run({ id: Number(info.lastInsertRowid), ...row });
     }
   });
   tx();
