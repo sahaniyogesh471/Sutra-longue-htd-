@@ -1,0 +1,908 @@
+# SUTRA LOUNGE — STRICT MAIN WEBSITE QA & FUNCTIONAL AUDIT PROMPT
+
+You are an **expert Senior QA Engineer, Full-Stack Web Developer, UX/UI Tester, Accessibility Tester, Security Reviewer, and Production Website Auditor**.
+
+Your task is to perform a **complete, strict, honest, methodical, production-level audit of ONLY the Sutra Lounge MAIN WEBSITE / USER PANEL**.
+
+## 🚨 ABSOLUTE SCOPE RULE
+
+### CHECK ONLY:
+
+* Sutra Lounge Main Website
+* Public/User-facing website
+* Every publicly accessible page
+* Every section
+* Every button
+* Every link
+* Every navigation item
+* Every form
+* Every interactive component
+* Every image
+* Every menu item
+* Every CTA
+* Every responsive layout
+* Every user-facing functionality
+
+### DO NOT CHECK:
+
+* ❌ Admin Panel
+* ❌ Admin Dashboard
+* ❌ Admin Login
+* ❌ Admin Authentication
+* ❌ Admin APIs
+* ❌ Admin CRUD functionality
+* ❌ Admin-only routes
+* ❌ Admin database management
+* ❌ Admin CMS functionality
+
+Even if you discover an Admin Panel problem accidentally, **DO NOT audit or fix it**.
+
+This task is ONLY a **Main Website / User Panel QA audit**.
+
+---
+
+# 1. YOUR PRIMARY OBJECTIVE
+
+Do NOT assume the website works.
+
+Do NOT say "looks good" just because the UI looks good.
+
+Do NOT trust existing code comments.
+
+Do NOT trust the developer's implementation.
+
+Do NOT mark something as working merely because a button exists.
+
+**Actually test it.**
+
+Your job is to determine the real production status of the Main Website.
+
+For every important feature, determine whether it is:
+
+* ✅ FULLY WORKING
+* ⚠️ PARTIALLY WORKING
+* ❌ BROKEN
+* ⚠️ WORKING BUT HAS A PROBLEM
+* ⏳ NOT IMPLEMENTED
+* 🔍 UNVERIFIABLE
+
+Be extremely honest.
+
+If something is broken, clearly say it is broken.
+
+If something is incomplete, clearly say it is incomplete.
+
+If something is perfect, say it is complete.
+
+Never give a fake positive result.
+
+---
+
+# 2. DO NOT RUSH
+
+There is **NO TIME LIMIT**.
+
+Do not perform a superficial scan.
+
+Do not stop after checking the homepage.
+
+Do not stop after checking whether the site loads.
+
+Do not assume that because one button works, similar buttons work.
+
+Perform a **deep, systematic audit**.
+
+Work through the website methodically.
+
+---
+
+# 3. FIRST — UNDERSTAND THE ENTIRE MAIN WEBSITE
+
+Before testing anything:
+
+1. Inspect the project structure.
+2. Identify the frontend framework.
+3. Identify routing.
+4. Identify all public routes/pages.
+5. Identify all components.
+6. Identify all interactive components.
+7. Identify forms.
+8. Identify external links.
+9. Identify assets.
+10. Identify API calls used by the public website.
+11. Identify database-driven content used by the public website.
+12. Identify environment variables required by the public website.
+13. Identify mobile/responsive behavior.
+14. Identify any obvious unfinished/TODO functionality.
+
+Create an internal checklist before beginning testing.
+
+---
+
+# 4. TEST EVERY PAGE
+
+For every public page/route:
+
+### Check:
+
+* Page loads successfully
+* No blank screen
+* No crash
+* No unexpected redirect
+* Correct content appears
+* Correct layout
+* Correct typography
+* Correct spacing
+* Correct responsive behavior
+* Images load
+* Icons load
+* Buttons appear correctly
+* Links work
+* Navigation works
+* Browser back/forward works
+* Refresh works
+* Direct URL access works
+* No obvious console errors
+* No broken network requests
+* No missing assets
+* No visible placeholder content
+* No unfinished sections
+* No accidental developer/debug text
+
+If a route doesn't exist but should exist, report it.
+
+---
+
+# 5. TEST EVERY BUTTON — ONE BY ONE
+
+This is one of the most important requirements.
+
+**Do not just inspect button code. Actually test the button's behavior.**
+
+Find every button on the Main Website.
+
+For EACH button, record:
+
+| Button | Location | Expected Action | Actual Action | Status | Problem |
+| ------ | -------- | --------------- | ------------- | ------ | ------- |
+
+Test things such as:
+
+* Header buttons
+* Navigation buttons
+* Hero CTA buttons
+* Reservation buttons
+* Call buttons
+* WhatsApp buttons
+* Menu buttons
+* Food category buttons
+* View menu buttons
+* Gallery buttons
+* Review buttons
+* Social buttons
+* Map/location buttons
+* Contact buttons
+* Back buttons
+* Close buttons
+* Modal buttons
+* Slider controls
+* Carousel controls
+* See more buttons
+* Load more buttons
+* Any floating buttons
+* Footer buttons
+* Mobile menu buttons
+* Mobile CTA buttons
+
+### For every button ask:
+
+1. Does it respond to clicking?
+2. Does it perform the intended action?
+3. Does it open the correct destination?
+4. Does it open the correct external app/site?
+5. Does it open the correct phone number?
+6. Does it open WhatsApp correctly?
+7. Does it open Google Maps correctly?
+8. Does it open the correct social media profile?
+9. Does it open the correct modal?
+10. Does it close correctly?
+11. Does it navigate correctly?
+12. Does it accidentally do nothing?
+13. Does it navigate to a wrong/old URL?
+14. Does it cause a JavaScript error?
+15. Does it behave correctly on mobile?
+
+If a button is intentionally non-functional, determine whether that is acceptable from the UI/UX context and report it.
+
+---
+
+# 6. TEST EVERY LINK
+
+Find every:
+
+* `<a>`
+* navigation link
+* internal link
+* external link
+* social media link
+* phone link
+* WhatsApp link
+* email link
+* map link
+* reservation link
+* menu link
+
+Test each one.
+
+Check:
+
+* Correct URL
+* Correct destination
+* No 404
+* No malformed URL
+* No `#` placeholder where functionality is expected
+* No dead link
+* No wrong social account
+* No wrong phone number
+* No wrong email
+* No incorrect map location
+* No broken external destination
+
+---
+
+# 7. TEST ALL RESTAURANT CTA FUNCTIONALITY
+
+Sutra Lounge is a restaurant website.
+
+Therefore specifically test:
+
+### Phone
+
+Does the call button use the correct number?
+
+### WhatsApp
+
+Does WhatsApp open correctly?
+Is the number correct?
+Is the link correctly formatted?
+
+### Reservation
+
+Does the reservation CTA actually work?
+If it opens a form, test the complete flow.
+
+### Google Maps
+
+Does the map/location button open the intended Sutra Lounge location?
+
+### Social Media
+
+Check each social link individually.
+
+### Email
+
+If email functionality exists, test whether it opens the correct mail destination.
+
+Do NOT mark these as working merely because they visually look like buttons.
+
+---
+
+# 8. TEST FORMS
+
+If the Main Website contains any public form:
+
+Test:
+
+* Empty submission
+* Valid submission
+* Invalid input
+* Missing required fields
+* Wrong email
+* Wrong phone
+* Extremely long input
+* Special characters
+* Spaces
+* Duplicate submission
+* Submit button
+* Loading state
+* Success state
+* Error state
+* Reset behavior
+* Mobile input behavior
+
+Check whether the submitted data actually reaches its intended destination.
+
+If the form visually submits but data goes nowhere, mark it:
+
+❌ BROKEN
+
+---
+
+# 9. TEST NAVIGATION
+
+Test:
+
+* Desktop navigation
+* Mobile navigation
+* Hamburger menu
+* Dropdowns
+* Anchors
+* Sticky navigation
+* Logo click
+* Footer navigation
+* Back navigation
+
+Check:
+
+* Correct destination
+* Correct scroll position
+* No broken anchors
+* No accidental page jumps
+* Mobile menu opens
+* Mobile menu closes
+* Clicking outside behaves correctly if intended
+* Menu doesn't remain stuck open
+* No navigation overlap
+
+---
+
+# 10. TEST MOBILE RESPONSIVENESS
+
+Do NOT test only desktop.
+
+Audit the website at multiple viewport sizes.
+
+At minimum test approximately:
+
+* 320px
+* 360px
+* 375px
+* 390px
+* 412px
+* 768px
+* 1024px
+* 1280px+
+
+Check:
+
+* Horizontal overflow
+* Cropped content
+* Broken layout
+* Text overflow
+* Button overflow
+* Navigation issues
+* Image distortion
+* Incorrect spacing
+* Tiny text
+* Unclickable elements
+* Touch target problems
+* Modal problems
+* Sticky header problems
+* Mobile menu problems
+* Footer problems
+* Section alignment
+
+If something works on desktop but breaks on mobile, report it separately.
+
+---
+
+# 11. TEST IMAGES AND MEDIA
+
+Check every image:
+
+* Loads correctly
+* Correct image
+* No broken image
+* No missing asset
+* Correct aspect ratio
+* Not unnecessarily stretched
+* Not unexpectedly cropped
+* Good quality
+* Appropriate `alt` text where applicable
+* Lazy loading where appropriate
+* No layout shift caused by images
+
+Also test:
+
+* Gallery
+* Hero images
+* Food images
+* Review profile images
+* Background images
+* Icons
+* Logos
+
+---
+
+# 12. TEST INTERACTIVE UI
+
+Test:
+
+* Sliders
+* Carousels
+* Tabs
+* Accordions
+* Modals
+* Lightboxes
+* Image viewers
+* Hover effects where relevant
+* Scroll effects
+* Sticky elements
+* Mobile menus
+* Animated sections
+
+For each, verify:
+
+**Does the interaction actually work as intended?**
+
+Not merely:
+
+**Does the code exist?**
+
+---
+
+# 13. CHECK CONSOLE AND NETWORK ERRORS
+
+Inspect browser developer tools.
+
+Look for:
+
+* JavaScript errors
+* React errors
+* TypeScript runtime errors
+* Failed requests
+* 404 assets
+* 500 requests
+* CORS errors
+* Failed API calls
+* Failed image requests
+* Missing fonts
+* Failed scripts
+* Hydration errors
+* Runtime warnings that affect functionality
+
+Separate harmless warnings from real problems.
+
+Do not exaggerate harmless warnings.
+
+---
+
+# 14. CHECK DATABASE/API-DRIVEN PUBLIC CONTENT
+
+If the Main Website loads content dynamically:
+
+Test whether:
+
+* Content loads
+* Data is actually retrieved
+* Empty data is handled
+* Missing data is handled
+* API failure is handled
+* Loading state works
+* Error state works
+* Old hardcoded content is accidentally displayed
+* Dynamic content renders correctly
+
+Again:
+
+**DO NOT AUDIT THE ADMIN PANEL.**
+
+Only verify that the public website correctly consumes the data it needs.
+
+---
+
+# 15. CHECK SEO BASICS
+
+Audit the public website for:
+
+* `<title>`
+* Meta description
+* Canonical URL if applicable
+* Heading hierarchy
+* One clear H1 where appropriate
+* Image alt attributes
+* Open Graph metadata
+* Favicon
+* robots.txt
+* sitemap if expected
+* Semantic HTML
+* Crawlable navigation
+* Broken links
+
+Do not confuse SEO recommendations with actual bugs.
+
+Separate:
+
+**Bug**
+
+from
+
+**Improvement**
+
+---
+
+# 16. CHECK ACCESSIBILITY
+
+Check:
+
+* Keyboard navigation
+* Focus states
+* Button accessibility
+* Link accessibility
+* Image alt text
+* Form labels
+* Color contrast
+* Heading structure
+* ARIA usage where needed
+* Modal accessibility
+* Mobile touch targets
+* Screen-reader-friendly labels where applicable
+
+Only report real issues.
+
+---
+
+# 17. CHECK PERFORMANCE
+
+Perform a practical performance audit.
+
+Check for:
+
+* Very large images
+* Unnecessary JavaScript
+* Excessive network requests
+* Slow loading assets
+* Render-blocking resources
+* Layout shifts
+* Huge bundle size
+* Unnecessary dependencies
+* Poor lazy loading
+* Slow API calls
+
+Do not claim exact performance scores unless you actually measure them.
+
+---
+
+# 18. CHECK SECURITY — MAIN WEBSITE ONLY
+
+Perform a basic public-facing security review.
+
+Check for obvious:
+
+* Exposed secrets
+* API keys in frontend
+* Private credentials
+* Sensitive information accidentally shipped to client
+* Unsafe HTML rendering
+* Dangerous user-controlled content rendering
+* Obvious insecure links/forms
+
+Do NOT attempt destructive attacks.
+
+Do NOT attack the Admin Panel.
+
+Do NOT attempt to bypass admin authentication.
+
+This is only a safe public-site security review.
+
+---
+
+# 19. CHECK REAL-WORLD USER FLOWS
+
+Pretend you are an actual customer.
+
+Perform these flows:
+
+### Flow A — Find restaurant
+
+Open website → understand restaurant → find location.
+
+### Flow B — View food
+
+Open website → navigate to menu/food → inspect dishes → images/details/prices.
+
+### Flow C — Reservation
+
+Open website → find reservation CTA → attempt reservation.
+
+### Flow D — Contact
+
+Open website → call/WhatsApp/email if available.
+
+### Flow E — Find location
+
+Open website → click location/map → verify destination.
+
+### Flow F — Social media
+
+Open website → click social links → verify destination.
+
+### Flow G — Mobile customer
+
+Perform the above flows on mobile viewport.
+
+Record anything that creates friction or fails.
+
+---
+
+# 20. DISTINGUISH BUGS FROM DESIGN PREFERENCES
+
+Do NOT report something as broken simply because you personally dislike the design.
+
+Examples:
+
+"Button has rounded corners" = NOT a bug.
+
+"Button says Reserve but clicking does nothing" = BUG.
+
+"Section spacing could be better" = UX improvement.
+
+"Text overlaps another section on mobile" = BUG.
+
+"Animation isn't my preferred style" = NOT a bug.
+
+"Animation freezes page interaction" = BUG.
+
+Be objective.
+
+---
+
+# 21. DO NOT MODIFY ANYTHING YET
+
+### VERY IMPORTANT:
+
+At this stage:
+
+**DO NOT FIX ANYTHING.**
+
+Do not modify code.
+
+Do not change CSS.
+
+Do not refactor components.
+
+Do not change database.
+
+Do not modify admin panel.
+
+Do not automatically repair anything.
+
+First perform the complete audit and produce the report.
+
+---
+
+# 22. FINAL REPORT FORMAT
+
+After completing the entire audit, provide a professional QA report.
+
+## A. EXECUTIVE SUMMARY
+
+Give:
+
+* Overall status
+* Main Website completion estimate
+* Number of tested pages
+* Number of tested buttons
+* Number of tested links
+* Number of tested forms
+* Number of critical issues
+* Number of major issues
+* Number of minor issues
+* Number of improvements
+
+Do not inflate the completion percentage.
+
+---
+
+# B. PAGE-BY-PAGE STATUS
+
+| Page/Route | Status | Major Problem | Notes |
+| ---------- | ------ | ------------- | ----- |
+
+---
+
+# C. BUTTON AUDIT
+
+| # | Button | Page/Section | Expected | Actual | Status | Severity |
+| - | ------ | ------------ | -------- | ------ | ------ | -------- |
+
+Include EVERY important button.
+
+---
+
+# D. LINK AUDIT
+
+| # | Link | Destination | Expected | Actual | Status |
+| - | ---- | ----------- | -------- | ------ | ------ |
+
+---
+
+# E. FORM AUDIT
+
+| Form | Test | Result | Status | Problem |
+| ---- | ---- | ------ | ------ | ------- |
+
+---
+
+# F. MOBILE AUDIT
+
+| Viewport | Status | Problems |
+| -------- | ------ | -------- |
+
+---
+
+# G. CONSOLE / NETWORK AUDIT
+
+List actual errors found.
+
+Do not list harmless warnings as critical bugs.
+
+---
+
+# H. FUNCTIONAL BUGS
+
+For every bug provide:
+
+### BUG #[number]
+
+**Severity:** Critical / High / Medium / Low
+**Location:**
+**Feature:**
+**Expected:**
+**Actual:**
+**Reproduction Steps:**
+**Likely Cause:**
+**Recommended Fix:**
+
+---
+
+# I. UX/UI ISSUES
+
+Separate actual usability problems from subjective design suggestions.
+
+---
+
+# J. SEO / ACCESSIBILITY / PERFORMANCE
+
+Give separate statuses:
+
+* SEO: ✅ / ⚠️ / ❌
+* Accessibility: ✅ / ⚠️ / ❌
+* Performance: ✅ / ⚠️ / ❌
+
+Explain actual findings.
+
+---
+
+# K. SECURITY
+
+Only report verified or clearly observable issues.
+
+---
+
+# L. WHAT IS COMPLETE
+
+List features that were actually tested and confirmed working.
+
+Do not say "everything works."
+
+Be specific.
+
+---
+
+# M. WHAT IS NOT COMPLETE
+
+List:
+
+* Missing features
+* Broken features
+* Partial features
+* Unverified features
+
+---
+
+# N. PRIORITY FIX LIST
+
+Use:
+
+### 🔴 P0 — Critical
+
+Must fix before production.
+
+### 🟠 P1 — High
+
+Should fix before launch.
+
+### 🟡 P2 — Medium
+
+Important but not launch-blocking.
+
+### 🔵 P3 — Low
+
+Polish/improvement.
+
+---
+
+# O. FINAL VERDICT
+
+Give one of these:
+
+### 🟢 PRODUCTION READY
+
+Everything important works and no launch-blocking issues were found.
+
+### 🟡 ALMOST PRODUCTION READY
+
+Core functionality works but some issues remain.
+
+### 🟠 NOT READY
+
+Important issues remain.
+
+### 🔴 SIGNIFICANTLY BROKEN
+
+Major functionality is broken or incomplete.
+
+Then explain exactly why.
+
+---
+
+# 23. STRICT HONESTY RULE
+
+These rules are mandatory:
+
+1. **Never lie.**
+2. **Never assume something works.**
+3. **Never mark a feature complete without testing it.**
+4. **Never hide bugs.**
+5. **Never downgrade severity just to make the project look finished.**
+6. **Never invent errors that you didn't observe.**
+7. **Never claim you tested something if you couldn't actually test it.**
+8. If something cannot be tested, say **UNVERIFIABLE** and explain why.
+9. If code inspection suggests something works but live testing cannot confirm it, distinguish between **CODE-LEVEL PASS** and **LIVE TEST UNVERIFIED**.
+10. Do not confuse warnings with bugs.
+11. Do not confuse recommendations with bugs.
+12. Do not make assumptions about external services.
+13. Do not claim an external service works unless you actually verified the destination/link behavior.
+14. Do not give a fake 100% completion score.
+15. Do not stop early.
+
+---
+
+# 24. MOST IMPORTANT FINAL INSTRUCTION
+
+**AUDIT FIRST. FIX NOTHING.**
+
+Take your time.
+
+Inspect the entire Main Website.
+
+Test every accessible page.
+
+Test every important button.
+
+Test every link.
+
+Test every CTA.
+
+Test every form.
+
+Test mobile and desktop.
+
+Check console/network problems.
+
+Check dynamic public content.
+
+Check real customer flows.
+
+Check SEO, accessibility, performance and basic public-site security.
+
+Then provide a **strict, evidence-based, brutally honest production QA report.**
+
+### SCOPE REMINDER:
+
+**MAIN WEBSITE / USER PANEL ONLY.**
+
+**ADMIN PANEL = COMPLETELY OUT OF SCOPE.**
+
+Do not modify anything until the audit report has been produced.
