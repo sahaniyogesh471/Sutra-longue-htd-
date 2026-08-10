@@ -19,13 +19,13 @@
       'hero.reserve': 'Reserve a Table',
       'hero.whatsapp': 'WhatsApp Us',
       'hero.meta1': 'Hupra, Hetauda-4 · Makwanpur',
-      'hero.meta2': 'Open Daily 7 AM – 10 PM',
+      'hero.meta2': 'Open Daily 8 AM – 9 PM',
       'hero.video': 'Watch the Sutra Lounge Tour',
       'hero.scroll': 'Scroll',
 
       'about.kicker': 'Our Story',
       'about.title': "Where Hetauda comes to slow down & savour",
-      'about.badge': 'Days a week · open 7 AM – 10 PM',
+      'about.badge': 'Days a week · open 8:00 AM – 9:00 PM',
       'about.lead': 'Sutra Lounge was born from a simple belief — that great evenings are built on three things: sumptuous food, great music and unforgettable times.',
       'about.body': "Set in the heart of Hupra, our kitchen blends Nepali soul with international craft. Momos are folded by hand each morning, dough is stretched for the clay oven every afternoon, and the bar shakes to order through the night. Whether it is a family dinner, a celebration or a quiet date, our lounge is designed to make the moment last.",
       'about.p1': 'Hand-finished signature recipes from our head chef',
@@ -99,7 +99,7 @@
       'visit.title': 'In the Heart of Hupra, Hetauda',
       'visit.sub': 'Easy to reach, easy to park, hard to leave. Drop by for lunch, an evening sizzler, or a night of cocktails and music.',
       'visit.addrTitle': 'Address', 'visit.addr': 'Hupra, Hetauda-4, Makwanpur, Nepal',
-      'visit.hoursTitle': 'Opening Hours', 'visit.hours': 'Monday – Sunday · 7:00 AM – 10:00 PM',
+      'visit.hoursTitle': 'Opening Hours', 'visit.hours': 'Monday – Sunday · 8:00 AM – 9:00 PM',
       'visit.hoursNote': 'Open every single day — no off days',
       'visit.directions': 'Get Directions on Google Maps', 'visit.reserve': 'Reserve a Table',
 
@@ -117,7 +117,7 @@
 
       'footer.tag': 'Premium multi-cuisine resto-lounge & bar. Sumptuous food, great music, unforgettable times.',
       'footer.explore': 'Explore', 'footer.contact': 'Contact', 'footer.hours': 'Opening Hours',
-      'footer.hoursLine': 'Mon – Sun · 7:00 AM – 10:00 PM',
+      'footer.hoursLine': 'Mon – Sun · 8:00 AM – 9:00 PM',
       'footer.addr': 'Hupra, Hetauda-4, Makwanpur, Nepal',
       'footer.rights': '© {{year}} Sutra Lounge. All rights reserved.',
       'footer.love': 'Made with flavour in Hetauda',
@@ -137,13 +137,13 @@
       'hero.reserve': 'टेबल बुक गर्नुहोस्',
       'hero.whatsapp': 'ह्वाट्सएप गर्नुहोस्',
       'hero.meta1': 'हुप्रा, हेटौंडा-४ · मकवानपुर',
-      'hero.meta2': 'दैनिक बिहान ११ – राति ११ बजेसम्म',
+      'hero.meta2': 'दैनिक बिहान ८ – राति ९ बजेसम्म',
       'hero.video': 'सुत्र लाउन्ज टुर हेर्नुहोस्',
       'hero.scroll': 'स्क्रोल गर्नुहोस्',
 
       'about.kicker': 'हाम्रो कथा',
       'about.title': 'हेटौंडा बसेर स्वाद चाख्ने ठाउँ',
-      'about.badge': 'हप्ताको सातै दिन · बिहान ११ – राति ११ बजे खुला',
+      'about.badge': 'हप्ताको सातै दिन · बिहान ८ – राति ९ बजे खुला',
       'about.lead': 'सुत्र लाउन्जको जन्म एउटा सरल विश्वासबाट भएको हो — राम्रा साँझ तीन कुराले बन्छन्: स्वादिलो खाना, उत्कृष्ट संगीत र अविस्मरणीय क्षण।',
       'about.body': 'हुप्राको मुटुमा अवस्थित हाम्रो किचनले नेपाली स्वादलाई अन्तर्राष्ट्रिय कलासँग मिसाउँछ। म:म हरेक बिहान हातले बनाइन्छ, क्ले ओभनका लागि पीठो हरेक दिउँसो मुछिन्छ, र बारले रातभरि अर्डरमा शेक गर्छ। पारिवारिक भोज, उत्सव वा शान्त डेट — जे भए पनि हाम्रो लाउन्ज तपाईंको क्षणलाई अविस्मरणीय बनाउन डिजाइन गरिएको छ।',
       'about.p1': 'हेड सेफद्वारा हस्तलिखित विशेष रेसिपी',
@@ -217,7 +217,7 @@
       'visit.title': 'हुप्रा, हेटौंडाको मुटुमा',
       'visit.sub': 'पुग्न सजिलो, पार्किङ सजिलो, छाड्न गाह्रो। लन्च, साँझको सिजलर वा ककटेल र संगीतको रातका लागि आउनुहोस्।',
       'visit.addrTitle': 'ठेगाना', 'visit.addr': 'हुप्रा, हेटौंडा-४, मकवानपुर, नेपाल',
-      'visit.hoursTitle': 'खुल्ने समय', 'visit.hours': 'सोमबार – आइतबार · बिहान ११ – राति ११ बजे',
+      'visit.hoursTitle': 'खुल्ने समय', 'visit.hours': 'सोमबार – आइतबार · बिहान ८ – राति ९ बजे',
       'visit.hoursNote': 'हरेक दिन खुला — बिदा छैन',
       'visit.directions': 'गुगल म्याप्समा बाटो हेर्नुहोस्', 'visit.reserve': 'टेबल बुक गर्नुहोस्',
 
@@ -235,7 +235,7 @@
 
       'footer.tag': 'प्रिमियम मल्टि-क्युजिन रेस्टो-लाउन्ज र बार। स्वादिलो खाना, उत्कृष्ट संगीत, अविस्मरणीय क्षण।',
       'footer.explore': 'अन्वेषण गर्नुहोस्', 'footer.contact': 'सम्पर्क', 'footer.hours': 'खुल्ने समय',
-      'footer.hoursLine': 'सोम – आइत · बिहान ११ – राति ११ बजे',
+      'footer.hoursLine': 'सोम – आइत · बिहान ८ – राति ९ बजे',
       'footer.addr': 'हुप्रा, हेटौंडा-४, मकवानपुर, नेपाल',
       'footer.rights': '© {{year}} सुत्र लाउन्ज। सर्वाधिकार सुरक्षित।',
       'footer.love': 'हेटौंडामा माया र स्वादले बनाइएको',
@@ -452,30 +452,63 @@
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightboxImg');
   const lightboxCaption = document.getElementById('lightboxCaption');
+  const galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
+  let lightboxIndex = 0;
 
-  document.querySelectorAll('.gallery-item').forEach((item) => {
-    item.addEventListener('click', () => {
-      const img = item.querySelector('img');
-      lightboxImg.src = item.getAttribute('data-full') || img.src;
-      lightboxImg.alt = img.alt;
-      lightboxCaption.textContent = img.alt;
-      lightbox.classList.add('is-open');
-    });
+  const lightboxOpen = () => lightbox.classList.contains('is-open');
+
+  const lightboxShow = (index) => {
+    const item = galleryItems[index];
+    if (!item) return;
+    const img = item.querySelector('img');
+    lightboxIndex = index;
+    lightboxImg.src = item.getAttribute('data-full') || img.src;
+    lightboxImg.alt = img.alt;
+    lightboxCaption.textContent = img.alt;
+    lightbox.classList.add('is-open');
+  };
+
+  const lightboxStep = (dir) => {
+    if (!galleryItems.length) return;
+    const next = (lightboxIndex + dir + galleryItems.length) % galleryItems.length;
+    lightboxShow(next);
+  };
+
+  galleryItems.forEach((item, index) => {
+    item.addEventListener('click', () => lightboxShow(index));
   });
   lightbox.querySelectorAll('[data-close-lightbox]').forEach((el) => {
     el.addEventListener('click', () => lightbox.classList.remove('is-open'));
   });
+  lightbox.querySelector('[data-lightbox-prev]').addEventListener('click', () => lightboxStep(-1));
+  lightbox.querySelector('[data-lightbox-next]').addEventListener('click', () => lightboxStep(1));
   lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox) lightbox.classList.remove('is-open');
   });
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { lightbox.classList.remove('is-open'); videoModal.classList.remove('is-open'); videoFrame.src = ''; closeQv(); }
+    if (lightboxOpen()) {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); lightboxStep(-1); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); lightboxStep(1); }
+    }
   });
 
   /* ---------- 11. Reservation form -> WhatsApp ---------- */
   const form = document.getElementById('reserveForm');
   const WA_NUMBER = (window.SUTRA_CONTACT && window.SUTRA_CONTACT.wa) || '97757522111';
+
+  const setFieldError = (key, hasError) => {
+    const input = form.elements[key];
+    const field = input.closest('.form-field');
+    input.classList.toggle('is-invalid', hasError);
+    field.classList.toggle('has-error', hasError);
+    return !hasError;
+  };
+
+  /* Normalised digit count — the basis for phone validation. */
+  const phoneDigits = (v) => v.replace(/[^\d]/g, '');
+  const isValidPhone = (v) => /^[0-9+\s\-()]+$/.test(v) && phoneDigits(v).length >= 7 && phoneDigits(v).length <= 15;
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -489,13 +522,26 @@
 
     let valid = true;
     [['name', name], ['phone', phone], ['date', date], ['time', time]].forEach(([key, val]) => {
-      const input = form.elements[key];
-      const field = input.closest('.form-field');
       const hasError = !val;
-      input.classList.toggle('is-invalid', hasError);
-      field.classList.toggle('has-error', hasError);
+      setFieldError(key, hasError);
       if (hasError) valid = false;
     });
+
+    if (phone && !isValidPhone(phone)) {
+      setFieldError('phone', true);
+      valid = false;
+    }
+
+    if (date) {
+      const todayLocal = new Date();
+      todayLocal.setHours(0, 0, 0, 0);
+      const selected = new Date(date + 'T00:00:00');
+      if (!(selected >= todayLocal)) {
+        setFieldError('date', true);
+        valid = false;
+      }
+    }
+
     if (!valid) return;
 
     const prettyDate = date ? new Date(date + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' }) : date;

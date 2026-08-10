@@ -781,6 +781,45 @@ html[data-theme="dark"] .visit { background: linear-gradient(180deg, #0d0a07, #1
 .modal-video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; }
 
 /* ============================================================
+   ERROR 404
+   ============================================================ */
+.error-404 {
+  min-height: 70vh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 120px 20px 80px;
+}
+.error-404 .container { max-width: 640px; }
+.error-code {
+  font-family: var(--font-serif);
+  font-size: clamp(96px, 18vw, 170px);
+  font-weight: 800;
+  line-height: 1;
+  color: transparent;
+  background: linear-gradient(135deg, #d9b877 0%, #8a6b3f 55%, #d9b877 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  letter-spacing: 4px;
+}
+.error-title {
+  font-family: var(--font-serif);
+  font-size: clamp(30px, 5vw, 46px);
+  color: #f4e7cd;
+  margin: 14px 0 12px;
+}
+.error-sub { font-size: 17px; color: #d9c9a8; line-height: 1.6; }
+.error-desc { font-size: 14.5px; color: var(--text-mute); margin-top: 8px; line-height: 1.6; }
+.error-cta { display: flex; gap: 14px; justify-content: center; margin-top: 32px; flex-wrap: wrap; }
+.error-cta .btn svg { vertical-align: -2px; margin-right: 6px; }
+
+@media (max-width: 520px) {
+  .error-404 { padding: 100px 16px 60px; }
+  .error-cta { flex-direction: column; align-items: stretch; }
+  .error-cta .btn { justify-content: center; }
+}
+
+/* ============================================================
    LIGHTBOX
    ============================================================ */
 .lightbox {
@@ -800,6 +839,18 @@ html[data-theme="dark"] .visit { background: linear-gradient(180deg, #0d0a07, #1
   transition: background .3s, transform .3s;
 }
 .lightbox-close:hover { background: rgba(255,255,255,.25); transform: rotate(90deg); }
+.lightbox-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(255,255,255,.12); color: #fff;
+  display: grid; place-items: center; z-index: 2;
+  transition: background .3s, transform .3s;
+}
+.lightbox-nav:hover { background: rgba(255,255,255,.25); }
+.lightbox-prev { left: 20px; }
+.lightbox-prev:hover { transform: translateY(-50%) translateX(-3px); }
+.lightbox-next { right: 20px; }
+.lightbox-next:hover { transform: translateY(-50%) translateX(3px); }
 .lightbox-figure { max-width: 1080px; text-align: center; }
 .lightbox-figure img { max-height: 78vh; width: auto; max-width: 100%; border-radius: var(--radius-sm); box-shadow: 0 30px 80px -20px rgba(0,0,0,.8); }
 .lightbox-figure figcaption { margin-top: 14px; color: #d9c9a8; font-size: 14px; letter-spacing: 1px; }
@@ -1013,6 +1064,9 @@ html[data-theme="light"] .bs-cat { background: rgba(255,255,255,.72); color: #8a
   .contact-ico { width: 42px; height: 42px; }
   .reserve-form .btn { white-space: normal; text-align: center; }
   .visit-cta { flex-direction: column; align-items: stretch; }
+  .lightbox-nav { width: 40px; height: 40px; }
+  .lightbox-prev { left: 10px; }
+  .lightbox-next { right: 10px; }
 }
 
 @media (max-width: 380px) {

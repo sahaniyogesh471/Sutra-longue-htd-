@@ -37,7 +37,9 @@
                 <td>
                   <input class="input-sm" type="time" data-hours-close-time="<%= h.day_index %>" value="<%= h.close_time || '' %>" <%= Number(h.is_open) === 1 ? '' : 'disabled' %>>
                 </td>
-                <td class="cell-sub"><%= baselineHours[h.day_index] ? (Number(baselineHours[h.day_index].is_open) === 1 ? (baselineHours[h.day_index].open_time + ' – ' + baselineHours[h.day_index].close_time) : 'Closed') : '' %></td>
+                <td class="cell-sub"><%= baselineHours[h.day_index] ? (Number(baselineHours[h.day_index].is_open) === 1 ? (baselineHours[h.day_index].open_time + ' – ' + baselineHours[h.day_index].close_time) : 'Closed') : '' %>
+                  <button class="btn btn-ghost btn-tiny" type="button" data-hours-restore="<%= h.day_index %>" title="Restore original values">Restore</button>
+                </td>
               </tr>
             <% }); %>
           </tbody>

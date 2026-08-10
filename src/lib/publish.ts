@@ -565,29 +565,29 @@ export function resetAll(db: DB, by?: string): { ok: boolean } {
 
     db.prepare('DELETE FROM dishes').run();
     const insDish = db.prepare(
-      `INSERT INTO dishes (type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, is_visible, sort_order, created_at, updated_at)
-       VALUES (@type, @name, @description, @name_np, @description_np, @price, @category, @category_np, @badge, @badge_np, @image_url, @is_featured, 1, @sort_order, datetime('now'), datetime('now'))`
+      `INSERT INTO dishes (id, type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, is_visible, sort_order, created_at, updated_at)
+       VALUES (@id, @type, @name, @description, @name_np, @description_np, @price, @category, @category_np, @badge, @badge_np, @image_url, @is_featured, 1, @sort_order, datetime('now'), datetime('now'))`
     );
     for (const r of db.prepare('SELECT * FROM dishes_baseline').all() as Record<string, unknown>[]) {
-      insDish.run(r);
+      insDish.run({ ...r, id: r.baseline_ref ?? r.id });
     }
 
     db.prepare('DELETE FROM reviews').run();
     const insReview = db.prepare(
-      `INSERT INTO reviews (name, text, rating, image_url, is_visible, sort_order, created_at, updated_at)
-       VALUES (@name, @text, @rating, @image_url, 1, @sort_order, datetime('now'), datetime('now'))`
+      `INSERT INTO reviews (id, name, text, rating, image_url, is_visible, sort_order, created_at, updated_at)
+       VALUES (@id, @name, @text, @rating, @image_url, 1, @sort_order, datetime('now'), datetime('now'))`
     );
     for (const r of db.prepare('SELECT * FROM reviews_baseline').all() as Record<string, unknown>[]) {
-      insReview.run(r);
+      insReview.run({ ...r, id: r.baseline_ref ?? r.id });
     }
 
     db.prepare('DELETE FROM gallery').run();
     const insGallery = db.prepare(
-      `INSERT INTO gallery (image_url, alt, is_featured, is_visible, sort_order, created_at, updated_at)
-       VALUES (@image_url, @alt, @is_featured, 1, @sort_order, datetime('now'), datetime('now'))`
+      `INSERT INTO gallery (id, image_url, alt, is_featured, is_visible, sort_order, created_at, updated_at)
+       VALUES (@id, @image_url, @alt, @is_featured, 1, @sort_order, datetime('now'), datetime('now'))`
     );
     for (const r of db.prepare('SELECT * FROM gallery_baseline').all() as Record<string, unknown>[]) {
-      insGallery.run(r);
+      insGallery.run({ ...r, id: r.baseline_ref ?? r.id });
     }
 
     db.prepare('DELETE FROM opening_hours').run();

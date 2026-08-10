@@ -799,6 +799,22 @@
       toast('Opening hours saved as draft.');
       refreshDraftBar();
     });
+    document.querySelectorAll('[data-hours-restore]').forEach(function (btn) {
+      btn.addEventListener('click', async function () {
+        const day = Number(btn.getAttribute('data-hours-restore'));
+        confirmDialog({
+          title: 'Restore original hours?',
+          message: 'This restores the protected ORIGINAL schedule for this day. It is staged as a draft until you publish.',
+          confirmText: 'Restore',
+          danger: true,
+        }, async function () {
+          const r = await api('/admin/api/restore-original', { body: { kind: 'hours', id: day } });
+          if (!r.ok) { toast(r.error || 'Could not restore hours.', 'error'); return; }
+          setTimeout(function () { location.reload(); }, 150);
+          toast('Opening hours restored to original.');
+        });
+      });
+    });
   }
 
   /* ---------------- Settings ---------------- */

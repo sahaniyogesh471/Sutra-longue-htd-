@@ -131,14 +131,14 @@
       <div class="container about-grid">
         <div class="about-visual reveal">
           <div class="about-img-main">
-            <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80" alt="Elegantly plated dinner at <%= s('restaurant.name') %>" loading="lazy" />
+            <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=75" alt="Elegantly plated dinner at <%= s('restaurant.name') %>" loading="lazy" />
           </div>
           <div class="about-img-accent">
-            <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=800&q=80" alt="Warm candlelit tables at the lounge" loading="lazy" />
+            <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=600&q=70" alt="Warm candlelit tables at the lounge" loading="lazy" />
           </div>
           <div class="about-badge">
             <strong>7</strong>
-            <span data-i18n="about.badge">Days a week · open 7 AM – 10 PM</span>
+            <span data-i18n="about.badge">Days a week · open <%= hoursLabel.replace(/^Monday – Sunday · /, '') %></span>
           </div>
         </div>
 
@@ -580,8 +580,14 @@
   </div>
 
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
-    <button class="lightbox-close" data-close-lightbox aria-label="Close">
+    <button class="lightbox-close" data-close-lightbox aria-label="Close gallery">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <button class="lightbox-nav lightbox-prev" type="button" data-lightbox-prev aria-label="Previous image">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <button class="lightbox-nav lightbox-next" type="button" data-lightbox-next aria-label="Next image">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
     </button>
     <figure class="lightbox-figure">
       <img id="lightboxImg" src="" alt="" />

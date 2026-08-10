@@ -183,11 +183,17 @@ export function hoursMeta(hours: HourRow[]): string {
   return 'Open Daily';
 }
 
-/** Upgrades unsplash-style thumb URLs to a larger size (for lightbox / hero). */
+/** Rewrite an Unsplash-style URL to a given width & quality (returns URL unchanged if pattern doesn't match). */
+export function sizedImage(url: string | null, w: number, q: number): string {
+  if (!url) return '';
+  return url.replace(/(auto=format&fit=crop&)w=\d+&q=\d+/, `$1w=${w}&q=${q}`);
+}
+
+/** Upgrades unsplash-style thumb URLs to a larger size (for lightbox / hero slides). */
 export function fullImage(url: string | null): string {
   if (!url) return '';
   if (/auto=format&fit=crop&w=900&q=75/.test(url)) {
-    return url.replace('auto=format&fit=crop&w=900&q=75', 'auto=format&fit=crop&w=1600&q=80');
+    return url.replace('auto=format&fit=crop&w=900&q=75', 'auto=format&fit=crop&w=1600&q=75');
   }
   return url;
 }
@@ -362,7 +368,10 @@ export function buildPublicContent(db: DB, opts: { draft?: boolean } = {}): Publ
   ) as Settings;
   const s = (k: string, fallback = ''): string => settings[k] ?? fallback;
 
-  const dishes = dishesFromRows(dishesRaw);
+  const dishes = dishesFromRows(dishesRaw).map((d) => ({
+    ...d,
+    image_url: sizedImage(d.image_url, 600, 70),
+  }));
   const signature = dishes.filter((d) => d.type === 'signature');
   const bestsellers = dishes.filter((d) => d.type === 'bestseller');
   const reviews = reviewsFromRows(reviewsRaw);
@@ -376,20 +385,20 @@ export function buildPublicContent(db: DB, opts: { draft?: boolean } = {}): Publ
 
   const galleryFull = gallery.map((g) => ({ ...g, image_url: fullImage(g.image_url) }));
   const galleryItems = gallery.map((g, i) => ({
-    thumb: g.image_url,
+    thumb: sizedImage(g.image_url, 600, 70),
     full: galleryFull[i].image_url,
     alt: g.alt,
     is_featured: g.is_featured,
   }));
 
   const heroSlides: { image: string }[] = [];
-  const heroImage = s('hero.image');
+  const heroImage = sizedImage(s('hero.image'), 1600, 75);
   if (heroImage) heroSlides.push({ image: heroImage });
   for (const g of galleryFull.slice(0, 2)) heroSlides.push({ image: g.image_url });
   while (heroSlides.length < 3) {
     heroSlides.push({
       image:
-        'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1920&q=80',
+        'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1600&q=75',
     });
   }
 
@@ -405,7 +414,7 @@ export function buildPublicContent(db: DB, opts: { draft?: boolean } = {}): Publ
     'hero.meta2': hoursMetaLabel,
     'about.lead': s('restaurant.description'),
     'about.body': s('restaurant.about'),
-    'about.badge': 'Days a week · open 7 AM – 10 PM',
+    'about.badge': 'Days a week · open ' + hoursSummary(hours).replace(/^Monday – Sunday · /, ''),
     'visit.addr': address,
     'visit.hours': hoursLabel,
     'footer.tag': `${s('restaurant.cuisine')}. ${s('restaurant.tagline')}.`,

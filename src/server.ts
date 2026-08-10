@@ -124,6 +124,24 @@ export function createApp() {
     res.json({ ok: true, service: 'sutra-lounge', time: new Date().toISOString() });
   });
 
+  // ---- Branded 404 page (HTTP 404) ----
+  app.use('/admin', (_req, res) => {
+    res.status(404).send('Not found');
+  });
+  app.use((req: Request, res: Response) => {
+    res.status(404);
+    res.render('404', {
+      title: 'Page Not Found | Sutra Lounge',
+      description: 'The page you are looking for could not be found.',
+      canonical: '',
+      noindex: true,
+      pageCss: '',
+      year: new Date().getFullYear(),
+      assetsV: res.locals.assetsV,
+      requestHost: res.locals.requestHost,
+    });
+  });
+
   return app;
 }
 

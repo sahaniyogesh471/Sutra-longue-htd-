@@ -549,8 +549,13 @@ apiRouter.post('/revisions/restore', (req, res) => {
 apiRouter.post('/restore-original', (req, res) => {
   const db = getDb();
   const kind = String((req.body ?? {}).kind ?? '');
-  const id = toInt((req.body ?? {}).id);
-  if (!['settings', 'dishes', 'reviews', 'gallery', 'hours'].includes(kind) || !id) {
+  const rawId = (req.body ?? {}).id;
+  if (!['settings', 'dishes', 'reviews', 'gallery', 'hours'].includes(kind)) {
+    fail(res, 400, 'Invalid restore request.');
+    return;
+  }
+  const id = kind === 'hours' ? toInt(rawId, -1) : toInt(rawId);
+  if (kind === 'hours' ? id < 0 || id > 6 : !id) {
     fail(res, 400, 'Invalid restore request.');
     return;
   }

@@ -1,0 +1,1121 @@
+SUTRA LOUNGE — STRICT TARGETED FIX & OPTIMIZATION PROMPT
+
+ROLE
+
+You are a Senior Production Full-Stack Engineer, QA Engineer, SEO Engineer, Performance Engineer, Accessibility Engineer, and Regression-Test Specialist.
+
+You are working on the Sutra Lounge Main Website / User Panel.
+
+A complete QA audit has already been performed.
+
+Your task now is to implement ONLY the confirmed fixes and explicitly requested changes listed in this prompt.
+
+---
+
+🚨 ABSOLUTE RULE: DO NOT BREAK ANYTHING
+
+This is a targeted maintenance task, NOT a redesign, refactor, rewrite, modernization, or feature-expansion task.
+
+YOU MUST:
+
+- Preserve the existing design.
+- Preserve the existing UI.
+- Preserve the existing layout.
+- Preserve existing animations.
+- Preserve existing colors.
+- Preserve existing typography.
+- Preserve existing spacing.
+- Preserve existing content unless explicitly changed below.
+- Preserve existing navigation.
+- Preserve existing URLs/routes.
+- Preserve existing WhatsApp functionality.
+- Preserve existing reservation flow.
+- Preserve existing menu functionality.
+- Preserve existing theme functionality.
+- Preserve existing language functionality.
+- Preserve existing gallery functionality.
+- Preserve existing responsive behavior.
+- Preserve existing accessibility behavior.
+- Preserve existing security behavior.
+- Preserve existing working JavaScript.
+- Preserve existing server behavior unless explicitly required below.
+- Preserve the current technology stack.
+- Make the smallest safe changes necessary.
+
+DO NOT:
+
+- ❌ Redesign the website.
+- ❌ Change the visual style.
+- ❌ Replace the framework.
+- ❌ Rewrite the application.
+- ❌ Refactor unrelated code.
+- ❌ Rename unrelated files.
+- ❌ Change database structure unless absolutely required for an explicitly listed change.
+- ❌ Change Admin Panel code.
+- ❌ Modify Admin Panel functionality.
+- ❌ Modify Admin authentication.
+- ❌ Modify Admin APIs.
+- ❌ Modify Admin CRUD.
+- ❌ Add unnecessary dependencies.
+- ❌ Replace working components.
+- ❌ Change restaurant phone number.
+- ❌ Change WhatsApp number.
+- ❌ Change existing menu prices.
+- ❌ Change existing dishes.
+- ❌ Change existing social links.
+- ❌ Change existing map destination.
+- ❌ Change existing reservation message structure except where required for validation.
+- ❌ Remove working functionality.
+- ❌ "Improve" unrelated code.
+- ❌ Make speculative changes.
+
+---
+
+1. SCOPE
+
+You may modify ONLY:
+
+A. Five confirmed bugs from the QA report
+
+1. Reservation phone validation
+2. Reservation past-date validation
+3. Gallery lightbox previous/next navigation
+4. Missing Nepali translations
+5. Custom 404 page
+
+B. SEO improvements
+
+1. Canonical URLs
+2. Open Graph metadata
+3. Twitter/X card metadata if appropriate
+4. "robots.txt"
+5. "sitemap.xml"
+
+C. Performance improvements
+
+1. Optimize oversized homepage images
+2. Reduce unnecessary image transfer
+3. Preserve image visual quality
+4. Preserve layout and image appearance
+
+D. Explicit new content change
+
+Add/update Sutra Lounge operating hours:
+
+Sutra Lounge in Hetauda is open from 8:00 AM to 9:00 PM every day of the week.
+
+Display:
+
+Operating Hours
+Monday – Sunday: 8:00 AM – 9:00 PM
+
+This operating-hours information should be added wherever the website currently communicates restaurant hours, ONLY where such information logically belongs.
+
+Do not create unnecessary duplicate sections.
+
+---
+
+2. BEFORE CHANGING ANYTHING
+
+First inspect the existing project.
+
+Identify:
+
+- Frontend files
+- Server files
+- Main JavaScript
+- Main CSS
+- EJS/templates if used
+- Public assets
+- Existing SEO metadata
+- Existing routes
+- Existing 404 handling
+- Existing gallery implementation
+- Existing reservation form implementation
+- Existing i18n implementation
+- Existing image URLs
+- Existing operating-hours content
+
+Then create a precise internal change plan.
+
+IMPORTANT:
+
+Do not start editing immediately.
+
+Understand how each feature currently works so that fixes can be minimal and isolated.
+
+---
+
+3. BUG FIX #1 — RESERVATION PHONE VALIDATION
+
+Current confirmed problem
+
+The reservation form currently accepts obviously invalid values such as:
+
+"123"
+
+The current JavaScript checks whether the field is non-empty but does not properly validate the phone format.
+
+Required fix
+
+Implement proper client-side phone validation.
+
+The validator must:
+
+- Reject empty values.
+- Reject obviously invalid short numbers.
+- Accept legitimate phone formats.
+- Allow reasonable formatting such as:
+  - digits
+  - spaces
+  - "+"
+  - "-"
+  - parentheses where reasonable
+- Avoid rejecting legitimate international numbers unnecessarily.
+
+Use a reasonable validation rule such as a normalized digit count of approximately 7–15 digits, unless the existing site's intended phone format requires something more appropriate.
+
+Required behavior
+
+Invalid:
+
+"123"
+
+should NOT open WhatsApp.
+
+Instead:
+
+- Show the existing form error UI.
+- Keep the user on the form.
+- Do not generate a WhatsApp reservation URL.
+- Do not lose entered data.
+
+Valid input should continue using the existing WhatsApp reservation flow exactly as before.
+
+IMPORTANT
+
+Do NOT change:
+
+- WhatsApp number
+- WhatsApp message structure
+- reservation fields
+- reservation design
+- form layout
+
+Only strengthen validation.
+
+---
+
+4. BUG FIX #2 — RESERVATION DATE VALIDATION
+
+Current confirmed problem
+
+The date input has a minimum date set to today, but the custom submit handler does not enforce it.
+
+Therefore a past date such as:
+
+"2020-01-01"
+
+can still be submitted.
+
+Required fix
+
+Enforce the existing minimum-date rule in JavaScript.
+
+When the user submits:
+
+If date < today:
+
+- Reject submission.
+- Show the existing validation error state.
+- Do NOT open WhatsApp.
+- Do NOT create the reservation message.
+
+If date == today:
+
+Allow it.
+
+If date > today:
+
+Allow it.
+
+Use the user's local browser date appropriately.
+
+Do not introduce timezone-related bugs.
+
+IMPORTANT
+
+Preserve:
+
+- existing date picker
+- existing styling
+- existing form layout
+- existing reservation flow
+- existing WhatsApp message
+
+Only fix the missing validation enforcement.
+
+---
+
+5. BUG FIX #3 — GALLERY LIGHTBOX NAVIGATION
+
+Current confirmed problem
+
+The gallery lightbox opens individual images but does not provide:
+
+- Previous button
+- Next button
+- ArrowLeft keyboard navigation
+- ArrowRight keyboard navigation
+
+Required fix
+
+Add proper gallery navigation.
+
+Required functionality
+
+When a gallery image is opened:
+
+- Show the selected image.
+- Track the current gallery index.
+
+Add:
+
+Previous button
+
+Moves to previous image.
+
+Next button
+
+Moves to next image.
+
+Keyboard:
+
+"ArrowLeft" → previous image
+
+"ArrowRight" → next image
+
+"Escape" → close lightbox
+
+Circular navigation
+
+Prefer:
+
+- Previous from first image → last image
+- Next from last image → first image
+
+unless the existing design strongly indicates otherwise.
+
+Preserve existing behavior
+
+The following MUST continue working:
+
+- Clicking gallery image opens lightbox.
+- Image appears correctly.
+- Caption appears correctly.
+- Close button works.
+- Backdrop close works.
+- Escape closes.
+- Existing gallery images remain unchanged.
+- Existing image ordering remains unchanged.
+
+Accessibility
+
+Navigation controls must include appropriate accessible names, e.g.:
+
+- "aria-label="Previous image""
+- "aria-label="Next image""
+- "aria-label="Close gallery""
+
+Do not introduce keyboard traps.
+
+Do not break existing focus behavior.
+
+Visual requirement
+
+The new buttons MUST match the existing Sutra Lounge visual design.
+
+Do NOT redesign the lightbox.
+
+---
+
+6. BUG FIX #4 — COMPLETE NEPALI TRANSLATION
+
+Current confirmed problem
+
+Nepali mode leaves these four strings in English:
+
+1. "Call"
+2. "Reserve"
+3. "WhatsApp"
+4. "Made with flavour in Hetauda"
+
+Required fix
+
+Add Nepali translations for these missing i18n keys.
+
+Use natural, user-friendly Nepali appropriate for a restaurant website.
+
+Ensure:
+
+- English mode remains unchanged.
+- Nepali mode displays Nepali text.
+- "<html lang>" behavior remains unchanged.
+- Existing 100+ translations remain unchanged.
+- No translation keys are removed.
+- No unrelated text is translated unexpectedly.
+
+After fixing, inspect the complete visible homepage in Nepali mode and verify that the known four fallback strings are no longer English.
+
+---
+
+7. BUG FIX #5 — CUSTOM 404 PAGE
+
+Current confirmed problem
+
+Unknown routes currently return the default Express response:
+
+"Cannot GET /nonexistent"
+
+Required fix
+
+Implement a proper branded Sutra Lounge 404 page.
+
+Requirements
+
+Unknown URL:
+
+"/some-invalid-route"
+
+must return:
+
+- HTTP status "404"
+- A proper Sutra Lounge branded page
+- Existing visual language
+- Clear "Page Not Found" message
+- Helpful explanation
+- A working button/link to return to homepage
+
+IMPORTANT
+
+The server MUST still return actual HTTP status:
+
+"404"
+
+Do NOT return HTTP 200 for missing pages.
+
+Preserve
+
+- Existing valid routes
+- "/"
+- "/menu.html"
+- "/index.html" behavior
+- Static assets
+- Admin routes
+- Existing server behavior
+
+ADMIN PANEL RULE
+
+Do not accidentally route Admin Panel URLs through the public 404 handler.
+
+Do not modify Admin routes.
+
+If there are protected/admin-specific routes, preserve their existing behavior exactly.
+
+---
+
+8. SEO FIX #1 — CANONICAL URLS
+
+Add appropriate canonical URLs to public pages.
+
+At minimum verify:
+
+- Homepage
+- "/menu.html"
+
+Canonical URLs must point to the preferred public URL.
+
+Do not create incorrect canonical URLs.
+
+Do not canonicalize Admin Panel pages.
+
+Do not invent a domain.
+
+If the production domain is already defined in project configuration, use it.
+
+If a production domain cannot be determined from the project, inspect existing configuration rather than inventing one.
+
+---
+
+9. SEO FIX #2 — OPEN GRAPH
+
+Add appropriate Open Graph metadata to public pages.
+
+At minimum:
+
+- "og:title"
+- "og:description"
+- "og:type"
+- "og:url"
+- "og:image"
+
+Use existing Sutra Lounge branding/images where appropriate.
+
+Do NOT add random external images.
+
+Do NOT create new branding.
+
+Ensure:
+
+- Homepage metadata represents Sutra Lounge.
+- Menu page metadata represents the digital menu.
+- URLs are correct.
+
+---
+
+10. SEO FIX #3 — TWITTER/X CARD
+
+If appropriate for the existing website, add:
+
+- "twitter:card"
+- "twitter:title"
+- "twitter:description"
+- "twitter:image"
+
+Use existing metadata consistently.
+
+Do not add unnecessary scripts or third-party libraries.
+
+---
+
+11. SEO FIX #4 — ROBOTS.TXT
+
+Create:
+
+"/robots.txt"
+
+It must be valid.
+
+The public website should be crawlable.
+
+Admin/private routes should NOT be unnecessarily exposed to search engines.
+
+If the project already has known Admin routes, prevent crawling of those routes where appropriate.
+
+Do not block:
+
+- Homepage
+- Public menu
+- Public restaurant content
+- Public assets required for rendering
+
+---
+
+12. SEO FIX #5 — SITEMAP.XML
+
+Create:
+
+"/sitemap.xml"
+
+Include only valid public URLs.
+
+At minimum include:
+
+- Homepage
+- Public menu page
+
+Do NOT include:
+
+- Admin login
+- Admin dashboard
+- Admin-only routes
+- API endpoints
+- Random nonexistent routes
+
+Use the correct production origin determined from the project configuration.
+
+Do not invent URLs.
+
+---
+
+13. PERFORMANCE OPTIMIZATION
+
+Confirmed issue
+
+Homepage transfer is approximately 2.1 MB.
+
+Large images are a major contributor.
+
+The audit identified large images including approximately:
+
+- 379 KB
+- 318 KB
+- 237 KB
+
+Required goal
+
+Reduce unnecessary image transfer while preserving visual quality.
+
+Safely optimize:
+
+- Hero images
+- Above-the-fold images
+- Large Unsplash images
+- Other oversized public images where safe
+
+Prefer:
+
+- Appropriate image dimensions
+- Responsive image URLs
+- "srcset" / "sizes" where appropriate
+- Correct "width" and "height"
+- Existing lazy loading
+- Proper compression
+- Smaller image variants for smaller screens
+
+IMPORTANT
+
+Do NOT:
+
+- Replace images with unrelated images.
+- Make images visibly blurry.
+- Change image composition unnecessarily.
+- Remove important images.
+- Break lazy loading.
+- Break hero rendering.
+- Break gallery.
+- Break menu images.
+- Break quick-view images.
+
+The website must look visually equivalent after optimization.
+
+---
+
+14. OPERATING HOURS — EXPLICIT CONTENT CHANGE
+
+Add the following official information to the Main Website:
+
+Sutra Lounge in Hetauda is open from 8:00 AM to 9:00 PM every day of the week.
+
+Display:
+
+Operating Hours
+Monday – Sunday: 8:00 AM – 9:00 PM
+
+Placement
+
+Place the information naturally in the existing restaurant information/contact/visit area.
+
+If the website already has an operating-hours field or section, update that existing location instead of creating a duplicate.
+
+If multiple existing public locations display restaurant hours, keep them consistent.
+
+IMPORTANT
+
+The exact hours are:
+
+Monday – Sunday: 8:00 AM – 9:00 PM
+
+Do not invent different hours for:
+
+- Saturday
+- Sunday
+- Holidays
+- Lunch
+- Dinner
+
+Do not add unsupported holiday exceptions.
+
+Do not modify other restaurant contact information.
+
+---
+
+15. NO UNAUTHORIZED CONTENT CHANGES
+
+Except for the operating hours explicitly requested above, do NOT change:
+
+- Restaurant name
+- Address
+- Phone number
+- WhatsApp number
+- Email
+- Menu prices
+- Dish names
+- Dish descriptions
+- Social links
+- Map destination
+- Reviews
+- Existing English translations
+- Existing Nepali translations except the four missing keys
+- Images
+- Branding
+
+---
+
+16. REGRESSION PROTECTION
+
+After making changes, perform a complete regression test.
+
+You MUST verify that the fixes did not break previously working functionality.
+
+Test at minimum:
+
+Homepage
+
+- Page loads
+- Header
+- Logo
+- Navigation
+- Scroll navigation
+- Scroll spy
+- Hamburger
+- Theme toggle
+- Language toggle
+- Hero slider
+- Hero CTAs
+- Video modal
+- Bestsellers tabs
+- Quick View
+- WhatsApp ordering
+- Gallery
+- New gallery navigation
+- Lightbox close
+- Reservation form
+- Phone validation
+- Date validation
+- Google Maps
+- Contact
+- Footer
+- Back-to-top
+
+Menu page
+
+- Page loads
+- Theme toggle
+- Call button
+- Home button
+- Dish display
+- All WhatsApp ordering buttons
+- Complete menu WhatsApp CTA
+- Reservation CTA
+- Visit/location content
+
+Responsive
+
+Test:
+
+- 320px
+- 360px
+- 390px
+- 768px
+- 1024px
+- 1280px+
+
+Check:
+
+- No horizontal overflow
+- No overlapping
+- No cropped content
+- No broken buttons
+- No broken modal
+- No broken lightbox
+- No broken mobile menu
+
+---
+
+17. FORM REGRESSION TESTS
+
+After fixing validation, run all of these:
+
+Test 1
+
+Empty form → rejected.
+
+Test 2
+
+Valid phone + today → accepted.
+
+Test 3
+
+Valid phone + future date → accepted.
+
+Test 4
+
+Phone = "123" → rejected.
+
+Test 5
+
+Past date → rejected.
+
+Test 6
+
+Valid international-style phone → accepted if within reasonable valid format.
+
+Test 7
+
+Special characters in name/note → safely encoded.
+
+Test 8
+
+Optional guests/note → existing behavior preserved.
+
+Test 9
+
+Successful submission → WhatsApp destination remains:
+
+"97757522111"
+
+Do NOT change the WhatsApp number.
+
+---
+
+18. GALLERY REGRESSION TESTS
+
+Test:
+
+1. Open first image.
+2. Next → second image.
+3. Next repeatedly.
+4. Previous.
+5. Previous from first → last if circular navigation is implemented.
+6. ArrowLeft.
+7. ArrowRight.
+8. Escape.
+9. Backdrop click.
+10. Close button.
+11. Open another thumbnail after closing.
+
+Verify:
+
+- Correct image
+- Correct caption
+- No broken image
+- No console error
+- No layout shift
+- No stuck modal
+
+---
+
+19. LANGUAGE REGRESSION TEST
+
+English
+
+Everything remains correct.
+
+Nepali
+
+Verify:
+
+- Existing translations remain.
+- The four missing strings are translated.
+- No visible fallback to English for those four keys.
+- No layout overflow caused by Nepali text.
+- Mobile bottom bar remains usable.
+
+---
+
+20. SEO REGRESSION
+
+Verify:
+
+Homepage
+
+- Title
+- Description
+- Canonical
+- OG tags
+- Twitter/X tags
+
+Menu
+
+- Title
+- Description
+- Canonical
+- OG tags
+- Twitter/X tags
+
+robots.txt
+
+HTTP 200 and valid content.
+
+sitemap.xml
+
+HTTP 200 and valid XML.
+
+404
+
+HTTP 404.
+
+Do not allow SEO additions to break rendering.
+
+---
+
+21. PERFORMANCE REGRESSION
+
+After optimization:
+
+- All images must still load.
+- Hero must still load correctly.
+- Gallery must still work.
+- Menu images must still work.
+- Quick View must still work.
+- No broken asset URLs.
+- No 404 image requests.
+- No failed network requests.
+- No unexpected visual quality degradation.
+
+Measure transfer size if tooling permits.
+
+Report before vs after.
+
+Do NOT fabricate performance numbers.
+
+---
+
+22. CONSOLE / NETWORK REQUIREMENT
+
+After all changes:
+
+There must be:
+
+- No new JavaScript errors.
+- No unhandled exceptions.
+- No broken image requests.
+- No failed CSS requests.
+- No failed JS requests.
+- No broken internal resources.
+
+Existing harmless browser-generated warnings should not be falsely classified as site bugs.
+
+---
+
+23. SECURITY REGRESSION
+
+Verify that changes did not introduce:
+
+- XSS
+- unsafe HTML rendering
+- exposed secrets
+- unsafe redirects
+- unsafe external links
+- broken "noopener"
+- unintended form data exposure
+
+Do not perform destructive testing.
+
+Do not attack the Admin Panel.
+
+---
+
+24. ADMIN PANEL ABSOLUTE EXCLUSION
+
+This is critical.
+
+DO NOT:
+
+- Test Admin Panel functionality.
+- Change Admin Panel.
+- Refactor Admin code.
+- Modify Admin authentication.
+- Modify Admin routes.
+- Modify Admin database logic.
+- Modify Admin CRUD.
+- Modify Admin API.
+- Change Admin styling.
+
+The Admin Panel is OUT OF SCOPE.
+
+If your changes could potentially affect shared server routing, carefully ensure Admin routes continue functioning, but do not perform an Admin QA audit.
+
+---
+
+25. CHANGE MINIMIZATION RULE
+
+For every modification ask:
+
+«"Is this change explicitly required by this prompt?"»
+
+If NO:
+
+DO NOT MAKE THE CHANGE.
+
+Do not clean up unrelated code.
+
+Do not rename variables for style.
+
+Do not reorganize folders.
+
+Do not upgrade dependencies.
+
+Do not refactor unrelated functions.
+
+Do not change formatting across unrelated files.
+
+Do not optimize code that is not connected to these requirements.
+
+---
+
+26. BUILD VERIFICATION
+
+After implementation:
+
+1. Run the project's existing build command.
+2. Ensure build succeeds.
+3. Start the production build.
+4. Test the production build, not only development mode.
+5. Verify all public routes.
+6. Verify all modified functionality.
+
+If the project has existing lint/type-check commands, run them.
+
+Do not introduce new tooling solely for this task.
+
+---
+
+27. FINAL QA REPORT
+
+After completing the work, provide a concise but evidence-based report.
+
+Use exactly this structure:
+
+IMPLEMENTATION SUMMARY
+
+List every change made.
+
+FILES MODIFIED
+
+List only files actually modified.
+
+For each file explain why.
+
+FIVE BUGS
+
+Bug| Fixed?| Verification
+Phone validation| ✅/❌| 
+Past-date validation| ✅/❌| 
+Gallery navigation| ✅/❌| 
+Nepali translations| ✅/❌| 
+Custom 404| ✅/❌| 
+
+SEO
+
+Item| Status
+Canonical| 
+Open Graph| 
+Twitter/X| 
+robots.txt| 
+sitemap.xml| 
+
+PERFORMANCE
+
+Report:
+
+- Before transfer size if measured
+- After transfer size if measured
+- Difference
+- Images optimized
+- Any visual-quality concerns
+
+Never invent numbers.
+
+OPERATING HOURS
+
+Confirm:
+
+Monday – Sunday: 8:00 AM – 9:00 PM
+
+REGRESSION TEST
+
+Report:
+
+- Pages tested
+- Viewports tested
+- Buttons tested
+- Forms tested
+- Gallery tested
+- Language tested
+- Console status
+- Network status
+- Build status
+
+UNRELATED CHANGES
+
+State explicitly:
+
+No unrelated functionality was intentionally modified.
+
+If anything outside scope was changed because it was technically unavoidable, explain exactly what and why.
+
+---
+
+28. FINAL PASS/FAIL RULE
+
+The implementation is NOT considered complete until:
+
+Five bugs:
+
+- Phone validation works.
+- Past date is rejected.
+- Gallery has working navigation.
+- Four missing Nepali translations are fixed.
+- Custom branded 404 exists with HTTP 404.
+
+SEO:
+
+- Canonical metadata implemented correctly.
+- OG metadata implemented correctly.
+- Twitter/X metadata implemented where appropriate.
+- robots.txt works.
+- sitemap.xml works.
+
+Performance:
+
+- Image transfer is meaningfully optimized where safely possible.
+- No broken images.
+- No visible quality regression.
+
+Operating hours:
+
+- Public website clearly states:
+
+Monday – Sunday: 8:00 AM – 9:00 PM
+
+Regression:
+
+- Existing functionality remains working.
+- No new console errors.
+- No failed requests.
+- No responsive regressions.
+- Production build succeeds.
+
+---
+
+29. ABSOLUTE FINAL INSTRUCTION
+
+FIX ONLY WHAT THIS PROMPT REQUESTS.
+
+Do not turn this into a redesign.
+
+Do not add features.
+
+Do not rewrite the website.
+
+Do not modify the Admin Panel.
+
+Do not change existing working behavior unnecessarily.
+
+Do not hide failures.
+
+Do not claim a fix is complete without testing it.
+
+Do not assume.
+
+Implement → Build → Test → Regression Test → Report.
+
+If a requested change cannot safely be implemented without affecting existing functionality, STOP and report the exact conflict instead of making a risky unrelated change.
+
+The goal is:
+
+«Make the five confirmed bugs disappear, implement the requested SEO/performance improvements, add the exact operating hours, and leave every other working part of Sutra Lounge unchanged.»
+
+NO UNAUTHORIZED CHANGES.

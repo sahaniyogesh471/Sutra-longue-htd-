@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <%- include('partials/head', { title: title, description: description, pageCss: pageCss, canonical: canonical, noindex: noindex }); %>
+</head>
+<body class="error-page">
+
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="preloader-inner">
+      <span class="preloader-mark">S</span>
+      <span class="preloader-name">SUTRA LOUNGE</span>
+      <span class="preloader-line"></span>
+    </div>
+  </div>
+
+  <!-- ============ HEADER ============ -->
+  <header class="header" id="header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="<%= typeof s === 'function' ? s('restaurant.name') : 'Sutra Lounge' %> — back to home">
+        <span class="brand-mark">S</span>
+        <span class="brand-text">
+          <strong>SUTRA</strong>
+          <em>LOUNGE</em>
+        </span>
+      </a>
+      <div class="header-tools">
+        <a href="/" class="btn btn-gold nav-reserve">Back to Home</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="error-404">
+      <div class="container">
+        <div class="error-code">404</div>
+        <h1 class="error-title">Page Not Found</h1>
+        <p class="error-sub">The page you are looking for has been misplaced — perhaps it slipped off the platter.</p>
+        <p class="error-desc">Try the homepage, browse the signature dishes, or check the full digital menu.</p>
+        <div class="error-cta">
+          <a href="/" class="btn btn-gold">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
+            Return to Homepage
+          </a>
+          <a href="/menu.html" class="btn btn-ghost">Explore the Menu</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>© <%= year %> <%= typeof s === 'function' ? s('restaurant.name') : 'Sutra Lounge' %>. All rights reserved.</p>
+        <p>Made with flavour in Hetauda</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var preloader = document.getElementById('preloader');
+      if (preloader) {
+        setTimeout(function () { preloader.classList.add('is-hidden'); }, 350);
+        setTimeout(function () { preloader.style.display = 'none'; }, 1200);
+      }
+    })();
+  </script>
+</body>
+</html>
