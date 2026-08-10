@@ -1,0 +1,590 @@
+SUTRA LOUNGE — STRICT CONTINUATION / REVISION PROMPT
+
+Resume Existing Work — DO NOT RESTART
+
+You are taking over an existing Sutra Lounge website task from another MonkeyCode AI account whose daily quota was exhausted.
+
+The repository and code are already present in:
+
+"/workspace"
+
+The GitHub repository is the existing Sutra Lounge repository. Do not create a new project, do not rebuild the website, and do not replace working code.
+
+Your job is to continue from the exact current state of the repository, verify what the previous AI completed, finish the remaining verification, and make only necessary targeted corrections.
+
+---
+
+1. CRITICAL HANDOVER CONTEXT
+
+The previous MonkeyCode AI account already performed substantial work and verification.
+
+Its last known work included:
+
+Hours requirement
+
+Sutra Lounge in Hetauda must be:
+
+Monday – Sunday · 8:00 AM – 9:00 PM
+
+The database was verified as:
+
+- Current opening hours: "08:00–21:00"
+- Baseline opening hours: "08:00–21:00"
+
+The previous AI also updated the static homepage About badge so that it matches the JavaScript-rendered value and avoids a visible text flash/change on page load.
+
+Expected English badge:
+
+"Days a week · open 8:00 AM – 9:00 PM"
+
+The Nepali translation remains appropriate.
+
+---
+
+2. CHANGES ALREADY PERFORMED — DO NOT REPEAT BLINDLY
+
+The previous AI worked on:
+
+"views/index.ejs"
+
+The static About badge was changed so it matches the JS-applied English i18n value:
+
+"Days a week · open 8:00 AM – 9:00 PM"
+
+This was done specifically to prevent static HTML from displaying one value and JavaScript from immediately changing it to another value.
+
+"js/main.js"
+
+The English fallback:
+
+"about.badge"
+
+was updated from the shorter:
+
+"Days a week · open 8 AM – 9 PM"
+
+to the consistent:
+
+"Days a week · open 8:00 AM – 9:00 PM"
+
+The Nepali value was intentionally left as its proper Nepali translation.
+
+Runtime database
+
+The previous AI verified:
+
+- "opening_hours" = 08:00–21:00
+- "opening_hours_baseline" = 08:00–21:00
+- Gallery = 8/8 URLs matched the expected "w=900&q=75" pattern
+- Dish source images use "w=800"
+- Render-time image processing downsizes dishes appropriately to approximately "w=600&q=70"
+
+Image optimization
+
+The previous AI verified homepage images were optimized, including:
+
+- About main image
+- About accent image
+- Gallery thumbnails
+- Dish images
+- Menu hero
+
+It also verified the lightbox full-size image mechanism.
+
+JavaScript
+
+The previous AI ran:
+
+"node --check js/main.js"
+
+and it passed.
+
+It also inspected:
+
+- bestseller tabs
+- quickview logic
+- lightbox logic
+- referenced DOM elements
+- menu inline i18n
+- "contact.alt"
+- admin preview routing
+- catch-all 404 placement
+- robots
+- sitemap
+- canonical/OG-related behavior
+
+---
+
+3. WHERE THE PREVIOUS AI STOPPED
+
+The final command attempted to verify that:
+
+- "/sitemap.xml"
+- "/robots.txt"
+
+correctly use the incoming request host rather than a hardcoded localhost/incorrect host.
+
+The command failed because the MonkeyCode environment returned:
+
+"Payment Required: Insufficient credits"
+
+This was a tool/quota failure — NOT evidence that the website itself is broken.
+
+Therefore, continue from here.
+
+---
+
+4. FIRST ACTION — INSPECT, DON'T EDIT
+
+Before changing ANYTHING:
+
+1. Inspect the current git status.
+2. Inspect recent git diff.
+3. Inspect the relevant files.
+4. Determine exactly which changes from the previous AI are already present.
+5. Do not assume the handover is perfect.
+6. Do not blindly reapply edits.
+
+Run appropriate commands such as:
+
+cd /workspace
+git status --short
+git diff --stat
+git diff
+
+Then inspect the relevant files:
+
+src/content.ts
+views/index.ejs
+js/main.js
+src/db/seed.ts
+
+Also inspect the current database schema/data if necessary.
+
+---
+
+5. IMPORTANT: PRESERVE EXISTING WORK
+
+This is a continuation task.
+
+DO NOT:
+
+- rebuild the website
+- redesign the website
+- change the visual design
+- replace existing components
+- migrate frameworks
+- change database technology
+- change authentication
+- change admin architecture
+- rewrite unrelated JavaScript
+- refactor unrelated code
+- change working routes
+- change working translations
+- change image sources unnecessarily
+- install unnecessary dependencies
+- modify package versions without a demonstrated need
+- make speculative "improvements"
+- fix things that are not actually broken
+
+ONLY:
+
+- verify
+- identify genuine remaining issues
+- make minimal targeted fixes
+- regression-test every affected area
+
+---
+
+6. COMPLETE THE REMAINING VERIFICATION
+
+Continue the final regression test.
+
+A. Sitemap
+
+Verify:
+
+/sitemap.xml
+
+Ensure:
+
+- HTTP status is correct
+- XML is valid
+- URLs use the correct request host
+- no "localhost" URLs are exposed
+- no incorrect preview hostname is hardcoded
+- production behavior remains correct
+
+Test with the available local server and appropriate Host header.
+
+---
+
+7. ROBOTS.TXT
+
+Verify:
+
+/robots.txt
+
+Ensure:
+
+- correct HTTP status
+- valid robots content
+- sitemap reference is correct
+- no accidental localhost URL
+- no accidental preview-only URL
+- no important page is incorrectly blocked
+
+Do not change it unless an actual problem is found.
+
+---
+
+8. FULL ROUTE REGRESSION
+
+Check all important public routes.
+
+At minimum inspect/test:
+
+/
+ /menu.html
+ /robots.txt
+ /sitemap.xml
+
+Also verify relevant admin routes exist and that unauthenticated users are correctly redirected to authentication rather than receiving accidental 404s.
+
+The previous AI observed that "/admin/preview" returning "302" to login was correct behavior.
+
+Do not remove or bypass authentication.
+
+---
+
+9. HOURS — STRICT REQUIREMENT
+
+The ONLY required operating hours are:
+
+Monday – Sunday · 8:00 AM – 9:00 PM
+
+Verify consistency across:
+
+- server-rendered homepage
+- JavaScript/i18n
+- English content
+- Nepali content
+- database
+- admin hours data
+- any structured/SEO data where opening hours are represented
+- relevant contact/about sections
+
+There must not be stale:
+
+- "7 AM – 10 PM"
+- "7:00 AM – 10:00 PM"
+- "8 AM – 9 PM" where the exact "8:00 AM – 9:00 PM" format is required
+- other contradictory hours
+
+However, do not unnecessarily change Nepali localized wording simply to make it English-like.
+
+---
+
+10. I18N CONSISTENCY
+
+Verify:
+
+English
+
+Expected hours presentation:
+
+"8:00 AM – 9:00 PM"
+
+Nepali
+
+Use the existing proper Nepali translation for the same hours.
+
+Check that:
+
+- static HTML
+- JS dictionary
+- overrides
+- server-rendered content
+
+do not fight each other.
+
+Most importantly, avoid this type of bug:
+
+Server HTML:
+Monday – Sunday · 8:00 AM – 9:00 PM
+
+JavaScript after load:
+Days a week · open 8:00 AM – 9:00 PM
+
+if that creates a visible flash.
+
+---
+
+11. IMAGE OPTIMIZATION REGRESSION
+
+Verify that image optimization remains intact.
+
+Expected general behavior from the previous work:
+
+- gallery render images approximately "w=600&q=70" or appropriate thumbnail dimensions
+- gallery full images approximately "w=1600" where applicable
+- about main image approximately "w=900&q=75"
+- about accent approximately "w=600&q=70"
+- dish render images approximately "w=600&q=70"
+- menu hero appropriately optimized
+
+Do NOT replace images merely to optimize them.
+
+Do NOT change image URLs unless a real optimization or functionality issue exists.
+
+---
+
+12. LIGHTBOX
+
+Verify the gallery lightbox logic.
+
+Check:
+
+- opening a gallery image works
+- full-size image URL is valid
+- next works
+- previous works
+- close works
+- keyboard behavior if implemented
+- accessibility attributes remain correct
+- no JS errors are introduced
+
+If a real browser/headless browser is unavailable, perform the strongest static/runtime verification possible and explicitly report that limitation.
+
+Do not claim browser-level testing was performed if it was not.
+
+---
+
+13. BESTSELLERS / QUICKVIEW
+
+Verify:
+
+- bestseller tabs
+- dish rendering
+- quickview
+- relevant buttons
+- modal open/close behavior
+- missing DOM element handling
+- JavaScript references
+
+Again, do not redesign or refactor.
+
+---
+
+14. SECURITY REGRESSION
+
+Do not weaken security.
+
+Verify that:
+
+- admin authentication still exists
+- unauthenticated admin access redirects appropriately
+- admin routes are not exposed accidentally
+- catch-all 404 does not shadow admin routes
+- no secrets are hardcoded into public frontend code
+- no debugging information is unnecessarily exposed
+
+Do not change authentication unless an actual security defect is discovered.
+
+---
+
+15. SEO / PERFORMANCE REGRESSION
+
+Verify existing:
+
+- canonical URL behavior
+- Open Graph metadata
+- robots
+- sitemap
+- page titles
+- relevant descriptions
+- structured data if present
+- optimized image URLs
+
+Do not add speculative SEO features.
+
+Do not alter working metadata without a reason.
+
+---
+
+16. SERVER / BUILD VALIDATION
+
+Run appropriate checks such as:
+
+node --check js/main.js
+
+and whatever existing project build/test/typecheck commands are already defined in "package.json".
+
+First inspect:
+
+cat package.json
+
+Then use the project's existing scripts.
+
+Do not install unnecessary packages just to create a test environment.
+
+---
+
+17. DATABASE VALIDATION
+
+Inspect the actual current database.
+
+Confirm:
+
+opening_hours
+opening_hours_baseline
+gallery
+dishes
+
+where relevant.
+
+Do not recreate or reset the database.
+
+Do not seed over production/runtime data unless explicitly necessary.
+
+---
+
+18. GIT SAFETY
+
+Before editing:
+
+git status --short
+
+After editing:
+
+git diff --check
+git diff
+git status --short
+
+Review every changed line.
+
+There must be no accidental:
+
+- debug files
+- temporary files
+- generated junk
+- credentials
+- logs
+- unrelated formatting changes
+- massive unrelated rewrites
+
+---
+
+19. STRICT CHANGE-MINIMIZATION RULE
+
+If everything is already correct:
+
+MAKE ZERO CODE CHANGES.
+
+A clean verification is a valid result.
+
+Do NOT manufacture changes simply because the task says "continue."
+
+If something is wrong:
+
+1. identify exact defect
+2. explain why it is wrong
+3. make the smallest possible fix
+4. test it
+5. regression-test affected functionality
+
+---
+
+20. DO NOT TRUST THE HANDOVER BLINDLY
+
+The previous AI's reasoning is useful context, but you must independently verify the repository.
+
+For example, if the previous AI said:
+
+«"All good"»
+
+you must still inspect the actual current code.
+
+The source of truth is:
+
+the current repository + current runtime behavior.
+
+---
+
+21. FINAL REPORT REQUIRED
+
+At the end, provide a concise but honest report with these sections:
+
+Completed
+
+List exactly what was already complete and what you verified.
+
+Fixed During This Session
+
+Only list actual changes made by you.
+
+If no changes were necessary, explicitly say:
+
+"No code changes were necessary."
+
+Verified
+
+Include:
+
+- hours
+- i18n
+- database
+- routes
+- sitemap
+- robots
+- images
+- lightbox
+- bestseller/quickview
+- JS syntax
+- SEO
+- security
+- admin route protection
+
+Limitations
+
+Clearly state anything that could not be tested because of environment limitations.
+
+For example:
+
+"Full browser interaction testing was not available; static/runtime verification was performed instead."
+
+Never claim a browser test was performed unless it actually was.
+
+Git Status
+
+Report whether there are:
+
+- modified files
+- untracked files
+- staged files
+
+Do not commit or push unless explicitly instructed.
+
+---
+
+22. MOST IMPORTANT INSTRUCTION
+
+You are NOT starting a new task.
+
+You are taking over an almost-completed task after another AI ran out of quota.
+
+Therefore:
+
+CONTINUE → INSPECT → VERIFY → FIX ONLY REAL ISSUES → REGRESSION TEST → REPORT
+
+Do not restart.
+
+Do not redesign.
+
+Do not over-engineer.
+
+Do not make unrelated changes.
+
+Do not claim success without verification.
+
+Be strict, conservative, honest, and evidence-based.
