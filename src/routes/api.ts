@@ -11,6 +11,7 @@ import {
   deleteDishDraft,
   saveReviewDraft,
   deleteReviewDraft,
+  reviewPublishProblems,
   saveGalleryDraft,
   deleteGalleryDraft,
   saveHoursDraft,
@@ -247,10 +248,17 @@ apiRouter.post('/reviews/save', (req, res) => {
   const errors: VErr = {};
   const name = String(b.name ?? '').trim();
   const text = String(b.text ?? '').trim();
+  const nameNp = String(b.name_np ?? '').trim();
+  const textNp = String(b.text_np ?? '').trim();
+  const isVisible = boolInt(b.is_visible);
   errors.name = required(name) ?? maxLen(name, 80) ?? undefined;
   errors.text = required(text) ?? maxLen(text, 800) ?? undefined;
-  errors.name_np = maxLen(b.name_np, 80) ?? undefined;
-  errors.text_np = maxLen(b.text_np, 800) ?? undefined;
+  errors.name_np = maxLen(nameNp, 80) ?? undefined;
+  errors.text_np = maxLen(textNp, 800) ?? undefined;
+  if (isVisible) {
+    if (!nameNp) errors.name_np = 'Reviewer name (नेपाली) is required for a visible review.';
+    if (!textNp) errors.text_np = 'Review text (नेपाली) is required for a visible review.';
+  }
   errors.rating = isIntRange(toInt(b.rating), 1, 5) ?? undefined;
   errors.image_url = isUrl(b.image_url, true) ?? undefined;
   errors.sort_order = isIntRange(toInt(b.sort_order), -9999, 9999) ?? undefined;
@@ -267,11 +275,11 @@ apiRouter.post('/reviews/save', (req, res) => {
     row_id: rowId,
     name,
     text,
-    name_np: optStr(b.name_np, 80) ?? '',
-    text_np: optStr(b.text_np, 800) ?? '',
+    name_np: nameNp,
+    text_np: textNp,
     rating: toInt(b.rating, 5),
     image_url: optStr(b.image_url, 500),
-    is_visible: boolInt(b.is_visible),
+    is_visible: isVisible,
     sort_order: toInt(b.sort_order),
   };
 
@@ -507,6 +515,15 @@ apiRouter.get('/status', (_req, res) => {
 
 apiRouter.post('/publish', (req, res) => {
   const db = getDb();
+  const problems = reviewPublishProblems(db);
+  if (problems.length) {
+    res.status(400).json({
+      ok: false,
+      error: 'Cannot publish — some visible reviews are incomplete.',
+      problems,
+    });
+    return;
+  }
   const result = publishAll(db, ADMIN(res));
   ok(res, { published: result.published, count: result.count });
 });

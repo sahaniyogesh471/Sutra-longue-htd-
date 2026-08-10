@@ -1,0 +1,496 @@
+SUTRA LOUNGE — FINAL REVIEW SYSTEM FIX
+
+Permanent Prevention of Review Translation/Data Loss
+
+The existing Sutra Lounge project is at:
+
+"/workspace"
+
+I have now manually added the correct photo for Yogesh Sahani's review through the Admin Panel.
+
+IMPORTANT
+
+DO NOT remove, replace, reset, or overwrite reviewer's photo.
+
+The currently saved photo is the correct one and must remain associated with his review.
+
+---
+
+PRIMARY REQUIREMENT
+
+I do NOT want this problem to happen again.
+
+From now on, whenever an administrator adds a new review through the Admin Panel and publishes it:
+
+The review MUST support both:
+
+English (EN)
+and
+Nepali (NP)
+
+The public website must never show an untranslated English review merely because the website is currently in Nepali.
+
+---
+
+1. FIRST — INSPECT CURRENT IMPLEMENTATION
+
+Before editing anything, inspect the current implementation after the previous regression fixes.
+
+Check:
+
+reviews table
+reviews_baseline
+reviews_draft
+review schema/migrations
+admin review form
+admin review save/update API
+review rendering
+i18n logic
+Nepali review fields
+REVIEW_NP translation map
+Yogesh Sahani's current record
+Yogesh Sahani's current image/photo
+
+Do NOT blindly modify the existing implementation.
+
+---
+
+2. EXISTING YOGESH SAHANI REVIEW
+
+Verify the current database record for Yogesh Sahani.
+
+Confirm:
+
+- review exists
+- rating is preserved
+- English name is preserved
+- English review text is preserved
+- existing photo is preserved
+- photo path/URL is preserved
+- published status is preserved
+- Nepali fields exist
+- revision information is preserved
+
+ABSOLUTE RULE
+
+Do NOT replace the current Yogesh Sahani image with:
+
+- a placeholder
+- a generated image
+- another avatar
+- a default avatar
+- a hardcoded image
+- a seed image
+
+The photo I manually added through Admin Panel is the source of truth.
+
+---
+
+3. PERMANENT NEPALI SUPPORT FOR ADMIN REVIEWS
+
+The Admin Panel review form must provide proper support for:
+
+English
+
+- Reviewer Name
+- Review Text
+
+Nepali
+
+- Reviewer Name (Nepali)
+- Review Text (Nepali)
+
+If the current architecture already has:
+
+name_np
+text_np
+
+use the existing architecture.
+
+Do NOT create a second competing translation system.
+
+---
+
+4. WHEN ADMIN ADDS A NEW REVIEW
+
+This is critical.
+
+Suppose an administrator adds:
+
+Name EN: Ram
+Review EN: Excellent food and wonderful service.
+
+The system must ensure a Nepali version is also available.
+
+The final behavior should be:
+
+Option A — Preferred
+
+The Admin Panel provides Nepali fields and requires/encourages the admin to enter:
+
+Name NP
+Review NP
+
+The review cannot silently become an English-only review on the Nepali website.
+
+Option B — If the project is designed for automatic translation
+
+If the application already has a safe deterministic/local translation mechanism, use it.
+
+But:
+
+DO NOT add an external paid translation API.
+
+This project must remain within the existing $0/free architecture.
+
+IMPORTANT
+
+Do not fabricate a translation system that requires an unavailable external service.
+
+---
+
+5. PUBLISHED REVIEW VALIDATION
+
+When Admin clicks Publish:
+
+The backend must validate the review.
+
+At minimum:
+
+English name exists
+English review text exists
+Nepali name exists
+Nepali review text exists
+rating is valid
+image reference is valid if provided
+
+If Nepali content is mandatory, publishing must prevent an incomplete review from becoming publicly visible.
+
+Show a clear Admin Panel validation message instead of silently publishing an English-only review.
+
+---
+
+6. PUBLIC WEBSITE LANGUAGE BEHAVIOR
+
+When:
+
+English selected
+
+Show:
+
+English reviewer name
+English review
+
+Nepali selected
+
+Show:
+
+Nepali reviewer name
+Nepali review
+
+Do NOT fall back to English when the review is supposed to have Nepali content.
+
+The public review rendering must use the correct language field.
+
+---
+
+7. EXISTING REVIEWS
+
+Audit ALL existing reviews.
+
+Do not check only the seed reviews.
+
+Check:
+
+- every current review
+- every baseline review
+- published reviews
+- admin-created reviews
+- Yogesh Sahani's review
+
+For every review verify:
+
+EN name
+EN text
+NP name
+NP text
+rating
+image
+published status
+
+If any existing published review lacks Nepali content:
+
+Fix it using the correct source-of-truth architecture.
+
+Do NOT hide the review.
+
+Do NOT delete it.
+
+Do NOT replace it with fake content.
+
+---
+
+8. DO NOT USE A FRAGILE HARDCODED TRANSLATION MAP AS THE ONLY SOLUTION
+
+There is currently a "REVIEW_NP" translation map from the previous fix.
+
+Inspect it.
+
+If it is only a hardcoded list of known review IDs/texts, do NOT rely on that as the permanent CMS solution.
+
+A future admin-created review will not automatically exist in that map.
+
+The database/CMS must be capable of storing the Nepali version for NEW reviews.
+
+The translation map may remain only where appropriate for legacy/backfill compatibility.
+
+The long-term source of truth must be the review record itself.
+
+---
+
+9. ADMIN EDITING
+
+This must also work when an existing review is edited.
+
+Example:
+
+Admin edits:
+
+English review
+
+The Admin Panel must make it clear that the corresponding Nepali review may also need updating.
+
+Do NOT allow this situation:
+
+EN = updated review
+NP = old unrelated review
+
+If both fields are editable, preserve their relationship and validate appropriately.
+
+---
+
+10. IMAGE/PERSONAL DATA PRESERVATION
+
+For every review:
+
+The review image must be independent from translation.
+
+Changing:
+
+EN → NP
+
+must NEVER:
+
+- remove the image
+- replace the image
+- reset the image
+- change the image URL
+- assign a default avatar
+
+Specifically verify Yogesh Sahani's current photo after all database/migration operations.
+
+---
+
+11. DATABASE SAFETY
+
+ABSOLUTELY DO NOT:
+
+- reset the database
+- delete the reviews table
+- recreate the database
+- run destructive seed operations
+- overwrite admin-created records
+- restore an old snapshot blindly
+- delete revisions
+- change revisionPointer blindly
+- replace current production data with seed data
+
+Before any migration:
+
+1. inspect current schema
+2. inspect current data
+3. use a safe additive migration if needed
+4. preserve every existing record
+
+---
+
+12. MIGRATION SAFETY
+
+If Nepali fields already exist:
+
+DO NOT create duplicate columns/tables.
+
+If they do not exist:
+
+add them through the project's existing migration architecture.
+
+The migration must be:
+
+- additive
+- idempotent
+- safe on an already-populated database
+- non-destructive
+
+It must not erase existing English reviews or images.
+
+---
+
+13. TEST WITH A REAL ADMIN-CREATED REVIEW
+
+This is mandatory.
+
+Do not only test seed data.
+
+Using the existing Admin Panel workflow, create or edit a test review if doing so can be safely removed afterward without affecting real production content.
+
+Verify:
+
+Admin form
+↓
+Save
+↓
+Database
+↓
+Publish
+↓
+English website
+↓
+Nepali website
+↓
+Refresh
+↓
+Server restart
+
+The Nepali version must survive all of those steps.
+
+If creating test content risks polluting production data, use an existing safe test record or another non-destructive method.
+
+---
+
+14. TEST YOGESH SAHANI SPECIFICALLY
+
+After all changes:
+
+Verify Yogesh Sahani's review:
+
+EN
+
+- name correct
+- text correct
+- rating correct
+- photo correct
+
+NP
+
+- Nepali name available
+- Nepali review available
+- rating correct
+- SAME photo remains
+
+Switch:
+
+EN → NP → EN → NP
+
+The photo and review must remain correct every time.
+
+---
+
+15. REGRESSION CHECK
+
+Also verify that this fix does NOT break:
+
+- homepage
+- reviews carousel/grid
+- English language
+- Nepali language
+- menu translation
+- admin reviews
+- review publishing
+- review editing
+- review images
+- existing opening hours
+- Google Maps
+- authentication
+
+Do not modify unrelated functionality.
+
+---
+
+16. FINAL ACCEPTANCE CRITERIA
+
+This task is NOT complete unless all of the following are true:
+
+Review system
+
+- [ ] Existing reviews preserved
+- [ ] Yogesh Sahani review preserved
+- [ ] Yogesh Sahani photo preserved
+- [ ] All published reviews have Nepali content
+- [ ] Admin can enter/edit Nepali review content
+- [ ] New Admin review supports EN + NP
+- [ ] Published review appears correctly in EN
+- [ ] Published review appears correctly in NP
+- [ ] Language switching does not lose review content
+- [ ] Refresh does not lose review content
+- [ ] Server restart does not lose review content
+- [ ] Images never disappear during language switching
+
+Data safety
+
+- [ ] No database reset
+- [ ] No destructive seed
+- [ ] No deleted reviews
+- [ ] No deleted images
+- [ ] No overwritten admin content
+- [ ] No fabricated replacement records
+
+---
+
+17. FINAL REPORT
+
+Report:
+
+Root Cause
+
+Explain why the previous implementation failed to automatically support Nepali for Admin-created reviews.
+
+Architecture
+
+Explain where EN/NP review content is now stored and how the public site selects it.
+
+Yogesh Sahani
+
+Confirm:
+
+- photo preserved
+- EN review preserved
+- NP review available
+- published status preserved
+
+New Admin Review
+
+Explain exactly how a future Admin-created review gets its Nepali content.
+
+Database Safety
+
+State explicitly whether any existing records were modified, restored, deleted, or migrated.
+
+Tests
+
+Report the actual tests performed.
+
+Do NOT claim browser interaction if it was not actually performed.
+
+---
+
+FINAL RULE
+
+The goal is NOT merely:
+
+«"Make current reviews Nepali."»
+
+The goal is:
+
+«Build the review CMS so this translation problem cannot happen again when an administrator adds a new review.»
+
+Do it using the existing architecture, preserve all existing admin data and photos, make the smallest safe changes, and do not redesign anything.

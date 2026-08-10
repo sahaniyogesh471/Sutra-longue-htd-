@@ -101,11 +101,16 @@
 
   function reviewRow(r) {
     const key = r.id != null ? r.id : r.draft_id;
+    const npMissing = !String(r.name_np || '').trim() || !String(r.text_np || '').trim();
+    const npPill = npMissing
+      ? '<span class="pill pill-danger">Needs नेपाली</span>'
+      : '<span class="pill pill-ok">नेपाली ✓</span>';
     return '<tr class="state-' + r.draftState + '" data-row="' + key + '" data-kind="reviews" data-id="' + (r.id || '') + '" data-draft-id="' + (r.draft_id || '') + '">' +
       '<td class="cell-avatar">' + (r.image_url ? '<img src="' + esc(r.image_url) + '" alt="">' : '<span class="avatar-empty">' + esc(String(r.name || '?').charAt(0)) + '</span>') + '</td>' +
       '<td><strong>' + esc(r.name) + '</strong><span class="cell-sub">' + r.draftState + '</span></td>' +
       '<td><span class="stars" aria-label="' + esc(r.rating) + ' star rating">★' + esc(r.rating) + '/5</span></td>' +
       '<td class="cell-text">' + esc(r.text) + '</td>' +
+      '<td>' + npPill + '</td>' +
       '<td>' + statusPill(r) + '</td>' +
       '<td class="cell-actions">' + rowActions(r, 'reviews') + '</td></tr>';
   }
@@ -149,7 +154,7 @@
       const tbody = table.querySelector('tbody');
       if (!tbody) return false;
       if (r.items.length === 0) {
-        const cols = kind === 'dishes' ? 7 : 6;
+        const cols = kind === 'dishes' ? 7 : kind === 'reviews' ? 7 : 6;
         tbody.innerHTML = '<tr><td colspan="' + cols + '" class="empty"><h4>No ' + (kind === 'dishes' ? 'dishes' : 'reviews') + ' added yet.</h4><p class="muted">Add your first ' + (kind === 'dishes' ? 'menu item' : 'review') + '.</p></td></tr>';
       } else {
         tbody.innerHTML = r.items.map(kind === 'dishes' ? dishRow : reviewRow).join('');
@@ -472,7 +477,7 @@
       body:
         '<div class="field" data-field-wrap="name"><label>Reviewer name <span class="req">*</span></label>' +
         '<input type="text" name="name" value="' + esc(rv.name || '') + '"><p class="field-error" data-error="name"></p></div>' +
-        '<div class="field" data-field-wrap="name_np"><label>Reviewer name (नेपाली)</label>' +
+        '<div class="field" data-field-wrap="name_np"><label>Reviewer name (नेपाली) <span class="req">*</span></label>' +
         '<input type="text" name="name_np" value="' + esc(rv.name_np || '') + '">' +
         '<p class="field-error" data-error="name_np"></p></div>' +
         '<div class="field" data-field-wrap="rating"><label>Rating</label>' +
@@ -481,9 +486,9 @@
         '<textarea name="text" rows="4">' + esc(rv.text || '') + '</textarea>' +
         '<p class="hint">Demo reviews are clearly labelled and safe to replace or remove.</p>' +
         '<p class="field-error" data-error="text"></p></div>' +
-        '<div class="field" data-field-wrap="text_np"><label>Review text (नेपाली)</label>' +
+        '<div class="field" data-field-wrap="text_np"><label>Review text (नेपाली) <span class="req">*</span></label>' +
         '<textarea name="text_np" rows="4">' + esc(rv.text_np || '') + '</textarea>' +
-        '<p class="hint">Optional Nepali translation — shown when the website language is set to Nepali.</p>' +
+        '<p class="hint">Required — shown when the website language is Nepali. Every visible review must have Nepali content; publishing an English-only review is blocked.</p>' +
         '<p class="field-error" data-error="text_np"></p></div>' +
         '<div class="field"><label>Reviewer photo</label>' +
         '<div class="upload-block">' +
@@ -529,6 +534,16 @@
       const body = Object.fromEntries(fd.entries());
       body.is_visible = el.querySelector('[name="is_visible"]').checked ? 1 : 0;
       body.rating = Number(body.rating || 5);
+      if (Number(body.is_visible) === 1) {
+        const localErrors = {};
+        if (!String(body.name_np || '').trim()) localErrors.name_np = 'Reviewer name (नेपाली) is required for a visible review.';
+        if (!String(body.text_np || '').trim()) localErrors.text_np = 'Review text (नेपाली) is required for a visible review.';
+        if (Object.keys(localErrors).length) {
+          showErrors(el, localErrors);
+          toast('Nepali content is required for visible reviews.', 'error');
+          return;
+        }
+      }
       const r = await api('/admin/api/reviews/save', { body: body });
       if (!r.ok) { showErrors(el, r.errors || { _: r.error }); if (!r.errors) toast(r.error, 'error'); return; }
       toast('Review saved as draft.');
@@ -676,6 +691,7 @@
     } else if (kind === 'reviews') {
       body = Object.assign(base, {
         name: item.name, text: item.text, rating: Number(item.rating || 5),
+        name_np: item.name_np || '', text_np: item.text_np || '',
         image_url: item.image_url, sort_order: Number(item.sort_order || 0),
       });
     } else {
@@ -902,7 +918,11 @@
         }
         if (btn.getAttribute('data-submit') === 'publish') {
           const p = await api('/admin/api/publish', { body: {} });
-          if (!p.ok) { toast(p.error || 'Saved, but publishing failed.', 'error'); return; }
+          if (!p.ok) {
+            if (p.problems && p.problems.length) toast('Publish blocked: ' + p.problems.join(' '), 'error');
+            else toast(p.error || 'Saved, but publishing failed.', 'error');
+            return;
+          }
           toast('Settings published successfully.');
         } else {
           toast('Settings saved as draft.');
@@ -942,7 +962,14 @@
 
   async function publishChanges() {
     const r = await api('/admin/api/publish', { body: {} });
-    if (!r.ok) { toast(r.error || 'Publish failed.', 'error'); return; }
+    if (!r.ok) {
+      if (r.problems && r.problems.length) {
+        toast('Publish blocked: ' + r.problems.join(' '), 'error');
+      } else {
+        toast(r.error || 'Publish failed.', 'error');
+      }
+      return;
+    }
     toast('Changes published successfully.');
     refreshAfterGlobalAction();
   }
