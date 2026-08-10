@@ -507,6 +507,17 @@
     return !hasError;
   };
 
+  /* Convert "HH:MM" (24h) to a 12-hour display like "02:30 PM". */
+  const formatTime12 = (hhmm) => {
+    const parts = String(hhmm || '').split(':');
+    const h = parseInt(parts[0], 10);
+    const m = parts[1] ? parts[1].padStart(2, '0') : '00';
+    if (isNaN(h)) return '';
+    const period = h < 12 ? 'AM' : 'PM';
+    const h12 = h % 12 === 0 ? 12 : h % 12;
+    return String(h12).padStart(2, '0') + ':' + m + ' ' + period;
+  };
+
   /* Normalised digit count — the basis for phone validation. */
   const phoneDigits = (v) => v.replace(/[^\d]/g, '');
   const isValidPhone = (v) => /^[0-9+\s\-()]+$/.test(v) && phoneDigits(v).length >= 7 && phoneDigits(v).length <= 15;
@@ -543,16 +554,25 @@
       }
     }
 
+    if (date && time) {
+      const selectedWhen = new Date(date + 'T' + time + ':00');
+      if (selectedWhen <= new Date()) {
+        setFieldError('time', true);
+        valid = false;
+      }
+    }
+
     if (!valid) return;
 
     const prettyDate = date ? new Date(date + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' }) : date;
+    const prettyTime = time ? formatTime12(time) : time;
 
     const lines = [
       'Hi Sutra Lounge! I would like to reserve a table.',
       'Name: ' + name,
       'Phone: ' + phone,
       'Date: ' + prettyDate,
-      'Time: ' + time,
+      'Time: ' + prettyTime,
       'Guests: ' + guests
     ];
     if (note) lines.push('Note: ' + note);
@@ -569,11 +589,54 @@
     });
   });
 
-  /* ---------- 13. Set min date to today ---------- */
+  /* ---------- 13. Reservation date & 12-hour time picker ---------- */
   const dateInput = document.getElementById('fDate');
+  const timeInput = document.getElementById('fTime');
   const today = new Date();
   const todayISO = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
   dateInput.min = todayISO;
+
+  const OPEN_START_MIN = 8 * 60;   // 08:00
+  const OPEN_END_MIN = 21 * 60;    // 21:00
+  const STEP_MIN = 15;
+
+  /* Build the 12-hour options between opening hours. The value stays "HH:MM"
+     (24h) so validation & the WhatsApp message remain unambiguous; the label
+     is shown in 12-hour AM/PM form. */
+  const buildTimeOptions = () => {
+    if (!timeInput) return;
+    const options = ['<option value="" disabled selected hidden></option>'];
+    for (let m = OPEN_START_MIN; m <= OPEN_END_MIN; m += STEP_MIN) {
+      const hh = String(Math.floor(m / 60)).padStart(2, '0');
+      const mm = String(m % 60).padStart(2, '0');
+      const v = hh + ':' + mm;
+      options.push('<option value="' + v + '">' + formatTime12(v) + '</option>');
+    }
+    timeInput.innerHTML = options.join('');
+  };
+
+  /* Block past times for today: when the chosen date is today, any option that
+     has already passed is disabled. */
+  const syncTimeOptions = () => {
+    if (!timeInput) return;
+    const current = timeInput.value;
+    timeInput.querySelectorAll('option').forEach((opt) => {
+      if (!opt.value) return;
+      if (dateInput.value === todayISO) {
+        const when = new Date(dateInput.value + 'T' + opt.value + ':00');
+        opt.disabled = when <= new Date();
+      } else {
+        opt.disabled = false;
+      }
+    });
+    if (current) {
+      const sel = timeInput.querySelector('option[value="' + current + '"]');
+      if (sel && sel.disabled) timeInput.value = '';
+    }
+  };
+  buildTimeOptions();
+  dateInput.addEventListener('change', syncTimeOptions);
+  syncTimeOptions();
 
   /* ---------- 14. Bestsellers ---------- */
   const bsCategories = [

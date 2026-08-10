@@ -68,7 +68,7 @@ export function validateImageFile(filePath: string, mimetype: string): boolean {
   }
 }
 
-function ensureUploadsDir(): void {
+export function ensureUploadsDir(): void {
   if (!fs.existsSync(UPLOADS_DIR)) {
     fs.mkdirSync(UPLOADS_DIR, { recursive: true });
   }
