@@ -66,11 +66,11 @@
           <div class="menu-cat" id="<%= group.category.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-') %>">
             <div class="menu-cat-head">
               <span class="menu-cat-dot" aria-hidden="true"></span>
-              <h2><%= group.category %></h2>
+              <h2 data-np-cat="<%= group.category_np %>"><%= group.category %></h2>
               <span class="menu-cat-line" aria-hidden="true"></span>
             </div>
             <% if (group.sub) { %>
-              <p class="menu-cat-sub"><%= group.sub %></p>
+              <p class="menu-cat-sub" data-np-sub="<%= group.sub_np %>"><%= group.sub %></p>
             <% } %>
 
             <div class="dish-grid">
@@ -127,11 +127,11 @@
         <div class="menu-visit-grid">
           <div class="menu-visit-item">
             <strong data-i18n="menu.visitAddr">Address</strong>
-            <span><%= address %></span>
+            <span data-i18n="menu.visitAddrValue"><%= address %></span>
           </div>
           <div class="menu-visit-item">
             <strong data-i18n="menu.visitHours">Opening Hours</strong>
-            <span><%= hoursLabel %></span>
+            <span data-i18n="menu.visitHoursValue"><%= hoursLabel %></span>
           </div>
           <div class="menu-visit-item">
             <strong data-i18n="menu.visitCall">Call to Book</strong>
@@ -193,6 +193,8 @@
           'menu.visitAddr': 'Address',
           'menu.visitHours': 'Opening Hours',
           'menu.visitCall': 'Call to Book',
+          'menu.visitAddrValue': 'Hupra, Hetauda-4, Makwanpur, Nepal',
+          'menu.visitHoursValue': 'Monday – Sunday · 8:00 AM – 9:00 PM',
           'menu.directions': 'Get Directions on Google Maps',
           'menu.waUs': 'WhatsApp Us',
           'menu.rights': '{{name}}. All rights reserved.'
@@ -212,6 +214,8 @@
           'menu.visitAddr': 'ठेगाना',
           'menu.visitHours': 'खुल्ने समय',
           'menu.visitCall': 'बुक गर्न कल गर्नुहोस्',
+          'menu.visitAddrValue': 'हुप्रा, हेटौंडा-४, मकवानपुर, नेपाल',
+          'menu.visitHoursValue': 'सोमबार – आइतबार · बिहान ८ – राति ९ बजे',
           'menu.directions': 'गुगल म्याप्समा बाटो हेर्नुहोस्',
           'menu.waUs': 'ह्वाट्सएप',
           'menu.rights': '{{name}}। सर्वाधिकार सुरक्षित।'
@@ -247,7 +251,9 @@
       var dishAttrs = [
         ['data-np-name', 'data-en-name'],
         ['data-np-desc', 'data-en-desc'],
-        ['data-np-badge', 'data-en-badge']
+        ['data-np-badge', 'data-en-badge'],
+        ['data-np-cat', 'data-en-cat'],
+        ['data-np-sub', 'data-en-sub']
       ];
 
       function applyDishLang(lang) {

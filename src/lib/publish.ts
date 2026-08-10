@@ -82,12 +82,14 @@ export function effectiveReviews(db: DB): Record<string, unknown>[] {
   const published = db.prepare('SELECT * FROM reviews').all() as Record<string, unknown>[];
   const drafts = db
     .prepare(
-      'SELECT draft_id, row_id, op, name, text, rating, image_url, is_visible, sort_order FROM reviews_draft'
+      'SELECT draft_id, row_id, op, name, text, name_np, text_np, rating, image_url, is_visible, sort_order FROM reviews_draft'
     )
     .all() as Record<string, unknown>[];
   return applyDraftRows(published, drafts as never, (d) => ({
     name: d.name ?? '',
     text: d.text ?? '',
+    name_np: d.name_np ?? '',
+    text_np: d.text_np ?? '',
     rating: d.rating ?? 5,
     image_url: d.image_url ?? null,
     is_visible: d.is_visible ?? 1,
@@ -172,6 +174,8 @@ export function saveReviewDraft(
     row_id: number | null;
     name: string;
     text: string;
+    name_np: string;
+    text_np: string;
     rating: number;
     image_url: string | null;
     is_visible: number;
@@ -179,8 +183,8 @@ export function saveReviewDraft(
   }
 ): void {
   db.prepare(
-    `INSERT INTO reviews_draft (row_id, op, name, text, rating, image_url, is_visible, sort_order, updated_at)
-     VALUES (@row_id, 'upsert', @name, @text, @rating, @image_url, @is_visible, @sort_order, datetime('now'))`
+    `INSERT INTO reviews_draft (row_id, op, name, text, name_np, text_np, rating, image_url, is_visible, sort_order, updated_at)
+     VALUES (@row_id, 'upsert', @name, @text, @name_np, @text_np, @rating, @image_url, @is_visible, @sort_order, datetime('now'))`
   ).run(input);
 }
 
@@ -251,7 +255,7 @@ export function restoreOriginalRow(db: DB, kind: Kind, id: number): boolean {
   if (kind === 'dishes' || kind === 'reviews' || kind === 'gallery') {
     const map = {
       dishes: { base: 'dishes_baseline', cols: ['type', 'name', 'description', 'name_np', 'description_np', 'price', 'category', 'category_np', 'badge', 'badge_np', 'image_url', 'is_featured', 'sort_order'] },
-      reviews: { base: 'reviews_baseline', cols: ['name', 'text', 'rating', 'image_url', 'sort_order'] },
+      reviews: { base: 'reviews_baseline', cols: ['name', 'text', 'name_np', 'text_np', 'rating', 'image_url', 'sort_order'] },
       gallery: { base: 'gallery_baseline', cols: ['image_url', 'alt', 'is_featured', 'sort_order'] },
     } as const;
     const spec = map[kind];
@@ -287,6 +291,8 @@ export function restoreOriginalRow(db: DB, kind: Kind, id: number): boolean {
       row_id: id,
       name: (draftInput.name as string) ?? '',
       text: (draftInput.text as string) ?? '',
+      name_np: (draftInput.name_np as string) ?? '',
+      text_np: (draftInput.text_np as string) ?? '',
       rating: Number(draftInput.rating ?? 5),
       image_url: (draftInput.image_url as string) ?? null,
       is_visible,
@@ -340,10 +346,16 @@ function applySnapshot(db: DB, snap: SiteSnapshot): void {
 
     clear('reviews');
     const insReview = db.prepare(
-      `INSERT INTO reviews (id, name, text, rating, image_url, is_visible, sort_order, created_at, updated_at)
-       VALUES (@id, @name, @text, @rating, @image_url, @is_visible, @sort_order, @created_at, datetime('now'))`
+      `INSERT INTO reviews (id, name, text, name_np, text_np, rating, image_url, is_visible, sort_order, created_at, updated_at)
+       VALUES (@id, @name, @text, @name_np, @text_np, @rating, @image_url, @is_visible, @sort_order, @created_at, datetime('now'))`
     );
-    for (const r of snap.reviews) insReview.run(r);
+    for (const r of snap.reviews) {
+      insReview.run({
+        ...r,
+        name_np: r.name_np ?? '',
+        text_np: r.text_np ?? '',
+      });
+    }
 
     clear('gallery');
     const insGallery = db.prepare(
@@ -470,20 +482,25 @@ export function publishAll(db: DB, by?: string): { published: string[]; count: n
     // reviews
     const reviewDrafts = db.prepare('SELECT * FROM reviews_draft').all() as Record<string, unknown>[];
     const insertReview = db.prepare(
-      `INSERT INTO reviews (name, text, rating, image_url, is_visible, sort_order, created_at, updated_at)
-       VALUES (@name, @text, @rating, @image_url, @is_visible, @sort_order, datetime('now'), datetime('now'))`
+      `INSERT INTO reviews (name, text, name_np, text_np, rating, image_url, is_visible, sort_order, created_at, updated_at)
+       VALUES (@name, @text, @name_np, @text_np, @rating, @image_url, @is_visible, @sort_order, datetime('now'), datetime('now'))`
     );
     const updateReview = db.prepare(
-      `UPDATE reviews SET name=@name, text=@text, rating=@rating, image_url=@image_url, is_visible=@is_visible, sort_order=@sort_order, updated_at=datetime('now') WHERE id=@row_id`
+      `UPDATE reviews SET name=@name, text=@text, name_np=@name_np, text_np=@text_np, rating=@rating, image_url=@image_url, is_visible=@is_visible, sort_order=@sort_order, updated_at=datetime('now') WHERE id=@row_id`
     );
     const deleteReview = db.prepare('DELETE FROM reviews WHERE id = ?');
     for (const d of reviewDrafts) {
-      if (d.op === 'delete') {
-        if (d.row_id) deleteReview.run(d.row_id);
-      } else if (d.row_id) {
-        updateReview.run(d);
+      const norm: Record<string, unknown> = {
+        ...d,
+        name_np: d.name_np ?? '',
+        text_np: d.text_np ?? '',
+      };
+      if (norm.op === 'delete') {
+        if (norm.row_id) deleteReview.run(norm.row_id);
+      } else if (norm.row_id) {
+        updateReview.run(norm);
       } else {
-        const info = insertReview.run(d);
+        const info = insertReview.run(norm);
         const newId = Number(info.lastInsertRowid);
         db.prepare('UPDATE reviews_draft SET row_id = ? WHERE draft_id = ?').run(newId, d.draft_id);
       }
@@ -574,11 +591,11 @@ export function resetAll(db: DB, by?: string): { ok: boolean } {
 
     db.prepare('DELETE FROM reviews').run();
     const insReview = db.prepare(
-      `INSERT INTO reviews (id, name, text, rating, image_url, is_visible, sort_order, created_at, updated_at)
-       VALUES (@id, @name, @text, @rating, @image_url, 1, @sort_order, datetime('now'), datetime('now'))`
+      `INSERT INTO reviews (id, name, text, name_np, text_np, rating, image_url, is_visible, sort_order, created_at, updated_at)
+       VALUES (@id, @name, @text, @name_np, @text_np, @rating, @image_url, 1, @sort_order, datetime('now'), datetime('now'))`
     );
     for (const r of db.prepare('SELECT * FROM reviews_baseline').all() as Record<string, unknown>[]) {
-      insReview.run({ ...r, id: r.baseline_ref ?? r.id });
+      insReview.run({ ...r, id: r.baseline_ref ?? r.id, name_np: r.name_np ?? '', text_np: r.text_np ?? '' });
     }
 
     db.prepare('DELETE FROM gallery').run();

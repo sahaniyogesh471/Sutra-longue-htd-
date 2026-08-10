@@ -1,0 +1,638 @@
+SUTRA LOUNGE — STRICT REGRESSION FIX PROMPT
+
+Fix ONLY These 4 Confirmed Problems — Protect Existing Admin Data
+
+You are working on the EXISTING Sutra Lounge repository at:
+
+"/workspace"
+
+The website is already substantially completed.
+
+This is a targeted regression-fix task, NOT a redesign and NOT a rebuild.
+
+I have manually reviewed the latest website screen recording and identified exactly these 4 problems:
+
+---
+
+🔴 BUG 1 — REVIEWS ARE NOT TRANSLATING TO NEPALI
+
+When the website is switched from English to Nepali:
+
+- Reviews are still showing English content.
+- Review names/content/labels that are supposed to be localized are not properly translated.
+- The Nepali page must not leave English review text behind where a Nepali translation is expected.
+
+REQUIRED INVESTIGATION
+
+First inspect:
+
+- review database schema
+- review data
+- "src/content.ts"
+- "js/main.js"
+- EJS review rendering
+- i18n dictionaries
+- any "data-i18n" / "data-i18n-html" attributes
+- admin review/content structure
+
+Determine whether reviews are:
+
+1. database-driven,
+2. static,
+3. partially translated,
+4. missing Nepali fields,
+5. or rendered without applying the Nepali language.
+
+IMPORTANT
+
+Do NOT simply replace English reviews with hardcoded Nepali strings in JavaScript.
+
+If the architecture is database-driven, preserve that architecture.
+
+If the database has separate English/Nepali fields, use the correct fields.
+
+If translations are missing, add them in the correct source-of-truth location.
+
+Do NOT overwrite existing review data.
+
+---
+
+🔴 BUG 2 — ADMIN-PUBLISHED CONTENT DISAPPEARED FROM PUBLIC WEBSITE
+
+This is the MOST IMPORTANT issue.
+
+Previously, I used the Admin Panel to:
+
+1. add content,
+2. publish it,
+3. verify that it appeared publicly.
+
+After the recent website changes, some of that previously published content is no longer visible on the public website.
+
+THIS MUST BE INVESTIGATED BEFORE ANY EDITING
+
+Do NOT assume the content was deleted.
+
+Determine exactly what happened.
+
+Check:
+
+Database
+
+Inspect all relevant tables and records.
+
+Look for:
+
+- settings
+- dishes
+- gallery
+- reviews
+- pages/content
+- published/draft status
+- ordering/sort fields
+- language fields
+- visibility fields
+- any CMS-related tables
+
+Compare the current database against the application's rendering logic.
+
+Admin Panel
+
+Verify:
+
+- content still appears in Admin Panel
+- published status is still correct
+- content wasn't moved to draft
+- content wasn't deleted
+- content wasn't replaced by seed data
+- content wasn't filtered out by language
+- content wasn't hidden because of a new query/filter
+
+Public website
+
+Determine why published content is missing.
+
+Possible causes include:
+
+- frontend rendering only static seed content
+- DB query filtering incorrectly
+- newly introduced fallback content replacing DB content
+- i18n logic selecting the wrong field
+- "published" condition incorrect
+- content sorting/filtering incorrectly
+- database being reset/reseeded
+- public route using a different DB
+- static HTML being served instead of DB-backed EJS content
+- cache/stale content
+- content IDs or references changed
+
+Do NOT guess.
+
+---
+
+🚨 ABSOLUTE DATABASE SAFETY RULE
+
+You MUST NOT:
+
+- delete the database
+- recreate the database
+- reset the database
+- run destructive seed commands
+- overwrite the database with seed data
+- replace existing CMS records with hardcoded defaults
+- remove admin-created records
+- blindly run migrations that destroy data
+
+Before changing anything, inspect the actual database.
+
+If admin-created content still exists, preserve it.
+
+If content was actually lost, determine whether it can be recovered from:
+
+- Git-tracked database state
+- WAL/backup state
+- seed/source files
+- existing admin data
+- previous code/data snapshots
+
+Do NOT fabricate missing content.
+
+If recovery is uncertain, report it instead of silently inventing replacements.
+
+---
+
+🟠 BUG 3 — FULL MENU PAGE HAS UNTRANSLATED CONTENT/DISHES
+
+On the full menu page, after switching to Nepali:
+
+Some:
+
+- menu section titles
+- descriptions
+- dish names
+- dish descriptions
+- category text
+- buttons/labels
+- supporting content
+
+remain in English.
+
+The entire menu experience should correctly support Nepali.
+
+REQUIRED INVESTIGATION
+
+Inspect:
+
+- "menu.html"
+- menu EJS/template
+- menu JavaScript
+- dish database records
+- category data
+- English/Nepali fields
+- i18n dictionaries
+- "data-i18n"
+- "data-i18n-html"
+- menu rendering functions
+
+Determine exactly which content is:
+
+A. Static UI
+
+Examples:
+
+- Menu
+- Order
+- View Details
+- Price
+- Category labels
+
+These should use i18n.
+
+B. Database-driven dish content
+
+Examples:
+
+- dish names
+- dish descriptions
+- categories
+
+These should use the correct Nepali database/content field if the CMS architecture supports localized content.
+
+C. Content with no Nepali translation yet
+
+Do NOT randomly translate or hardcode it in the frontend if the CMS is supposed to be the source of truth.
+
+Instead, implement the translation in the correct architecture.
+
+---
+
+🔴 BUG 4 — GOOGLE MAPS DIRECTIONS DISAPPEARED
+
+There was previously a black/dark section on the website containing Google Maps / Directions functionality.
+
+After the recent updates, that Google Maps Directions functionality is missing.
+
+This must be restored.
+
+REQUIRED INVESTIGATION
+
+Find the previous/current implementation.
+
+Search the entire project for:
+
+Google Maps
+maps.google
+google.com/maps
+Directions
+Get Directions
+iframe
+maps/embed
+latitude
+longitude
+location
+Hetauda
+
+Determine whether the previous map was:
+
+- an iframe,
+- a Google Maps URL,
+- an external Directions link,
+- an embedded map,
+- or another implementation.
+
+IMPORTANT
+
+Do NOT replace it with a random map.
+
+Preserve the intended Sutra Lounge location.
+
+If the original Google Maps Directions URL exists anywhere in the repository, recover and reuse it.
+
+If the location/address is already stored in settings/database, use the existing source of truth.
+
+The restored public UI must allow the user to access Google Maps directions again.
+
+---
+
+5. DO NOT CHANGE THE DESIGN
+
+These four bugs are the ONLY scope.
+
+Do NOT:
+
+- redesign the homepage
+- redesign the menu
+- change colors
+- change typography
+- change spacing globally
+- replace images
+- change animations
+- change branding
+- change the navigation
+- change the reservation system
+- change authentication
+- change database technology
+- refactor unrelated code
+- change SEO unnecessarily
+- change already-correct opening hours
+
+The existing opening hours must remain:
+
+Monday – Sunday · 8:00 AM – 9:00 PM
+
+---
+
+6. FIRST STEP — READ AND INSPECT
+
+Before editing anything, run:
+
+cd /workspace
+
+git status --short
+git diff --stat
+git diff --check
+
+Then inspect:
+
+cat "Resume Existing Work.txt"
+
+Read the actual current implementation rather than trusting previous AI assumptions.
+
+Then inspect the relevant source files and database.
+
+---
+
+7. PROTECT CURRENT ADMIN DATA
+
+Before making modifications, establish a clear picture of the current DB.
+
+Inspect relevant tables and records.
+
+At minimum identify:
+
+settings
+dishes
+gallery
+reviews
+opening_hours
+opening_hours_baseline
+
+and any additional CMS/content tables.
+
+For every relevant record, inspect:
+
+- ID
+- title/name
+- English content
+- Nepali content
+- published/visibility status
+- sort/order
+- timestamps where available
+
+Do not expose secrets in the final report.
+
+---
+
+8. COMPARE ADMIN VS PUBLIC
+
+This is mandatory for Bug #2.
+
+Pick several records that are currently visible in Admin Panel and verify:
+
+Admin record
+        ↓
+Database record
+        ↓
+Public query
+        ↓
+Template
+        ↓
+Rendered HTML
+
+Identify exactly where the content disappears.
+
+Do not stop at "database looks fine."
+
+Find the actual break in the chain.
+
+---
+
+9. CHECK FOR STATIC HTML REGRESSION
+
+The project contains static-looking files such as:
+
+index.html
+menu.html
+
+while the Express application also uses EJS templates.
+
+Determine which files are actually served in production.
+
+Do NOT assume.
+
+Verify:
+
+/
+ /menu.html
+
+and determine whether each is:
+
+- static,
+- redirected,
+- rendered dynamically,
+- or backed by EJS/database content.
+
+This is especially important because admin-created content must remain visible after publishing.
+
+---
+
+10. FIXING RULE
+
+For each bug:
+
+Step 1
+
+Identify root cause.
+
+Step 2
+
+Make the smallest possible fix.
+
+Step 3
+
+Test the fix.
+
+Step 4
+
+Verify existing functionality did not regress.
+
+Do NOT combine unrelated refactors with these fixes.
+
+---
+
+11. REQUIRED REGRESSION TESTS
+
+After fixing, verify:
+
+English
+
+- Homepage
+- Reviews
+- Menu
+- Admin-published content
+- Google Maps Directions
+
+Nepali
+
+- Homepage
+- Reviews
+- Full menu
+- Dish names
+- Dish descriptions
+- Menu labels
+- Admin-published content where applicable
+- Google Maps Directions
+
+---
+
+12. ADMIN DATA TEST
+
+This is mandatory.
+
+Use the existing Admin Panel if possible.
+
+Verify that:
+
+1. existing published content is still present
+2. published content appears publicly
+3. switching EN/NP does not make it disappear
+4. refreshing the page does not make it disappear
+5. restarting the server does not make it disappear
+
+Do NOT create fake test content unless absolutely necessary.
+
+---
+
+13. GOOGLE MAPS TEST
+
+Verify:
+
+- map/directions section is visible
+- link/button exists
+- URL is valid
+- it points to Sutra Lounge's intended location
+- it opens Google Maps/directions correctly
+- it is not replaced by a placeholder
+- mobile layout is correct
+
+---
+
+14. NEPALI MENU TEST
+
+Do a systematic sweep.
+
+Do not test only the first few dishes.
+
+Check the ENTIRE menu.
+
+For every category:
+
+Category title
+Dish name
+Dish description
+Price
+CTA/button
+Supporting labels
+
+Verify Nepali localization where applicable.
+
+---
+
+15. REVIEWS TEST
+
+Check ALL reviews, not only one.
+
+For each review verify:
+
+- reviewer name behavior
+- review text
+- rating
+- date/metadata if displayed
+- English version
+- Nepali version
+
+Do not translate personal names unnaturally.
+
+---
+
+16. BUILD / SYNTAX
+
+Run the existing project checks.
+
+At minimum:
+
+node --check js/main.js
+node --check js/admin.js
+
+and the project's existing TypeScript/build/typecheck commands from "package.json".
+
+Also:
+
+git diff --check
+
+---
+
+17. FINAL GIT SAFETY
+
+At the end run:
+
+git status --short
+git diff --stat
+git diff --check
+
+Review every changed file.
+
+There must be NO accidental:
+
+- database reset
+- database deletion
+- seed overwrite
+- unrelated redesign
+- generated files
+- credentials
+- debug files
+- temporary files
+
+Do NOT commit or push unless explicitly instructed.
+
+---
+
+18. FINAL REPORT
+
+Your final response MUST contain:
+
+Root Cause — Bug 1
+
+Exactly why reviews weren't translating.
+
+Root Cause — Bug 2
+
+Exactly why admin-published content disappeared.
+
+This section is the MOST IMPORTANT.
+
+Root Cause — Bug 3
+
+Exactly why menu content/dishes weren't translating.
+
+Root Cause — Bug 4
+
+Exactly why Google Maps Directions disappeared.
+
+Changes Made
+
+List exact files and what changed.
+
+Data Safety
+
+Explicitly state whether any existing database records were modified/deleted/recreated.
+
+Verification
+
+Report EN and NP results separately.
+
+Remaining Issues
+
+Only genuine remaining issues.
+
+Git Status
+
+List modified/untracked files.
+
+---
+
+FINAL COMMANDMENT
+
+This is a data-preservation + localization + regression-fix task.
+
+The most important rule is:
+
+DO NOT SACRIFICE EXISTING ADMIN-PUBLISHED CONTENT TO FIX THE FRONTEND.
+
+Investigate first.
+
+Preserve existing data.
+
+Fix the rendering/source-of-truth problem.
+
+Restore Google Maps Directions.
+
+Complete Nepali localization.
+
+Then regression-test the entire affected functionality.
+
+Do not redesign anything.
+Do not reset anything.
+Do not guess.
+Do not fabricate missing data.
+Do not claim a fix until it has been verified.

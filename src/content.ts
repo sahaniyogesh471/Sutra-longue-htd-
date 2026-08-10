@@ -1,5 +1,6 @@
 import type { DB } from './db/index.js';
 import { effectiveSettings, effectiveDishes, effectiveReviews, effectiveGallery, effectiveHours } from './lib/publish.js';
+import { CATEGORY_NP } from './db/translations.js';
 
 /**
  * Public content loader — reads the PUBLISHED state only.
@@ -27,6 +28,8 @@ export interface Review {
   id: number;
   name: string;
   text: string;
+  name_np: string;
+  text_np: string;
   rating: number;
   image_url: string | null;
   sort_order: number;
@@ -50,7 +53,9 @@ export interface HourRow {
 
 export interface MenuGroup {
   category: string;
+  category_np: string;
   sub: string;
+  sub_np: string;
   dishes: Dish[];
 }
 
@@ -89,7 +94,7 @@ export function dishesFromRows(rows: unknown[]): Dish[] {
 export function loadReviews(db: DB): Review[] {
   const rows = db
     .prepare(
-      `SELECT id, name, text, rating, image_url, sort_order
+      `SELECT id, name, text, name_np, text_np, rating, image_url, sort_order
        FROM reviews WHERE is_visible = 1 ORDER BY sort_order ASC, id ASC`
     )
     .all() as Review[];
@@ -325,14 +330,33 @@ export function buildMenuGroups(bestsellers: Dish[]): MenuGroup[] {
     'Snacks & Pizza': 'Wood-fired, loaded and impossible to share quietly.',
     'Cocktails & Hookah': 'Lounge nights start here — shaken to order, smoked to perfection.',
   };
+  const subsNp: Record<string, string> = {
+    Platters: 'साझा गर्नका लागि बनाइएको, छाप छाड्ने — हेटौंडाले नामसँगै माग्ने परिकार।',
+    'Snacks & Pizza': 'वुड-फायर्ड, भरिएको र चुपचाप साझा गर्न असम्भव।',
+    'Cocktails & Hookah': 'लाउन्ज रातहरू यहीं सुरु हुन्छ — अर्डरमै शेक, उत्तम धुँवासहित।',
+  };
   const groups: MenuGroup[] = [];
   for (const cat of order) {
     const dishes = bestsellers.filter((d) => d.category === cat);
-    if (dishes.length) groups.push({ category: cat, sub: subs[cat] ?? '', dishes });
+    if (dishes.length) {
+      groups.push({
+        category: cat,
+        category_np: CATEGORY_NP[cat] ?? '',
+        sub: subs[cat] ?? '',
+        sub_np: subsNp[cat] ?? '',
+        dishes,
+      });
+    }
   }
   const others = bestsellers.filter((d) => d.category && !order.includes(d.category));
   if (others.length) {
-    groups.push({ category: others[0].category ?? 'More', sub: '', dishes: others });
+    groups.push({
+      category: others[0].category ?? 'More',
+      category_np: CATEGORY_NP[others[0].category ?? ''] ?? '',
+      sub: '',
+      sub_np: '',
+      dishes: others,
+    });
   }
   return groups;
 }

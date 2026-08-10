@@ -102,3 +102,36 @@ export const MENU_SUB_NP: Record<string, string> = {
   'Snacks & Pizza': 'वुड-फायर्ड, भरिएको र चुपचाप साझा गर्न असम्भव।',
   'Cocktails & Hookah': 'लाउन्ज रातहरू यहीं सुरु हुन्छ — अर्डरमै शेक, उत्तम धुँवासहित।',
 };
+
+/**
+ * Nepali (NP) translations for seed reviews, keyed by the English reviewer
+ * name. Used by the seed script and by the DB migration backfill so existing
+ * databases receive the same translations as freshly seeded ones.
+ */
+export interface ReviewNp {
+  name_np: string;
+  text_np: string;
+}
+
+export const REVIEW_NP: Record<string, ReviewNp> = {
+  'Rabina Shrestha': {
+    name_np: 'रविना श्रेष्ठ',
+    text_np:
+      'सुत्र फ्युजन म:म प्लेटर हेटौंडामा अरू कतै छैन। न्यानो सेवा, उत्कृष्ट संगीत र अहिले पनि सम्झिरहने एउटा साँझ।',
+  },
+  'Prakash Adhikari': {
+    name_np: 'प्रकाश अधिकारी',
+    text_np:
+      'शहरकै उत्कृष्ट सिजलर, कुनै शंका छैन। क्ले-ओभन पिज्जा काठमाडौंका उत्कृष्ट किचनबाट ल्याइएजस्तै लाग्छ।',
+  },
+  'Sunita Gurung': {
+    name_np: 'सुनिता गुरुङ',
+    text_np:
+      'पारिवारिक भोज वा डेट नाइटका लागि उत्तम। स्टाफले ग्राहक होइन, पाहुनाजस्तै व्यवहार गरे — मकटेल पनि उत्कृष्ट।',
+  },
+  'Aayush Shrestha': {
+    name_np: 'आयुष श्रेष्ठ',
+    text_np:
+      'रात पर्दा लाउन्ज साँच्चै पार्टी स्पटमा बदलिन्छ। उत्कृष्ट भाइब, उत्कृष्ट पेय, र क्रिस्पी चिली चिकन त झनै लत लगाउने।',
+  },
+};

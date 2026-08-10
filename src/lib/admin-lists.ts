@@ -77,7 +77,7 @@ export function adminReviews(db: DB): AdminRow[] {
       id: p.id as number | null,
       draft_id: null,
       draftState: 'published',
-      name: p.name, text: p.text, rating: p.rating,
+      name: p.name, text: p.text, name_np: p.name_np, text_np: p.text_np, rating: p.rating,
       image_url: p.image_url, is_visible: p.is_visible, sort_order: p.sort_order,
     });
   }
@@ -95,7 +95,7 @@ export function adminReviews(db: DB): AdminRow[] {
     if (found) {
       const it = result.find((r) => r.id === rowId);
       if (it) {
-        for (const col of ['name', 'text', 'rating', 'image_url', 'is_visible', 'sort_order']) {
+        for (const col of ['name', 'text', 'name_np', 'text_np', 'rating', 'image_url', 'is_visible', 'sort_order']) {
           if (d[col] !== undefined && d[col] !== null) it[col] = d[col];
         }
         it.draftState = 'modified';
@@ -105,7 +105,7 @@ export function adminReviews(db: DB): AdminRow[] {
         id: null,
         draft_id: d.draft_id as number | null,
         draftState: 'new',
-        name: d.name ?? '', text: d.text ?? '', rating: d.rating ?? 5,
+        name: d.name ?? '', text: d.text ?? '', name_np: d.name_np ?? '', text_np: d.text_np ?? '', rating: d.rating ?? 5,
         image_url: d.image_url ?? null, is_visible: d.is_visible ?? 1, sort_order: d.sort_order ?? 0,
       });
     }

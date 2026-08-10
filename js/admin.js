@@ -472,12 +472,19 @@
       body:
         '<div class="field" data-field-wrap="name"><label>Reviewer name <span class="req">*</span></label>' +
         '<input type="text" name="name" value="' + esc(rv.name || '') + '"><p class="field-error" data-error="name"></p></div>' +
+        '<div class="field" data-field-wrap="name_np"><label>Reviewer name (नेपाली)</label>' +
+        '<input type="text" name="name_np" value="' + esc(rv.name_np || '') + '">' +
+        '<p class="field-error" data-error="name_np"></p></div>' +
         '<div class="field" data-field-wrap="rating"><label>Rating</label>' +
         '<select name="rating">' + ratingOpts + '</select><p class="field-error" data-error="rating"></p></div>' +
         '<div class="field" data-field-wrap="text"><label>Review text <span class="req">*</span></label>' +
         '<textarea name="text" rows="4">' + esc(rv.text || '') + '</textarea>' +
         '<p class="hint">Demo reviews are clearly labelled and safe to replace or remove.</p>' +
         '<p class="field-error" data-error="text"></p></div>' +
+        '<div class="field" data-field-wrap="text_np"><label>Review text (नेपाली)</label>' +
+        '<textarea name="text_np" rows="4">' + esc(rv.text_np || '') + '</textarea>' +
+        '<p class="hint">Optional Nepali translation — shown when the website language is set to Nepali.</p>' +
+        '<p class="field-error" data-error="text_np"></p></div>' +
         '<div class="field"><label>Reviewer photo</label>' +
         '<div class="upload-block">' +
         (rv.image_url ? '<div class="upload-preview round"><img src="' + esc(rv.image_url) + '" alt=""></div>' : '') +

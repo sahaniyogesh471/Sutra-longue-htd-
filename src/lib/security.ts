@@ -65,7 +65,7 @@ export function securityHeaders(req: Request, res: Response, next: NextFunction)
       "font-src 'self' data: https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
       "media-src 'self' blob: https:",
-      "frame-src 'self' https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com",
+      "frame-src 'self' https://maps.google.com https://www.google.com https://www.youtube.com https://www.youtube-nocookie.com",
       "connect-src 'self' https:",
       "object-src 'none'",
       "base-uri 'self'",

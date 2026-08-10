@@ -1,5 +1,5 @@
 import { DB, initSchema, getDb, setBaselineSetting, setSetting } from './index.js';
-import { DISH_NP } from './translations.js';
+import { DISH_NP, REVIEW_NP } from './translations.js';
 
 /**
  * ORIGINAL BASELINE — the protected Sutra Lounge content.
@@ -231,17 +231,18 @@ function seedReviews(db: DB, force: boolean): boolean {
   const count = (db.prepare('SELECT COUNT(*) AS c FROM reviews').get() as { c: number }).c;
   if (count > 0 && !force) return false;
   const insertCurrent = db.prepare(
-    `INSERT INTO reviews (name, text, rating, image_url, is_visible, sort_order, created_at, updated_at)
-     VALUES (@name, @text, @rating, @image_url, 1, @sort_order, datetime('now'), datetime('now'))`
+    `INSERT INTO reviews (name, text, name_np, text_np, rating, image_url, is_visible, sort_order, created_at, updated_at)
+     VALUES (@name, @text, @name_np, @text_np, @rating, @image_url, 1, @sort_order, datetime('now'), datetime('now'))`
   );
   const insertBaseline = db.prepare(
-    `INSERT INTO reviews_baseline (baseline_ref, name, text, rating, image_url, sort_order, captured_at)
-     VALUES (@id, @name, @text, @rating, @image_url, @sort_order, datetime('now'))`
+    `INSERT INTO reviews_baseline (baseline_ref, name, text, name_np, text_np, rating, image_url, sort_order, captured_at)
+     VALUES (@id, @name, @text, @name_np, @text_np, @rating, @image_url, @sort_order, datetime('now'))`
   );
   const tx = db.transaction(() => {
     REVIEWS.forEach((r, i) => {
-      const info = insertCurrent.run({ name: r.name, text: r.text, rating: r.rating, image_url: r.image_url, sort_order: i + 1 });
-      insertBaseline.run({ id: Number(info.lastInsertRowid), name: r.name, text: r.text, rating: r.rating, image_url: r.image_url, sort_order: i + 1 });
+      const np = REVIEW_NP[r.name] ?? { name_np: '', text_np: '' };
+      const info = insertCurrent.run({ name: r.name, text: r.text, name_np: np.name_np, text_np: np.text_np, rating: r.rating, image_url: r.image_url, sort_order: i + 1 });
+      insertBaseline.run({ id: Number(info.lastInsertRowid), name: r.name, text: r.text, name_np: np.name_np, text_np: np.text_np, rating: r.rating, image_url: r.image_url, sort_order: i + 1 });
     });
   });
   tx();

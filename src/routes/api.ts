@@ -249,6 +249,8 @@ apiRouter.post('/reviews/save', (req, res) => {
   const text = String(b.text ?? '').trim();
   errors.name = required(name) ?? maxLen(name, 80) ?? undefined;
   errors.text = required(text) ?? maxLen(text, 800) ?? undefined;
+  errors.name_np = maxLen(b.name_np, 80) ?? undefined;
+  errors.text_np = maxLen(b.text_np, 800) ?? undefined;
   errors.rating = isIntRange(toInt(b.rating), 1, 5) ?? undefined;
   errors.image_url = isUrl(b.image_url, true) ?? undefined;
   errors.sort_order = isIntRange(toInt(b.sort_order), -9999, 9999) ?? undefined;
@@ -265,6 +267,8 @@ apiRouter.post('/reviews/save', (req, res) => {
     row_id: rowId,
     name,
     text,
+    name_np: optStr(b.name_np, 80) ?? '',
+    text_np: optStr(b.text_np, 800) ?? '',
     rating: toInt(b.rating, 5),
     image_url: optStr(b.image_url, 500),
     is_visible: boolInt(b.is_visible),
@@ -273,7 +277,7 @@ apiRouter.post('/reviews/save', (req, res) => {
 
   if (draftId) {
     db.prepare(
-      `UPDATE reviews_draft SET name=@name, text=@text, rating=@rating, image_url=@image_url,
+      `UPDATE reviews_draft SET name=@name, text=@text, name_np=@name_np, text_np=@text_np, rating=@rating, image_url=@image_url,
        is_visible=@is_visible, sort_order=@sort_order, updated_at=datetime('now')
        WHERE draft_id=@draft_id`
     ).run({ ...input, draft_id: draftId });

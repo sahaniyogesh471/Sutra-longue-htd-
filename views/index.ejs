@@ -315,13 +315,13 @@
                   <span class="<%= i <= r.rating ? '' : 'star-empty' %>">★</span>
                 <% } %>
               </div>
-              <p class="review-text"><%= r.text %></p>
+              <p class="review-text" data-np-text="<%= r.text_np %>"><%= r.text %></p>
               <div class="review-author">
                 <% if (r.image_url) { %>
                   <span class="review-avatar"><img src="<%= r.image_url %>" alt="Portrait of <%= r.name %>" loading="lazy" /></span>
                 <% } %>
                 <div>
-                  <strong><%= r.name %></strong>
+                  <strong data-np-name="<%= r.name_np %>"><%= r.name %></strong>
                 </div>
               </div>
             </article>

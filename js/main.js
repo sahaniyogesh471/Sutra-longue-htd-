@@ -294,6 +294,7 @@
     ['data-np-desc', 'data-en-desc'],
     ['data-np-badge', 'data-en-badge'],
     ['data-np-cat', 'data-en-cat'],
+    ['data-np-text', 'data-en-text'],
   ];
 
   function applyDishTranslations(lang) {

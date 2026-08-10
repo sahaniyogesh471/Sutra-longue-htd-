@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import Database from 'better-sqlite3';
 import { DATA_DIR, DB_PATH } from '../config.js';
 import { SCHEMA_SQL } from './schema.js';
-import { DISH_NP } from './translations.js';
+import { DISH_NP, REVIEW_NP } from './translations.js';
 
 export type DB = Database.Database;
 
@@ -46,6 +46,18 @@ export function migrate(db: DB): void {
       { name: 'category_np', def: 'TEXT' },
       { name: 'badge_np', def: 'TEXT' },
     ],
+    reviews: [
+      { name: 'name_np', def: "TEXT NOT NULL DEFAULT ''" },
+      { name: 'text_np', def: "TEXT NOT NULL DEFAULT ''" },
+    ],
+    reviews_baseline: [
+      { name: 'name_np', def: "TEXT NOT NULL DEFAULT ''" },
+      { name: 'text_np', def: "TEXT NOT NULL DEFAULT ''" },
+    ],
+    reviews_draft: [
+      { name: 'name_np', def: 'TEXT' },
+      { name: 'text_np', def: 'TEXT' },
+    ],
   };
 
   for (const [table, cols] of Object.entries(addCols)) {
@@ -58,6 +70,7 @@ export function migrate(db: DB): void {
   }
 
   backfillDishNp(db);
+  backfillReviewNp(db);
   backfillSettings(db);
 }
 
@@ -85,6 +98,34 @@ function backfillDishNp(db: DB): void {
     if (!t) continue;
     db.prepare(
       'UPDATE dishes_baseline SET name_np=@name_np, description_np=@description_np, category_np=@category_np, badge_np=@badge_np WHERE id=@id'
+    ).run({ ...t, id: r.id });
+  }
+}
+
+/**
+ * Fills Nepali translations into existing review rows whose name matches the
+ * seed data and whose text_np is still empty. Idempotent and safe to re-run.
+ */
+function backfillReviewNp(db: DB): void {
+  const rows = db
+    .prepare("SELECT id, name FROM reviews WHERE text_np = '' OR text_np IS NULL")
+    .all() as { id: number; name: string }[];
+  for (const r of rows) {
+    const t = REVIEW_NP[r.name];
+    if (!t) continue;
+    db.prepare(
+      "UPDATE reviews SET name_np=@name_np, text_np=@text_np, updated_at=datetime('now') WHERE id=@id"
+    ).run({ ...t, id: r.id });
+  }
+
+  const base = db
+    .prepare("SELECT id, name FROM reviews_baseline WHERE text_np = '' OR text_np IS NULL")
+    .all() as { id: number; name: string }[];
+  for (const r of base) {
+    const t = REVIEW_NP[r.name];
+    if (!t) continue;
+    db.prepare(
+      'UPDATE reviews_baseline SET name_np=@name_np, text_np=@text_np WHERE id=@id'
     ).run({ ...t, id: r.id });
   }
 }
