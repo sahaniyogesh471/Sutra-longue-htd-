@@ -1,0 +1,190 @@
+CONTINUE EXISTING SUTRA LOUNGE WORK — DO NOT START OVER
+
+You are continuing an existing Sutra Lounge project in /workspace.
+
+Read and follow these existing project files/instructions first:
+1. Resume Existing Work.txt
+2. REGRESSION FIX PROMPT.txt
+3. SUTRA LOUNGE — ADMIN DRAFT PREVIEW + ADMIN CREDENTIAL MANAGEMENT PROMPT.txt
+
+IMPORTANT:
+- Do NOT rebuild or redesign anything.
+- Do NOT reset/recreate the database.
+- Do NOT delete admin users or existing CMS data.
+- Do NOT modify unrelated features.
+- Do NOT commit or push anything.
+- Continue from the existing implementation exactly as it is.
+- First inspect the current workspace/git diff before changing anything.
+- Do not assume previous work is missing just because you are in a new conversation.
+
+CURRENT PROJECT STATUS:
+
+1. ADMIN VIEW DRAFT CSS BUG — FIXED
+Root cause:
+Relative assets such as:
+- css/style.css
+- css/menu.css
+- js/main.js
+- img/avatar-*.jpg
+
+were resolving under /admin/preview/... and hitting admin authentication instead of the public static routes.
+
+Implemented fix:
+- views/partials/head.ejs → absolute /css/style.css
+- src/content.ts → /css/menu.css
+- views/index.ejs → /js/main.js
+- Added publicImage() normalization in src/content.ts
+- Applied image normalization to dishes, reviews, gallery, hero images.
+
+Live asset checks previously passed.
+
+2. ADMIN CREDENTIAL MANAGEMENT — IMPLEMENTED
+Implemented:
+- Username change
+- Password change
+- Current-password verification
+- Password policy validation
+- Session invalidation
+- CSRF protection
+- Security audit events
+- Admin Security page
+- Recovery page
+- Login recovery notice
+
+Important files:
+- src/routes/admin.ts
+- src/routes/api.ts
+- views/admin/security.ejs
+- views/admin/recover.ejs
+- views/admin/login.ejs
+- views/admin/partials/sidebar.ejs
+- views/admin/admin.css
+- js/admin.js
+
+3. PERMANENT 4-DIGIT RECOVERY CODE — IMPLEMENTED
+Implemented:
+- admin_security table
+- security_events table
+- ADMIN_RECOVERY_CODE environment variable
+- src/lib/admin-security.ts
+- One-time recovery-code initialization
+- scrypt hashing using existing password hashing
+- Constant-time verification
+- Recovery code cannot be changed through Admin Panel/API
+- Recovery reset invalidates all sessions
+- Recovery attempts are rate limited
+- Secrets are never logged/stored in frontend
+
+4. VALIDATION
+src/lib/validate.ts now contains:
+- isUsername()
+- passwordError()
+
+5. SERVER WIRING
+src/server.ts calls:
+ensureRecoveryCode(db)
+
+after ensureAdminUser().
+
+6. PREVIOUS REGRESSION FIXES MUST REMAIN INTACT
+Earlier fixes include:
+- 5 reviews including Yogesh Sahani
+- Nepali review/menu translations
+- CSP Google Maps support
+- revisionPointer preservation
+- existing CMS/data fixes
+
+DO NOT BREAK THESE.
+
+7. VERIFICATION ALREADY COMPLETED
+- npx tsc --noEmit → PASS
+- node --check js/main.js js/admin.js → PASS
+- git diff --check → PASS
+- Temporary DB recovery E2E → ALL GREEN
+- Recovery session-destroy bug was fixed and re-tested
+- /admin/security endpoint E2E → 11/11 ALL GREEN
+
+NOW CONTINUE ONLY WITH THESE REMAINING TASKS:
+
+TASK 1 — AUTHENTICATED VIEW DRAFT TEST
+Use the existing app and authenticate safely using a temporary/test DB if the live credentials are unknown.
+
+Test:
+- /admin/preview
+- /admin/preview/menu
+
+Verify:
+- HTML renders correctly
+- CSS loads with HTTP 200
+- JS loads with HTTP 200
+- review images load with HTTP 200
+- dish/gallery/hero images load correctly
+- no /admin/preview/css/... asset paths remain
+- no authentication redirect occurs for public assets
+- View Draft visually/structurally matches the public website
+- Do not modify unrelated code unless a real regression is found
+
+TASK 2 — FULL REGRESSION SWEEP
+Run:
+- npx tsc --noEmit
+- node --check js/main.js
+- node --check js/admin.js
+- git diff --check
+
+Check important routes/statuses:
+- /
+- /menu.html
+- /admin/login
+- /admin/recover
+- unauthenticated /admin/security → should require authentication
+- unauthenticated admin API → should return appropriate 401
+- public CSS/JS/images → 200
+
+Also verify existing regression fixes are still intact.
+
+TASK 3 — LIVE RECOVERY CODE
+The current live DB contains a hashed recovery code, but the actual 4-digit value was not captured in the previous terminal log.
+
+DO NOT delete/reset the live admin_security row just to obtain the code.
+
+Prefer:
+- determine whether the code can safely be recovered from existing local evidence/logs, OR
+- document that production should set ADMIN_RECOVERY_CODE before first initialization.
+
+If doing local brute-force testing of the existing 4-digit hash is considered necessary, keep it strictly local and do not expose/log the actual secret unnecessarily.
+
+Do NOT weaken the permanent-code requirement.
+
+TASK 4 — FINAL REPORT
+After all testing, produce a strict final report based on:
+SUTRA LOUNGE — ADMIN DRAFT PREVIEW + ADMIN CREDENTIAL MANAGEMENT PROMPT.txt
+
+Report:
+- Requirement 1
+- Root cause
+- Fix
+- Verification
+- Requirement 2
+- Security implementation
+- Recovery implementation
+- Session security
+- Data safety
+- E2E test results
+- Regression results
+- Remaining issues, if any
+- Git status / uncommitted changes
+
+Be honest:
+- If something passes, say PASS.
+- If something fails, say FAIL and explain exactly why.
+- Do not claim visual/E2E testing passed unless actually tested.
+
+CRITICAL:
+Do not commit.
+Do not push.
+Do not reset database.
+Do not delete existing data.
+Do not reveal passwords or recovery-code secrets in the final report.
+
+START NOW:
+First inspect the current workspace and git diff, then continue from the remaining tasks above. Do not redo completed implementation work.
