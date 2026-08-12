@@ -97,6 +97,28 @@ export function effectiveReviews(db: DB): Record<string, unknown>[] {
   }));
 }
 
+/**
+ * Returns human-readable problems for every effective review that would be
+ * visible after publishing but is missing required EN or NP content. An empty
+ * array means every visible review is publishable.
+ */
+export function reviewPublishProblems(db: DB): string[] {
+  const problems: string[] = [];
+  for (const r of effectiveReviews(db)) {
+    if (Number(r.is_visible ?? 1) !== 1) continue;
+    const label = String(r.name ?? '').trim() || `review #${String(r.id ?? '?')}`;
+    const missing: string[] = [];
+    if (!String(r.name ?? '').trim()) missing.push('English name');
+    if (!String(r.text ?? '').trim()) missing.push('English review text');
+    if (!String(r.name_np ?? '').trim()) missing.push('Nepali name (नेपाली)');
+    if (!String(r.text_np ?? '').trim()) missing.push('Nepali review text (नेपाली)');
+    if (missing.length) {
+      problems.push(`${label} is missing: ${missing.join(', ')}.`);
+    }
+  }
+  return problems;
+}
+
 export function effectiveGallery(db: DB): Record<string, unknown>[] {
   const published = db.prepare('SELECT * FROM gallery').all() as Record<string, unknown>[];
   const drafts = db

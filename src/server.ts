@@ -7,6 +7,7 @@ import { getDb, initSchema } from './db/index.js';
 import { seedAll } from './db/seed.js';
 import { ensureAdminUser, sessionMiddleware } from './auth.js';
 import { csrfProtect, securityHeaders } from './lib/security.js';
+import { ensureUploadsDir } from './lib/media.js';
 import { adminRouter } from './routes/admin.js';
 import { buildPublicContent, pageLocals } from './content.js';
 
@@ -148,6 +149,7 @@ export function createApp() {
 export function startServer() {
   const db = getDb();
   initSchema(db);
+  ensureUploadsDir();
   const { seeded, tables } = seedAll(db);
   if (seeded) {
     console.log(`[seed] Baseline content created for: ${tables.join(', ')}`);
