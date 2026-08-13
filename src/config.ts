@@ -16,6 +16,7 @@ export const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-insecure-sessio
 
 export const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
+export const ADMIN_RECOVERY_CODE = process.env.ADMIN_RECOVERY_CODE || '';
 
 export const isProd = process.env.NODE_ENV === 'production';
 

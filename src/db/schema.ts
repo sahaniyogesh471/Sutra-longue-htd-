@@ -256,4 +256,26 @@ CREATE TABLE IF NOT EXISTS media (
   alt         TEXT NOT NULL DEFAULT '',
   created_at  TEXT NOT NULL DEFAULT (datetime('now'))
 );
+
+-- ============================================================
+-- ADMIN SECURITY  (single-row permanent recovery credential)
+--   Only the hashed recovery code is stored — never the plaintext.
+--   The id CHECK enforces exactly one logical configuration row.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS admin_security (
+  id            INTEGER PRIMARY KEY CHECK (id = 1),
+  recovery_hash TEXT NOT NULL,
+  created_at    TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- ============================================================
+-- SECURITY EVENTS  (audit trail — never stores secrets)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS security_events (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  event      TEXT NOT NULL,
+  detail     TEXT NOT NULL DEFAULT '',
+  ip         TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
 `;

@@ -1,0 +1,169 @@
+CONTINUE FROM THE CURRENT IMPLEMENTATION.
+
+Requirement 2 has now been implemented and tested. Do NOT rebuild it.
+
+Before declaring the task final, perform one final security-hardening pass and regression verification.
+
+CRITICAL SECURITY FIX
+
+The current implementation reportedly prints the plaintext "ADMIN_RECOVERY_CODE" once at server bootstrap.
+
+This is NOT acceptable for the final production implementation.
+
+The permanent 4-digit recovery code is a secret.
+
+Change the implementation so that:
+
+- The plaintext recovery code is NEVER printed to console/logs.
+- The plaintext recovery code is NEVER written to audit logs.
+- The plaintext recovery code is NEVER returned by an API.
+- The plaintext recovery code is NEVER rendered into HTML.
+- The plaintext recovery code is NEVER placed into frontend JS.
+- The plaintext recovery code is NEVER included in error messages.
+- The plaintext recovery code is NEVER stored in SQLite.
+- Only the secure hash is persisted.
+
+IMPORTANT:
+Do NOT change the immutable recovery-code behavior.
+
+If "ADMIN_RECOVERY_CODE" is supplied during first initialization:
+
+- hash it
+- store only the hash
+- never log the plaintext
+- never overwrite an existing recovery hash
+
+If no recovery code is supplied during first initialization:
+
+- keep the existing secure generation behavior only if the generated secret can be delivered safely without logging it.
+- Do NOT silently invent a way that leaves the administrator without access to the code.
+- If the current architecture cannot safely provision a generated code without logging it, document this as a deployment requirement instead of printing the secret.
+
+Do NOT expose the actual recovery code in your final report.
+
+VERIFY IMMUTABILITY
+
+Confirm there is no route/API/UI capable of:
+
+- changing recovery code
+- regenerating recovery code
+- replacing recovery hash
+- deleting the recovery configuration
+
+"ensureRecoveryCode()" must not overwrite an existing recovery row.
+
+FINAL SECURITY TESTS
+
+Use a temporary test database only.
+
+Test:
+
+1. Correct recovery code succeeds.
+2. Wrong recovery code fails.
+3. Recovery rate limit activates after 5 attempts within 15 minutes.
+4. Direct step-2 POST without recovery verification is blocked.
+5. Recovery reset changes credentials.
+6. Old credentials fail.
+7. New credentials work.
+8. All previous sessions are invalidated.
+9. Recovery code remains valid after credential reset.
+10. Recovery code cannot be changed through any admin UI/API.
+11. Password is never logged.
+12. Recovery code is never logged.
+13. Recovery hash is stored, not plaintext.
+14. No secret appears in API responses.
+15. No secret appears in rendered HTML or frontend JS.
+
+ADMIN CREDENTIAL TESTS
+
+Test:
+
+Username
+
+- current password required
+- invalid username rejected
+- duplicate username rejected
+- valid username succeeds
+- other sessions invalidated
+- CSRF enforced
+
+Password
+
+- current password required
+- weak password rejected
+- mismatch rejected
+- valid password succeeds
+- all sessions invalidated
+- old password fails
+- new password succeeds
+- CSRF enforced
+
+REQUIREMENT 1 REGRESSION
+
+Do NOT modify the existing Requirement 1 implementation.
+
+Verify:
+
+- "/admin/preview"
+- "/admin/preview/menu"
+- CSS loads with 200
+- JS loads with 200
+- review images load
+- dish images load
+- gallery images load
+- hero image loads
+- no "/admin/preview/css/..."
+- no "/admin/preview/js/..."
+- no "/admin/preview/img/..."
+- preview remains structurally equivalent to live website
+
+FULL STATIC CHECK
+
+Run:
+
+npx tsc --noEmit
+
+node --check js/main.js
+
+node --check js/admin.js
+
+git diff --check
+
+DATA SAFETY
+
+Confirm:
+
+- "data/sutra.db" was not reset.
+- Existing CMS records were not deleted.
+- Existing reviews were not deleted.
+- Existing dishes were not deleted.
+- Existing gallery was not deleted.
+- Existing opening hours were not changed.
+- Existing revisionPointer was preserved.
+
+GIT
+
+Do NOT commit.
+Do NOT push.
+
+Report the final "git status --short".
+
+FINAL REPORT
+
+Give a strict PASS/FAIL report.
+
+Include:
+
+1. Requirement 1 status
+2. Requirement 2 status
+3. Security hardening status
+4. Recovery flow E2E results
+5. Credential-management E2E results
+6. Regression results
+7. Data-safety verification
+8. Remaining genuine issues
+9. Git status
+
+NEVER include the actual recovery code, password, password hash, recovery hash, or other secret in the report.
+
+START WITH THE SECURITY-LOGGING FIX, THEN RUN THE COMPLETE FINAL VERIFICATION.

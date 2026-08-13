@@ -30,6 +30,12 @@
     <% if (error) { %>
       <div class="alert alert-error"><%= error %></div>
     <% } %>
+    <% if (notice === 'recovery-success') { %>
+      <div class="alert alert-success">Recovery complete. Sign in with your new credentials.</div>
+    <% } %>
+    <% if (notice === 'session-invalidated') { %>
+      <div class="alert alert-info">Your password was changed. Please sign in again.</div>
+    <% } %>
 
     <div class="field">
       <label for="username">Username</label>
@@ -40,6 +46,7 @@
       <input id="password" name="password" type="password" autocomplete="current-password" required>
     </div>
     <button class="btn btn-gold btn-block" type="submit">Sign in</button>
+    <p class="login-foot"><a href="/admin/recover">Forgot your credentials? Recover access</a></p>
   </form>
 </div>
 </body>

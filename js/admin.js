@@ -1144,12 +1144,74 @@
     }
   });
 
+  /* ---------------- Admin security ---------------- */
+
+  function wireSecurity() {
+    const usernameForm = document.getElementById('usernameForm');
+    const passwordForm = document.getElementById('passwordForm');
+
+    function setFieldError(form, key, msg) {
+      const wrap = form.querySelector('[data-field-wrap="' + key + '"]');
+      const errEl = form.querySelector('[data-error="' + key + '"]');
+      if (errEl) errEl.textContent = msg || '';
+      if (wrap) wrap.classList.toggle('is-error', Boolean(msg));
+    }
+
+    function clearFormErrors(form) {
+      form.querySelectorAll('.is-error').forEach(function (w) { w.classList.remove('is-error'); });
+      form.querySelectorAll('[data-error]').forEach(function (e) { e.textContent = ''; });
+    }
+
+    if (usernameForm) {
+      usernameForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        clearFormErrors(usernameForm);
+        const body = {
+          new_username: usernameForm.querySelector('[name="new_username"]').value,
+          current_password: usernameForm.querySelector('[name="current_password"]').value,
+        };
+        const r = await api('/admin/api/security/username', { body: body });
+        if (!r.ok) {
+          setFieldError(usernameForm, 'current_password', r.error || 'Could not update the username.');
+          toast(r.error || 'Could not update the username.', 'error');
+          return;
+        }
+        toast('Username updated.');
+        const field = document.getElementById('currentUsername');
+        if (field) field.value = r.username || '';
+        usernameForm.querySelector('[name="new_username"]').value = '';
+        usernameForm.querySelector('[name="current_password"]').value = '';
+      });
+    }
+
+    if (passwordForm) {
+      passwordForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        clearFormErrors(passwordForm);
+        const body = {
+          current_password: passwordForm.querySelector('[name="current_password"]').value,
+          new_password: passwordForm.querySelector('[name="new_password"]').value,
+          confirm_password: passwordForm.querySelector('[name="confirm_password"]').value,
+        };
+        const r = await api('/admin/api/security/password', { body: body });
+        if (!r.ok) {
+          setFieldError(passwordForm, 'current_password', r.error || 'Could not change the password.');
+          toast(r.error || 'Could not change the password.', 'error');
+          return;
+        }
+        toast('Password changed. Signing you out...');
+        setTimeout(function () { window.location.href = '/admin/login?notice=session-invalidated'; }, 900);
+      });
+    }
+  }
+
   /* ---------------- Init ---------------- */
 
   function init() {
     wireSettings();
     wireHours();
     wireGalleryReorder();
+    wireSecurity();
   }
 
   document.addEventListener('DOMContentLoaded', init);

@@ -203,6 +203,18 @@ export function fullImage(url: string | null): string {
   return url;
 }
 
+/**
+ * Normalises a stored image path to an absolute URL. Admin preview renders
+ * public templates under /admin/preview, so bare relative paths such as
+ * `img/avatar-rs.jpg` would otherwise resolve to /admin/preview/img/... and
+ * hit admin auth/404 instead of the public static route.
+ */
+export function publicImage(url: string | null): string {
+  if (!url) return '';
+  if (/^(https?:)?\/\//i.test(url) || url.startsWith('/')) return url;
+  return `/${url}`;
+}
+
 /** Normalises a video setting into an embeddable iframe URL. */export function embedVideo(url: string | null, autoplay = false): string {
   if (!url) return '';
   let u = url.trim();
@@ -316,7 +328,7 @@ export function pageLocals(view: 'index' | 'menu', c: PublicContent, extra: Reco
       view === 'menu'
         ? `${c.s('restaurant.name')} full digital menu — group platters, snacks & pizza, cocktails & hookah. Live prices. Order on WhatsApp or reserve your table in ${c.s('contact.city')}.`
         : `${c.s('restaurant.name')} in ${c.address} — ${c.s('restaurant.tagline')} Reserve your table today.`,
-    pageCss: view === 'menu' ? '<link rel="stylesheet" href="css/menu.css?v=' + (extra.assetsV ?? 1) + '" />' : '',
+    pageCss: view === 'menu' ? '<link rel="stylesheet" href="/css/menu.css?v=' + (extra.assetsV ?? 1) + '" />' : '',
     canonical: requestHost ? `https://${requestHost}${canonicalPath}` : '',
     ...extra,
     preview: extra.preview ?? false,
@@ -394,11 +406,14 @@ export function buildPublicContent(db: DB, opts: { draft?: boolean } = {}): Publ
 
   const dishes = dishesFromRows(dishesRaw).map((d) => ({
     ...d,
-    image_url: sizedImage(d.image_url, 600, 70),
+    image_url: publicImage(sizedImage(d.image_url, 600, 70)),
   }));
   const signature = dishes.filter((d) => d.type === 'signature');
   const bestsellers = dishes.filter((d) => d.type === 'bestseller');
-  const reviews = reviewsFromRows(reviewsRaw);
+  const reviews = reviewsFromRows(reviewsRaw).map((r) => ({
+    ...r,
+    image_url: publicImage(r.image_url),
+  }));
   const gallery = galleryFromRows(galleryRaw);
   const hours = hoursFromRows(hoursRaw);
 
@@ -407,16 +422,16 @@ export function buildPublicContent(db: DB, opts: { draft?: boolean } = {}): Publ
   const address = s('contact.address');
   const mapsUrl = s('contact.maps_url');
 
-  const galleryFull = gallery.map((g) => ({ ...g, image_url: fullImage(g.image_url) }));
+  const galleryFull = gallery.map((g) => ({ ...g, image_url: publicImage(fullImage(g.image_url)) }));
   const galleryItems = gallery.map((g, i) => ({
-    thumb: sizedImage(g.image_url, 600, 70),
+    thumb: publicImage(sizedImage(g.image_url, 600, 70)),
     full: galleryFull[i].image_url,
     alt: g.alt,
     is_featured: g.is_featured,
   }));
 
   const heroSlides: { image: string }[] = [];
-  const heroImage = sizedImage(s('hero.image'), 1600, 75);
+  const heroImage = publicImage(sizedImage(s('hero.image'), 1600, 75));
   if (heroImage) heroSlides.push({ image: heroImage });
   for (const g of galleryFull.slice(0, 2)) heroSlides.push({ image: g.image_url });
   while (heroSlides.length < 3) {

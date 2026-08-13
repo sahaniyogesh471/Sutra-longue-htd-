@@ -3,7 +3,7 @@ import type { Request, Response, NextFunction } from 'express';
 import { ADMIN_PASSWORD, ADMIN_USERNAME, SESSION_SECRET, SESSION_SECURE } from './config.js';
 import { getDb } from './db/index.js';
 import { SqliteSessionStore } from './lib/session-store.js';
-import { generatePassword, hashPassword } from './lib/password.js';
+import { hashPassword } from './lib/password.js';
 
 export interface AdminSession {
   admin: { id: number; username: string; display_name: string; role: string };
@@ -46,23 +46,25 @@ export function ensureAdminUser(): void {
   const count = (db.prepare('SELECT COUNT(*) AS c FROM admin_users').get() as { c: number }).c;
   if (count > 0) return;
 
-  let password = ADMIN_PASSWORD;
-  if (!password) password = generatePassword();
-  const hash = hashPassword(password);
+  if (!ADMIN_PASSWORD) {
+    console.log('');
+    console.log('==========================================================');
+    console.log('  Admin account is NOT configured.');
+    console.log('  Deployment requirement:');
+    console.log('  Set ADMIN_PASSWORD before the first server start to');
+    console.log('  create the initial administrator account. The password');
+    console.log('  is never logged or generated-and-printed by this server.');
+    console.log('==========================================================');
+    console.log('');
+    return;
+  }
+
+  const hash = hashPassword(ADMIN_PASSWORD);
 
   db.prepare(
     `INSERT INTO admin_users (username, password_hash, display_name, role, is_active, created_at, updated_at)
      VALUES (?, ?, ?, 'admin', 1, datetime('now'), datetime('now'))`
   ).run(ADMIN_USERNAME, hash, ADMIN_USERNAME);
 
-  console.log('');
-  console.log('==========================================================');
-  console.log('  Admin account created (no default password was set).');
-  console.log(`  Username : ${ADMIN_USERNAME}`);
-  console.log(`  Password : ${password}`);
-  if (!ADMIN_PASSWORD) {
-    console.log('  (Generated automatically. Set ADMIN_PASSWORD next time to fix it.)');
-  }
-  console.log('==========================================================');
-  console.log('');
+  console.log('[auth] Initial administrator account created.');
 }

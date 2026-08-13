@@ -57,6 +57,11 @@ a:hover { color: var(--gold-soft); }
 }
 .alert { padding: 12px 14px; border-radius: 10px; font-size: 13.5px; margin-bottom: 16px; }
 .alert-error { background: rgba(224,96,79,.12); border: 1px solid rgba(224,96,79,.4); color: #f2a49a; }
+.alert-success { background: rgba(76,175,80,.12); border: 1px solid rgba(76,175,80,.4); color: #9fe0a2; }
+.alert-info { background: rgba(64,156,255,.12); border: 1px solid rgba(64,156,255,.4); color: #9cc6ff; }
+.login-foot { margin-top: 18px; text-align: center; font-size: 13px; }
+.login-foot a { color: var(--gold); text-decoration: none; }
+.login-foot a:hover { text-decoration: underline; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; cursor: pointer; border-radius: 10px; font-family: var(--font-sans); font-weight: 700; font-size: 14px; padding: 12px 20px; transition: transform .15s, filter .15s, background .2s; }
 .btn:hover { transform: translateY(-1px); }
 .btn-gold { background: var(--grad-gold); color: #1d1406; }

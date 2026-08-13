@@ -95,3 +95,39 @@ export function toInt(value: unknown, fallback = 0): number {
   const n = Number(value);
   return Number.isFinite(n) ? Math.round(n) : fallback;
 }
+
+const USERNAME_RE = /^[A-Za-z0-9_.-]{3,50}$/;
+
+/** Username validation: 3–50 chars of A-Z, a-z, 0-9, _, ., -. */
+export function isUsername(value: unknown): string | null {
+  const s = typeof value === 'string' ? value.trim() : '';
+  if (!s) return 'Username is required.';
+  if (s.length < 3 || s.length > 50) return 'Username must be 3–50 characters.';
+  if (!USERNAME_RE.test(s)) return 'Username may only contain letters, numbers, "_", "." and "-".';
+  return null;
+}
+
+const COMMON_PASSWORDS = new Set([
+  'password', 'password1', 'password123', 'passw0rd', '12345678', '123456789',
+  '1234567890', '12345678910', 'qwerty', 'qwerty123', 'qwertyuiop', 'letmein',
+  'letmein123', 'admin', 'admin123', 'admin1234', 'welcome', 'welcome1',
+  'welcome123', 'monkey', 'monkey123', 'dragon', 'dragon123', 'football',
+  'baseball', 'abc123', 'abc12345', 'abcd1234', '11111111', '111111111',
+  '00000000', '12341234', 'iloveyou', 'superman', 'princess', 'sutra1234',
+  'changeme', 'changeme123',
+]);
+
+const SEQUENTIAL_RE = /(0123456789|1234567890|abcdefghij|qwertyuiop|asdfghjkl|zxcvbnm)/i;
+
+/** Password policy: 8–128 chars, not trivially weak/repeated/sequential. */
+export function passwordError(value: unknown): string | null {
+  const s = typeof value === 'string' ? value : '';
+  if (!s) return 'Password is required.';
+  if (s.length < 8) return 'Password must be at least 8 characters.';
+  if (s.length > 128) return 'Password must be 128 characters or fewer.';
+  if (/^(.)\1+$/.test(s)) return 'Password must not be a repeated character.';
+  if (/(.)\1{4,}/.test(s)) return 'Password must not contain long runs of the same character.';
+  if (SEQUENTIAL_RE.test(s.toLowerCase())) return 'Password must not be a simple sequential string.';
+  if (COMMON_PASSWORDS.has(s.toLowerCase())) return 'Password is too common — choose something harder to guess.';
+  return null;
+}

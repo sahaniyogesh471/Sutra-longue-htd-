@@ -2,8 +2,15 @@ import { Router, type Request, type Response, type NextFunction } from 'express'
 import rateLimit from 'express-rate-limit';
 import { requireAuth } from '../auth.js';
 import { getDb } from '../db/index.js';
-import { verifyPassword } from '../lib/password.js';
+import { verifyPassword, hashPassword } from '../lib/password.js';
 import { getCsrfToken } from '../lib/security.js';
+import {
+  recoveryConfigured,
+  verifyRecoveryCode,
+  auditSecurity,
+  invalidateAdminSessions,
+} from '../lib/admin-security.js';
+import { isUsername, passwordError } from '../lib/validate.js';
 import { apiRouter } from './api.js';
 import { adminDishes, adminReviews, adminGallery } from '../lib/admin-lists.js';
 import {
@@ -25,12 +32,23 @@ const loginLimiter = rateLimit({
   message: { error: 'Too many login attempts. Please try again later.' },
 });
 
+const recoveryLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many recovery attempts. Please try again later.' },
+});
+
 adminRouter.get('/login', (req, res) => {
   if ((req.session as { admin?: unknown } | undefined)?.admin) {
     res.redirect('/admin');
     return;
   }
-  res.render('admin/login', { csrf: getCsrfToken(req), error: null });
+  const notice = ['recovery-success', 'session-invalidated'].includes(String(req.query.notice ?? ''))
+    ? String(req.query.notice)
+    : null;
+  res.render('admin/login', { csrf: getCsrfToken(req), error: null, notice });
 });
 
 adminRouter.post('/login', loginLimiter, (req, res) => {
@@ -39,6 +57,7 @@ adminRouter.post('/login', loginLimiter, (req, res) => {
     res.status(400).render('admin/login', {
       csrf: getCsrfToken(req),
       error: 'Please enter both username and password.',
+      notice: null,
     });
     return;
   }
@@ -54,6 +73,7 @@ adminRouter.post('/login', loginLimiter, (req, res) => {
     res.status(401).render('admin/login', {
       csrf: getCsrfToken(req),
       error: 'Invalid username or password.',
+      notice: null,
     });
     return;
   }
@@ -75,7 +95,145 @@ adminRouter.post('/logout', (req, res) => {
   });
 });
 
+/* ===================================================================== */
+/* RECOVERY — two-step flow (public, rate limited)                       */
+/* ===================================================================== */
+
+interface RecoveryState {
+  verified: boolean;
+}
+
+const RECOVERY_MSG: Record<string, string> = {
+  'invalid-code': 'That recovery code was not accepted. Please try again.',
+  'reset-complete': 'Recovery complete. Sign in with your new credentials.',
+};
+
+function renderRecovery(res: Response, opts: { csrf: string; step: 1 | 2; error: string | null; notice: string | null }) {
+  res.render('admin/recover', {
+    csrf: opts.csrf,
+    step: opts.step,
+    error: opts.error,
+    notice: opts.notice,
+    usernameValue: '',
+    fieldErrors: {},
+    isRecovery: true,
+  });
+}
+
+adminRouter.get('/recover', (req, res) => {
+  if ((req.session as { admin?: unknown } | undefined)?.admin) {
+    res.redirect('/admin');
+    return;
+  }
+  renderRecovery(res, { csrf: getCsrfToken(req), step: 1, error: null, notice: null });
+});
+
+adminRouter.post('/recover', recoveryLimiter, (req, res) => {
+  const db = getDb();
+  const body = (req.body ?? {}) as { code?: string; username?: string; password?: string; confirm?: string; step?: string };
+  const recovery = (req.session as { recovery?: RecoveryState }).recovery;
+
+  const isStepTwo = String(body.step ?? '') === '2' && recovery?.verified;
+
+  if (!isStepTwo) {
+    // Step 1 — verify the 4-digit code.
+    const code = String(body.code ?? '').trim();
+    if (!/^\d{4}$/.test(code)) {
+      auditSecurity(db, 'recovery_attempt_failed', 'invalid code format', req);
+      renderRecovery(res, { csrf: getCsrfToken(req), step: 1, error: RECOVERY_MSG['invalid-code'], notice: null });
+      return;
+    }
+    if (!verifyRecoveryCode(db, code)) {
+      auditSecurity(db, 'recovery_attempt_failed', 'wrong code', req);
+      renderRecovery(res, { csrf: getCsrfToken(req), step: 1, error: RECOVERY_MSG['invalid-code'], notice: null });
+      return;
+    }
+    (req.session as { recovery?: RecoveryState }).recovery = { verified: true };
+    auditSecurity(db, 'recovery_verified', 'recovery code accepted', req);
+    renderRecovery(res, { csrf: getCsrfToken(req), step: 2, error: null, notice: null });
+    return;
+  }
+
+  // Step 2 — set new username + password.
+  const username = String(body.username ?? '').trim();
+  const password = String(body.password ?? '');
+  const confirm = String(body.confirm ?? '');
+  const errors: Record<string, string> = {};
+  const uErr = isUsername(username);
+  if (uErr) errors.username = uErr;
+  const pErr = passwordError(password);
+  if (pErr) errors.password = pErr;
+  if (password !== confirm) errors.confirm = 'Passwords do not match.';
+  if (username && password.toLowerCase() === username.toLowerCase()) {
+    errors.password = 'Password must not equal the username.';
+  }
+  if (Object.keys(errors).length) {
+    res.status(400).render('admin/recover', {
+      csrf: getCsrfToken(req),
+      step: 2,
+      error: null,
+      notice: null,
+      fieldErrors: errors,
+      usernameValue: username,
+      isRecovery: true,
+    });
+    return;
+  }
+
+  const user = db
+    .prepare('SELECT * FROM admin_users WHERE id = (SELECT id FROM admin_users ORDER BY id LIMIT 1)')
+    .get() as { id: number; username: string; password_hash: string; display_name: string } | undefined;
+  if (!user) {
+    renderRecovery(res, { csrf: getCsrfToken(req), step: 1, error: 'No administrator account exists.', notice: null });
+    return;
+  }
+
+  // Duplicate username check against the other admin rows.
+  const dup = db.prepare('SELECT id FROM admin_users WHERE username = ? AND id != ?').get(username, user.id);
+  if (dup) {
+    res.status(400).render('admin/recover', {
+      csrf: getCsrfToken(req),
+      step: 2,
+      error: null,
+      notice: null,
+      fieldErrors: { username: 'That username is already taken.' },
+      usernameValue: username,
+      isRecovery: true,
+    });
+    return;
+  }
+
+  db.prepare(
+    `UPDATE admin_users SET username = ?, password_hash = ?, display_name = ?, updated_at = datetime('now') WHERE id = ?`
+  ).run(username, hashPassword(password), username, user.id);
+
+  // Invalidate ALL sessions (including the current one).
+  db.prepare('DELETE FROM sessions').run();
+  auditSecurity(db, 'recovery_reset_completed', `admin #${user.id} reset via recovery`, req);
+  req.session.destroy(() => {
+    res.clearCookie('sutra.sid');
+    res.redirect('/admin/login?notice=recovery-success');
+  });
+});
+
 adminRouter.use(requireAuth);
+
+/* ===================================================================== */
+/* SECURITY — authenticated credential management                        */
+/* ===================================================================== */
+
+adminRouter.get('/security', (req, res) => {
+  const db = getDb();
+  const events = db
+    .prepare('SELECT event, detail, ip, created_at FROM security_events ORDER BY id DESC LIMIT 40')
+    .all() as { event: string; detail: string; ip: string; created_at: string }[];
+  res.render('admin/security', {
+    ...pageBase(req, res, { title: 'Admin Security', crumb: 'Username, password & recovery', active: 'security' }),
+    recoveryConfigured: recoveryConfigured(db),
+    currentUsername: (res.locals.admin as { username?: string } | undefined)?.username ?? '',
+    events,
+  });
+});
 
 /* ---- JSON API (all mutations require an authenticated session) ---- */
 adminRouter.use('/api', apiRouter);

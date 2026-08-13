@@ -1,0 +1,515 @@
+CONTINUE FROM ACTUAL REPOSITORY STATE — IMPLEMENT MISSING REQUIREMENT 2 ONLY
+
+You have now verified the actual "/workspace" repository and confirmed that the previous handover claim was incorrect:
+
+- "src/lib/admin-security.ts" does NOT exist.
+- "views/admin/security.ejs" does NOT exist.
+- "views/admin/recover.ejs" does NOT exist.
+- "admin_security" and "security_events" tables do NOT exist.
+- "ADMIN_RECOVERY_CODE" handling does NOT exist.
+- "ensureRecoveryCode()" does NOT exist.
+- "/admin/security" and "/admin/recover" routes do NOT exist.
+- "isUsername()" / "passwordError()" do NOT exist.
+
+Therefore, Requirement 2 is genuinely unfinished in this checkout.
+
+ABSOLUTE RULES
+
+1. Do NOT redo Requirement 1.
+2. Do NOT modify the already-fixed View Draft CSS/image-path implementation unless a direct regression is discovered.
+3. Do NOT redesign the website or admin panel.
+4. Do NOT reset, recreate, delete, or reseed the production database.
+5. Do NOT delete the existing admin account.
+6. Do NOT overwrite existing CMS/content/reviews/dishes/gallery data.
+7. Use additive database migrations only.
+8. Preserve the existing password hashing implementation.
+9. Do NOT weaken authentication, CSRF, rate limiting, or session security.
+10. Do NOT hardcode the recovery code into frontend JavaScript.
+11. NEVER log passwords, password hashes, recovery codes, or secrets.
+12. The permanent 4-digit recovery code MUST NOT be changeable from the Admin Panel or any normal API.
+13. Do NOT create any UI/API that changes or regenerates the permanent recovery code after initialization.
+14. Do NOT commit or push.
+15. Before editing, inspect the existing architecture and follow its patterns.
+16. Make the smallest targeted implementation necessary.
+17. After implementation, test everything. Do not claim PASS without actual verification.
+
+---
+
+REQUIREMENT 2 — IMPLEMENT NOW
+
+Implement admin credential management with TWO independent methods.
+
+METHOD 1 — Normal Admin Panel Credential Management
+
+Create an authenticated Admin Security page where the currently authenticated administrator can:
+
+A. Change username
+
+Requirements:
+
+- Require current password before changing username.
+- Validate username.
+- Username length: 3–50 characters.
+- Allowed characters:
+  "A-Z", "a-z", "0-9", "_", ".", "-"
+- Reject duplicate usernames.
+- Preserve the existing admin account.
+- Do not create unnecessary additional admin accounts.
+- Update the current session identity safely.
+- Invalidate other sessions for that admin.
+- Prevent session fixation.
+- Preserve CSRF protection.
+- Never expose password/hash values in API responses.
+
+B. Change password
+
+Require:
+
+- Current password
+- New password
+- Confirm new password
+
+Password policy:
+
+- Minimum 8 characters.
+- Maximum 128 characters.
+- Must not equal the username.
+- Reject obvious/common weak passwords.
+- Reject obviously repeated-character passwords.
+- Reject simple sequential passwords where the existing validation architecture supports this.
+
+Use the project's EXISTING password hashing implementation.
+
+After successful password change:
+
+- Invalidate ALL existing sessions for that admin, including the current session.
+- Force a fresh login.
+- Old password must no longer authenticate.
+- Prevent session fixation.
+- Show an appropriate success message after fresh login.
+
+---
+
+METHOD 2 — PERMANENT 4-DIGIT EMERGENCY RECOVERY
+
+Implement an emergency recovery mechanism independent of the normal password.
+
+Recovery code requirements
+
+The recovery credential is exactly 4 digits.
+
+It is PERMANENT.
+
+Once initialized:
+
+- It cannot be changed from the Admin Panel.
+- It cannot be changed through the normal API.
+- It cannot be reset through the Admin Panel.
+- There must be no "change recovery code" button.
+- There must be no endpoint for regenerating it.
+- Existing stored recovery hash must never be overwritten.
+
+Store ONLY a secure hash using the existing project's password hashing mechanism.
+
+Never store the plaintext recovery code in the database.
+
+Initialization
+
+Add an environment variable:
+
+"ADMIN_RECOVERY_CODE"
+
+If it is supplied during first initialization, use it.
+
+If no recovery code exists yet and no environment value is supplied, implement a secure first-time initialization mechanism consistent with the project's architecture.
+
+The actual code must NEVER be placed into frontend JavaScript, HTML, API responses, database plaintext, or ordinary audit logs.
+
+IMPORTANT:
+
+Do NOT destroy or replace an existing recovery hash just to create a new code.
+
+---
+
+DATABASE
+
+Add additive schema support.
+
+Create a single-row table such as:
+
+"admin_security"
+
+Fields should minimally support:
+
+- id
+- recovery_hash
+- created_at
+
+Enforce one logical recovery configuration row.
+
+Also create an audit table such as:
+
+"security_events"
+
+Fields should minimally support:
+
+- id
+- event
+- detail
+- ip
+- created_at
+
+Do not store secrets in "detail".
+
+Use the project's existing SQLite/schema/migration conventions.
+
+Do NOT reset the database.
+
+---
+
+RECOVERY UI
+
+Add:
+
+"/admin/recover"
+
+The login page should contain a safe link such as:
+
+"Forgot username or password?"
+
+Recovery should be a controlled two-step process:
+
+Step 1
+
+User enters the 4-digit recovery code.
+
+Requirements:
+
+- Rate limit attempts.
+- Do not reveal whether the stored code/hash exists.
+- Wrong code must fail safely.
+- Do not log the actual code.
+- Do not place the code in the URL.
+
+Step 2
+
+After successful verification, allow the administrator to set:
+
+- new username
+- new password
+- confirm password
+
+The reset POST must be protected by a recovery-session verification state.
+
+Do NOT trust only a frontend flag.
+
+Re-verify the recovery authorization server-side where appropriate.
+
+After successful reset:
+
+- Update the existing admin account.
+- Delete/invalidate all existing sessions.
+- Prevent old credentials from working.
+- Redirect to login.
+- Show a safe recovery-success notice.
+
+---
+
+RATE LIMITING
+
+Recovery attempts must be rate limited.
+
+Target policy:
+
+- Maximum 5 attempts per 15 minutes per IP.
+
+Use the existing rate-limiting dependency/pattern in the project.
+
+Do not invent a second incompatible rate-limiter architecture.
+
+---
+
+AUDIT LOGGING
+
+Record security events such as:
+
+- failed admin login
+- username changed
+- password changed
+- recovery attempt failed
+- recovery succeeded
+- recovery reset completed
+- rate-limit/lockout event where appropriate
+
+NEVER record:
+
+- password
+- password hash
+- recovery code
+- recovery hash
+- session secret
+- any other secret
+
+---
+
+SESSION SECURITY
+
+Inspect the existing session implementation first.
+
+Implement using the project's existing session architecture.
+
+Requirements:
+
+Username change
+
+- Current session remains valid only if safely updated.
+- Other sessions for that admin are invalidated.
+
+Password change
+
+- ALL sessions for that admin are invalidated.
+- Current session must also be invalidated.
+- Fresh login required.
+
+Recovery reset
+
+- ALL sessions for that admin are invalidated.
+- Fresh login required.
+
+Do not introduce session fixation vulnerabilities.
+
+---
+
+ADMIN SECURITY PAGE
+
+Create an authenticated page:
+
+"/admin/security"
+
+It should provide:
+
+1. Change username
+2. Change password
+3. Recovery status
+
+Recovery status may show something safe such as:
+
+- Recovery configured: Yes
+
+It MUST NOT show:
+
+- recovery code
+- recovery hash
+- partial recovery code
+- secret environment values
+
+Do not add a recovery-code editing interface.
+
+Add the page to the existing admin sidebar/navigation following the current design.
+
+Use the existing admin JS/API/toast conventions.
+
+---
+
+API
+
+Add authenticated security endpoints following the existing API architecture.
+
+Suggested endpoints:
+
+- GET "/admin/api/security/status"
+- POST "/admin/api/security/username"
+- POST "/admin/api/security/password"
+
+For sensitive operations:
+
+- Require current password.
+- Require CSRF protection.
+- Validate all input server-side.
+- Return safe JSON only.
+- Never return hashes/secrets.
+
+Recovery routes may remain under the normal admin router rather than exposing secrets through the API.
+
+---
+
+LOGIN PAGE
+
+Add:
+
+"Forgot username or password?"
+
+linking to:
+
+"/admin/recover"
+
+After successful recovery, provide a safe success notice on login.
+
+Do not reveal which credentials were previously valid.
+
+---
+
+IMPLEMENTATION PROCESS
+
+Before editing:
+
+1. Inspect:
+   - "src/routes/admin.ts"
+   - "src/routes/api.ts"
+   - "src/server.ts"
+   - "src/db/schema.ts"
+   - "src/lib/password.ts"
+   - "src/lib/security.ts"
+   - "src/lib/validate.ts"
+   - existing admin views
+   - existing admin JS
+2. Understand the current session and CSRF architecture.
+3. Follow existing coding conventions.
+4. Implement only Requirement 2.
+
+DO NOT modify Requirement 1 unnecessarily.
+
+---
+
+TESTING — MANDATORY
+
+Use a TEMPORARY TEST DATABASE for destructive/authentication E2E testing.
+
+Do NOT reset the real "data/sutra.db".
+
+Use known test credentials and a known test recovery code in the temporary database.
+
+Test all of the following:
+
+Recovery
+
+1. Recovery page loads.
+2. Wrong recovery code fails.
+3. Correct recovery code succeeds.
+4. More than 5 attempts within 15 minutes are rate limited.
+5. Recovery reset requires verified recovery session.
+6. New username/password can be set.
+7. Old credentials fail.
+8. New credentials work.
+9. All old sessions are invalidated.
+10. Login success notice appears.
+11. Recovery code remains unchanged after reset.
+12. Recovery code cannot be changed through any admin endpoint.
+
+Username change
+
+1. Current password required.
+2. Invalid username rejected.
+3. Duplicate username rejected.
+4. Valid username changes successfully.
+5. Current session identity updates safely.
+6. Other sessions are invalidated.
+7. CSRF is enforced.
+
+Password change
+
+1. Current password required.
+2. Weak password rejected.
+3. Confirmation mismatch rejected.
+4. Valid password accepted.
+5. All sessions invalidated.
+6. Old password fails.
+7. New password succeeds.
+8. CSRF is enforced.
+
+Security
+
+Verify:
+
+- No password appears in logs.
+- No recovery code appears in logs.
+- No secret appears in frontend JS.
+- Recovery hash is stored hashed.
+- Recovery hash cannot be retrieved through an API.
+- Recovery code cannot be modified through Admin Panel.
+- Existing admin account remains intact.
+- Existing CMS data remains intact.
+
+---
+
+REGRESSION TEST
+
+After Requirement 2 implementation:
+
+Run:
+
+"npx tsc --noEmit"
+
+"node --check js/main.js"
+
+"node --check js/admin.js"
+
+"git diff --check"
+
+Also verify Requirement 1 remains intact:
+
+- "/admin/preview"
+- "/admin/preview/menu"
+- "/css/style.css"
+- "/css/menu.css"
+- "/js/main.js"
+- review images
+- dish images
+- gallery images
+- hero image
+
+Do not claim browser/visual verification unless an actual browser is available.
+
+---
+
+FINAL REPORT
+
+At the end provide a strict report:
+
+Requirement 1
+
+- Status
+- Root cause
+- Existing fix
+- Verification
+
+Requirement 2
+
+- Status
+- Username management
+- Password management
+- Recovery mechanism
+- Session security
+- CSRF
+- Rate limiting
+- Audit logging
+
+Database Safety
+
+- Tables added
+- Existing data preserved
+- No reset/reseed/delete
+
+E2E Results
+
+Give exact PASS/FAIL results.
+
+Regression Results
+
+Give exact PASS/FAIL results.
+
+Remaining Issues
+
+Only genuine issues.
+
+Git Status
+
+List modified/untracked files.
+
+IMPORTANT:
+Do not commit.
+Do not push.
+Do not fabricate test results.
+Do not expose any password or recovery-code secret.
+
+START IMPLEMENTATION NOW.

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head'); %>
+</head>
+<body>
+<div class="admin-shell">
+  <%- include('partials/sidebar'); %>
+  <main class="main">
+    <%- include('partials/topbar'); %>
+
+    <form id="usernameForm" class="stack" data-section="security-username">
+      <div class="card">
+        <h3>Admin account</h3>
+        <div class="field">
+          <label>Current username</label>
+          <input id="currentUsername" type="text" value="<%= currentUsername %>" disabled>
+        </div>
+        <div class="field" data-field-wrap="new_username">
+          <label for="new_username">New username <span class="req">*</span></label>
+          <input id="new_username" name="new_username" type="text" minlength="3" maxlength="50" autocomplete="off" placeholder="3–50 characters: letters, numbers, _ . -">
+          <p class="field-error" data-error="new_username"></p>
+        </div>
+        <div class="field" data-field-wrap="current_password">
+          <label for="username_current_password">Current password <span class="req">*</span></label>
+          <input id="username_current_password" name="current_password" type="password" autocomplete="current-password">
+          <p class="field-error" data-error="current_password"></p>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-gold" type="submit">Save username</button>
+        </div>
+      </div>
+    </form>
+
+    <form id="passwordForm" class="stack" data-section="security-password">
+      <div class="card">
+        <h3>Change password</h3>
+        <div class="field" data-field-wrap="current_password">
+          <label for="pw_current_password">Current password <span class="req">*</span></label>
+          <input id="pw_current_password" name="current_password" type="password" autocomplete="current-password">
+          <p class="field-error" data-error="current_password"></p>
+        </div>
+        <div class="field" data-field-wrap="new_password">
+          <label for="new_password">New password <span class="req">*</span></label>
+          <input id="new_password" name="new_password" type="password" autocomplete="new-password" minlength="8" maxlength="128">
+          <p class="field-error" data-error="new_password"></p>
+        </div>
+        <div class="field" data-field-wrap="confirm_password">
+          <label for="confirm_password">Confirm new password <span class="req">*</span></label>
+          <input id="confirm_password" name="confirm_password" type="password" autocomplete="new-password" minlength="8" maxlength="128">
+          <p class="field-error" data-error="confirm_password"></p>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-gold" type="submit">Change password</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="card">
+      <h3>Recovery code</h3>
+      <% if (recoveryConfigured) { %>
+        <p class="muted">A permanent 4-digit recovery code is configured. It lets you reset your admin credentials if the password is lost.</p>
+        <ul class="list">
+          <li><span class="k">Status</span><span class="v"><span class="pill pill-ok">Configured</span></span></li>
+          <li><span class="k">Changeable</span><span class="v">No — the permanent code cannot be changed or regenerated from this panel.</span></li>
+          <li><span class="k">Use it at</span><span class="v"><a href="/admin/recover">/admin/recover</a></span></li>
+        </ul>
+      <% } else { %>
+        <p class="muted">No recovery code is configured. Restart the server with <code>ADMIN_RECOVERY_CODE</code> set to initialize one.</p>
+      <% } %>
+    </div>
+
+    <div class="card">
+      <h3>Recent security events</h3>
+      <% if (events.length === 0) { %>
+        <p class="muted">No security events recorded yet.</p>
+      <% } else { %>
+        <ul class="list">
+          <% events.forEach(function (ev) { %>
+            <li>
+              <span class="k"><%= ev.event %><% if (ev.detail) { %> — <%= ev.detail %><% } %></span>
+              <span class="v"><%= ev.created_at %><% if (ev.ip) { %> · <%= ev.ip %><% } %></span>
+            </li>
+          <% }); %>
+        </ul>
+      <% } %>
+    </div>
+  </main>
+</div>
+<%- include('partials/foot'); %>

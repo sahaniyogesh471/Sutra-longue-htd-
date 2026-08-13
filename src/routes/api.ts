@@ -38,11 +38,19 @@ import {
   optStr,
   boolInt,
   toInt,
+  isUsername,
+  passwordError,
   type VErr,
 } from '../lib/validate.js';
 import type { DB } from '../db/index.js';
 import { adminDishes, adminReviews, adminGallery } from '../lib/admin-lists.js';
 import { ALL_SETTING_KEYS, SETTING_RULES } from '../lib/settings-defs.js';
+import { verifyPassword, hashPassword } from '../lib/password.js';
+import {
+  recoveryConfigured,
+  auditSecurity,
+  invalidateAdminSessions,
+} from '../lib/admin-security.js';
 
 export const apiRouter = Router();
 
@@ -648,4 +656,101 @@ apiRouter.post('/media/prune', (req, res) => {
   }
   pruneOrphanMedia(getDb(), urlPath);
   ok(res);
+});
+
+/* ===================================================================== */
+/* ADMIN SECURITY — authenticated credential management                  */
+/* ===================================================================== */
+
+apiRouter.get('/security/status', (_req, res) => {
+  const db = getDb();
+  ok(res, {
+    recoveryConfigured: recoveryConfigured(db),
+    username: (res.locals.admin as { username?: string } | undefined)?.username ?? '',
+  });
+});
+
+apiRouter.post('/security/username', (req, res) => {
+  const db = getDb();
+  const body = (req.body ?? {}) as { current_password?: string; new_username?: string };
+  const admin = res.locals.admin as { id: number; username: string; password_hash?: string; display_name: string };
+  const row = db.prepare('SELECT * FROM admin_users WHERE id = ?').get(admin.id) as
+    | { id: number; username: string; password_hash: string; display_name: string }
+    | undefined;
+
+  if (!row || !verifyPassword(String(body.current_password ?? ''), row.password_hash)) {
+    auditSecurity(db, 'username_change_failed', 'wrong current password', req);
+    fail(res, 400, 'Current password is incorrect.');
+    return;
+  }
+
+  const newUsername = String(body.new_username ?? '').trim();
+  const uErr = isUsername(newUsername);
+  if (uErr) {
+    fail(res, 400, uErr);
+    return;
+  }
+  const dup = db.prepare('SELECT id FROM admin_users WHERE username = ? AND id != ?').get(newUsername, row.id);
+  if (dup) {
+    fail(res, 400, 'That username is already taken.');
+    return;
+  }
+
+  db.prepare('UPDATE admin_users SET username = ?, updated_at = datetime(\'now\') WHERE id = ?').run(newUsername, row.id);
+
+  // Keep the current session (update its identity), invalidate all other sessions.
+  const sid = (req as Request & { sessionID?: string }).sessionID ?? '';
+  invalidateAdminSessions(db, row.id, sid);
+  (req.session as { admin?: { id: number; username: string; display_name: string; role?: string } }).admin = {
+    id: row.id,
+    username: newUsername,
+    display_name: row.display_name,
+    role: (res.locals.admin as { role?: string } | undefined)?.role ?? 'admin',
+  };
+  auditSecurity(db, 'username_changed', `admin #${row.id} changed username to ${newUsername}`, req);
+  ok(res, { username: newUsername });
+});
+
+apiRouter.post('/security/password', (req, res) => {
+  const db = getDb();
+  const body = (req.body ?? {}) as { current_password?: string; new_password?: string; confirm_password?: string };
+  const admin = res.locals.admin as { id: number; username: string };
+  const row = db.prepare('SELECT * FROM admin_users WHERE id = ?').get(admin.id) as
+    | { id: number; username: string; password_hash: string }
+    | undefined;
+
+  if (!row || !verifyPassword(String(body.current_password ?? ''), row.password_hash)) {
+    auditSecurity(db, 'password_change_failed', 'wrong current password', req);
+    fail(res, 400, 'Current password is incorrect.');
+    return;
+  }
+
+  const password = String(body.new_password ?? '');
+  const confirm = String(body.confirm_password ?? '');
+  const pErr = passwordError(password);
+  if (pErr) {
+    fail(res, 400, pErr);
+    return;
+  }
+  if (password !== confirm) {
+    fail(res, 400, 'New passwords do not match.');
+    return;
+  }
+  if (password.toLowerCase() === row.username.toLowerCase()) {
+    fail(res, 400, 'Password must not equal the username.');
+    return;
+  }
+
+  db.prepare('UPDATE admin_users SET password_hash = ?, updated_at = datetime(\'now\') WHERE id = ?').run(
+    hashPassword(password),
+    row.id
+  );
+
+  // Invalidate ALL sessions for this admin, including the current one.
+  invalidateAdminSessions(db, row.id);
+  auditSecurity(db, 'password_changed', `admin #${row.id} changed password`, req);
+  req.session.destroy(() => {
+    res.clearCookie('sutra.sid');
+    ok(res, { reauthRequired: true });
+  });
 });

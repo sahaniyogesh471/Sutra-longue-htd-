@@ -8,6 +8,7 @@ import { seedAll } from './db/seed.js';
 import { ensureAdminUser, sessionMiddleware } from './auth.js';
 import { csrfProtect, securityHeaders } from './lib/security.js';
 import { ensureUploadsDir } from './lib/media.js';
+import { ensureRecoveryCode } from './lib/admin-security.js';
 import { adminRouter } from './routes/admin.js';
 import { buildPublicContent, pageLocals } from './content.js';
 
@@ -156,6 +157,7 @@ export function startServer() {
     console.log('[seed] Review rows are DEMO content — replace/remove from the admin panel.');
   }
   ensureAdminUser();
+  ensureRecoveryCode(db);
 
   const app = createApp();
   app.listen(PORT, () => {
