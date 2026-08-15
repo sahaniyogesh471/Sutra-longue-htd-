@@ -26,7 +26,7 @@ import {
   listRevisions,
   restoreRevision,
 } from '../lib/publish.js';
-import { upload, registerMedia, pruneOrphanMedia, validateImageFile } from '../lib/media.js';
+import { upload, registerMedia, pruneOrphanMedia, validateImageFile, optimizeImageFile } from '../lib/media.js';
 import {
   required,
   maxLen,
@@ -616,7 +616,7 @@ apiRouter.post('/reset', (req, res) => {
 /* ===================================================================== */
 
 apiRouter.post('/upload', (req, res) => {
-  upload.single('file')(req, res, (err?: unknown) => {
+  upload.single('file')(req, res, async (err?: unknown) => {
     if (err) {
       const e = err as { code?: string; message?: string };
       const code = e.code ?? '';
@@ -643,7 +643,8 @@ apiRouter.post('/upload', (req, res) => {
     }
     const db = getDb();
     const alt = String((req.body ?? {}).alt ?? '').trim().slice(0, 120);
-    const id = registerMedia(db, req.file, alt);
+    const dims = await optimizeImageFile(req.file);
+    const id = registerMedia(db, req.file, alt, dims);
     ok(res, { url: `/uploads/${req.file.filename}`, mediaId: id });
   });
 });

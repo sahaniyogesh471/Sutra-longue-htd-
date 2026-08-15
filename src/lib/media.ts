@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import multer from 'multer';
+import sharp from 'sharp';
 import type { DB } from '../db/index.js';
 
 /**
@@ -18,6 +19,11 @@ export const UPLOADS_DIR = path.join(process.cwd(), 'data', 'uploads');
 export const UPLOADS_URL_PREFIX = '/uploads';
 
 const MAX_SIZE_BYTES = 8 * 1024 * 1024;
+
+/** Uploaded images are re-encoded to WebP and capped at this size for fast delivery. */
+const MAX_IMAGE_WIDTH = 1600;
+const MAX_IMAGE_HEIGHT = 1600;
+const WEBP_QUALITY = 80;
 
 const MIME_EXT: Record<string, string> = {
   'image/jpeg': 'jpg',
@@ -111,14 +117,83 @@ export function urlForFile(file: Express.Multer.File): string {
   return `${UPLOADS_URL_PREFIX}/${file.filename}`;
 }
 
+export interface OptimizedImage {
+  width: number;
+  height: number;
+}
+
+/**
+ * Re-encodes an uploaded image into a compressed WebP capped at MAX_IMAGE_WIDTH/HEIGHT
+ * so pages never ship multi-megabyte originals. The original upload is replaced in place:
+ * the file's filename/path/mimetype/size are updated to the WebP variant (which is always
+ * the best effort — the raw file is removed only after the smaller WebP is written).
+ * Returns null when the WebP is not smaller than the original (rare), keeping the original.
+ */
+export async function optimizeImageFile(file: Express.Multer.File): Promise<OptimizedImage | null> {
+  const ext = path.extname(file.filename).toLowerCase();
+  const base = path.basename(file.filename, ext);
+  const webpPath = path.join(UPLOADS_DIR, `${base}.webp`);
+
+  let meta: { width: number; height: number; size: number };
+  try {
+    const output = await sharp(file.path, { limitInputPixels: 100 * 1000 * 1000 })
+      .resize({ width: MAX_IMAGE_WIDTH, height: MAX_IMAGE_HEIGHT, fit: 'inside', withoutEnlargement: true })
+      .rotate()
+      .webp({ quality: WEBP_QUALITY, effort: 4 })
+      .toFile(webpPath);
+    meta = { width: output.width, height: output.height, size: output.size };
+  } catch {
+    try {
+      fs.rmSync(webpPath, { force: true });
+    } catch {
+      /* best effort */
+    }
+    return null;
+  }
+
+  if (meta.size >= file.size) {
+    try {
+      fs.rmSync(webpPath, { force: true });
+    } catch {
+      /* best effort */
+    }
+    return null;
+  }
+
+  try {
+    fs.rmSync(file.path, { force: true });
+  } catch {
+    /* best effort */
+  }
+  file.filename = `${base}.webp`;
+  file.path = webpPath;
+  file.mimetype = 'image/webp';
+  file.size = meta.size;
+  return { width: meta.width, height: meta.height };
+}
+
 /** Records an uploaded file in the media metadata table. */
-export function registerMedia(db: DB, file: Express.Multer.File, alt = ''): number {
+export function registerMedia(
+  db: DB,
+  file: Express.Multer.File,
+  alt = '',
+  dims?: OptimizedImage | null
+): number {
   const info = db
     .prepare(
-      `INSERT INTO media (file_name, stored_path, url_path, mime_type, size_bytes, alt, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`
+      `INSERT INTO media (file_name, stored_path, url_path, mime_type, size_bytes, width, height, alt, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
     )
-    .run(file.originalname, file.path, urlForFile(file), file.mimetype, file.size, alt);
+    .run(
+      file.originalname,
+      file.path,
+      urlForFile(file),
+      file.mimetype,
+      file.size,
+      dims?.width ?? null,
+      dims?.height ?? null,
+      alt
+    );
   return Number(info.lastInsertRowid);
 }
 
