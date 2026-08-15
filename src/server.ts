@@ -10,7 +10,7 @@ import { csrfProtect, securityHeaders } from './lib/security.js';
 import { ensureUploadsDir } from './lib/media.js';
 import { ensureRecoveryCode } from './lib/admin-security.js';
 import { adminRouter } from './routes/admin.js';
-import { buildPublicContent, pageLocals } from './content.js';
+import { buildPublicContent, pageLocals, loadSettings, loadHours, hoursSummary, digitsOnly } from './content.js';
 
 export function createApp() {
   const app = express();
@@ -84,7 +84,12 @@ export function createApp() {
   };
   app.get('/', renderPublic('index'));
   app.get('/index.html', (_req, res) => res.redirect(301, '/'));
-  app.get('/menu.html', renderPublic('menu'));
+  // Trailing-slash canonicalisation: /menu.html/ must 301 to the canonical URL.
+  // Express matches the trailing slash as optional, so inspect req.path directly.
+  app.get('/menu.html', (req, res) => {
+    if (req.path.endsWith('/')) return res.redirect(301, '/menu.html');
+    return renderPublic('menu')(req, res);
+  });
 
   // ---- robots.txt & sitemap.xml (host derived from the request) ----
   app.get('/robots.txt', (req, res) => {
@@ -105,7 +110,21 @@ export function createApp() {
     const host = (req.get('host') ?? '').replace(/^www\./, '');
     const base = `https://${host}`;
     const urls = ['/', '/menu.html'];
-    const lastmod = new Date().toISOString().slice(0, 10);
+    // lastmod reflects the real most-recent content/revision change rather than
+    // claiming every page was modified today.
+    const row = getDb()
+      .prepare(
+        `SELECT MAX(d) AS d FROM (
+           SELECT MAX(updated_at) AS d FROM settings
+           UNION ALL SELECT MAX(updated_at) FROM dishes
+           UNION ALL SELECT MAX(updated_at) FROM reviews
+           UNION ALL SELECT MAX(updated_at) FROM gallery
+           UNION ALL SELECT MAX(updated_at) FROM opening_hours
+           UNION ALL SELECT MAX(created_at) FROM revisions
+         )`
+      )
+      .get() as { d: string | null };
+    const lastmod = (row.d ? row.d.slice(0, 10) : new Date().toISOString().slice(0, 10));
     const body =
       `<?xml version="1.0" encoding="UTF-8"?>\n` +
       `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
@@ -113,6 +132,52 @@ export function createApp() {
       `\n</urlset>\n`;
     res.type('application/xml');
     res.send(body);
+  });
+
+  // ---- llms.txt (machine-readable business facts; verified repo data only) ----
+  app.get('/llms.txt', (req, res) => {
+    const settings = loadSettings(getDb());
+    const hours = loadHours(getDb());
+    const s = (k: string, fb = ''): string => settings[k] ?? fb;
+    const host = (req.get('host') ?? '').replace(/^www\./, '');
+    const base = `https://${host}`;
+    const phone = s('contact.phone');
+    const wa = digitsOnly(s('contact.whatsapp', digitsOnly(phone)));
+    const lines = [
+      '# Sutra Lounge',
+      '',
+      `> ${s('restaurant.description')}`,
+      '',
+      '## Location',
+      s('contact.address'),
+      '',
+      '## Opening Hours',
+      hoursSummary(hours),
+      '',
+      '## Contact',
+      phone ? `- Phone: ${phone}` : '',
+      wa ? `- WhatsApp: +${wa}` : '',
+      s('contact.email') ? `- Email: ${s('contact.email')}` : '',
+      '',
+      '## Website',
+      `- Home: ${base}/`,
+      `- Digital Menu: ${base}/menu.html`,
+      '',
+      '## Cuisine',
+      s('restaurant.cuisine'),
+      '',
+      '## Ordering & Reservations',
+      wa ? `- Order on WhatsApp: https://wa.me/${wa}` : '',
+      s('contact.maps_url') ? `- Get Directions: ${s('contact.maps_url')}` : '',
+      '',
+      '## Social',
+      s('social.facebook') ? `- Facebook: ${s('social.facebook')}` : '',
+      s('social.instagram') ? `- Instagram: ${s('social.instagram')}` : '',
+      s('social.tiktok') ? `- TikTok: ${s('social.tiktok')}` : '',
+      s('social.youtube') ? `- YouTube: ${s('social.youtube')}` : '',
+    ].filter(Boolean).join('\n');
+    res.type('text/plain');
+    res.send(`${lines}\n`);
   });
 
   // ---- Public static assets (explicit paths only — never expose the repo root) ----

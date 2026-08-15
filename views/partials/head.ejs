@@ -43,18 +43,27 @@
 <% if (typeof s === 'function' && (typeof noindex === 'undefined' || !noindex)) { %>
 <script type="application/ld+json">
 <% var phoneDigits = (typeof phone !== 'undefined' && phone && phone.display) ? String(phone.display).replace(/[^\d]/g, '') : ''; %>
+<% var waDigits = (typeof whatsapp !== 'undefined' && whatsapp && whatsapp.wa) ? String(whatsapp.wa).replace(/[^\d]/g, '') : (phoneDigits ? '977' + phoneDigits : phoneDigits); %>
+<% var addr = (typeof address !== 'undefined') ? address : ''; %>
+<% var addrParts = addr.split(',').map(function (p) { return p.trim(); }).filter(Boolean); %>
+<% var region = addrParts.length >= 3 ? addrParts[addrParts.length - 2] : ''; %>
+<% var socialsList = (typeof socials !== 'undefined' ? socials : {}); %>
+<% var sameAs = [socialsList.facebook, socialsList.instagram, socialsList.tiktok, socialsList.youtube].filter(Boolean); %>
 <% var ld = {
   '@context': 'https://schema.org',
   '@type': 'Restaurant',
   name: s('restaurant.name'),
   description: s('restaurant.description'),
   servesCuisine: s('restaurant.cuisine'),
-  telephone: phoneDigits,
-  url: canonical || '',
+  telephone: waDigits ? ('+' + waDigits) : undefined,
+  url: canonical || undefined,
   image: ogImage || undefined,
+  sameAs: sameAs.length ? sameAs : undefined,
   address: {
     '@type': 'PostalAddress',
-    streetAddress: (typeof address !== 'undefined') ? address : '',
+    streetAddress: addr,
+    addressLocality: s('contact.city') || undefined,
+    addressRegion: region || undefined,
     addressCountry: 'Nepal'
   },
   openingHoursSpecification: (typeof hours !== 'undefined' ? hours : []).filter(function (h) { return Number(h.is_open) === 1 && h.open_time && h.close_time; }).map(function (h) {
@@ -66,8 +75,6 @@
     };
   })
 };
-ld.image = ld.image || undefined;
-ld.url = ld.url || undefined;
 %><%- JSON.stringify(ld).replace(/</g, '\\u003c') %>
 </script>
 <% } %>
