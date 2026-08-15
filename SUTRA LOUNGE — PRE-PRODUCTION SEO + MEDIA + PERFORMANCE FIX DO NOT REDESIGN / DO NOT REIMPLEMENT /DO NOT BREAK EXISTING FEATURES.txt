@@ -1,0 +1,388 @@
+SUTRA LOUNGE — PRE-PRODUCTION SEO + MEDIA + PERFORMANCE FIX
+DO NOT REDESIGN / DO NOT REIMPLEMENT / DO NOT BREAK EXISTING FEATURES
+
+IMPORTANT:
+Work from the CURRENT repository state only.
+Read and follow these existing audit/instruction files before changing anything:
+- SEO.txt
+- FINAL PRODUCTION SAFETY AUDIT — DO NOT REDESIGN OR REIMPLEMENT.txt
+- CONTINUE EXISTING SUTRA LOUNGE WORK PROMPT.txt
+- CONTINUE FROM ACTUAL REPOSITORY STATE — IMPLEMENT MISSING REQUIREMENT 2 ONLY.txt
+- CONTINUE FROM THE CURRENT IMPLEMENTATION.txt
+
+The previous audits are already complete. Do NOT repeat already-completed security/auth/recovery/database work.
+
+GOAL:
+Implement only the SEO, media reliability, and performance improvements that can be safely completed BEFORE the final production domain is configured.
+
+==================================================
+PART A — MEDIA RELIABILITY IS PRIORITY #1
+==================================================
+
+There is a known user-reported problem:
+
+Admin updates content successfully, but when an admin adds/replaces an image:
+- the content updates on the public website,
+- but sometimes the new image does not appear,
+- some images load slowly,
+- future admin-added images must NOT make the website progressively slower.
+
+Investigate the COMPLETE admin media lifecycle:
+
+Admin upload
+→ validation
+→ storage
+→ database media reference
+→ content/review/dish/gallery reference
+→ public URL generation
+→ static serving
+→ cache headers
+→ browser rendering
+
+Do NOT assume the existing implementation is correct.
+
+For every admin-uploaded image verify:
+
+1. File is actually persisted.
+2. Database reference points to the correct current file.
+3. Public URL returns HTTP 200.
+4. Correct Content-Type is returned.
+5. Replacing an image does not leave the page pointing to an old/missing file.
+6. Preview and live/public rendering use the same valid media URL.
+7. No stale browser/cache response prevents a newly uploaded image from appearing.
+8. Image survives server restart.
+9. Image survives a fresh server process.
+10. Image is not dependent on /tmp or ephemeral storage.
+11. Existing images continue working.
+12. Existing content without uploaded images is unaffected.
+
+If cache invalidation is necessary, implement it safely without disabling useful long-term caching globally.
+
+DO NOT delete existing valid media.
+DO NOT rewrite unrelated database data.
+DO NOT change the admin UI design unless technically required.
+
+==================================================
+PART B — IMAGE PERFORMANCE
+==================================================
+
+Ensure EVERY future admin-uploaded image is automatically optimized.
+
+Requirements:
+
+- Keep the existing WebP optimization approach if already implemented.
+- Do not serve unnecessarily huge originals to normal website views.
+- Resize oversized uploads to sensible maximum dimensions.
+- Preserve aspect ratio.
+- Preserve acceptable visual quality.
+- Generate deterministic or safely unique filenames.
+- Prevent filename collisions.
+- Prevent path traversal.
+- Validate image type and size.
+- Do not allow arbitrary executable files through the image upload path.
+- Public image URLs must remain stable and valid.
+
+For frontend rendering:
+
+- Hero/LCP image: preload/high priority only where appropriate.
+- Below-the-fold images: lazy load.
+- Use appropriate image dimensions.
+- Add width/height attributes where practical to reduce CLS.
+- Keep existing CSS aspect-ratio protections.
+- Do not lazy-load the primary LCP hero image.
+- Do not add heavy image-processing libraries unless absolutely necessary.
+- Do not introduce a client-side image library/framework.
+
+IMPORTANT:
+The website must remain fast even after the admin adds many new images.
+
+==================================================
+PART C — SAFE PRE-PRODUCTION SEO FIXES
+==================================================
+
+Implement only fixes that do NOT require knowing the final production domain.
+
+1. JSON-LD:
+
+Improve Restaurant structured data where the values are already known from the repository.
+
+Add/fix where appropriate:
+- telephone in E.164 format
+- addressLocality = Hetauda
+- addressRegion = Makwanpur
+- country = Nepal
+- postal code if it is already known in repository data
+- geo only if exact coordinates already exist in repository/config
+- sameAs using existing verified social URLs from the project
+
+DO NOT invent addresses, coordinates, ratings, reviews, or business information.
+
+Do NOT fabricate structured data.
+
+2. Sitemap:
+
+Keep sitemap limited to real public canonical URLs.
+
+Do NOT include:
+- /admin
+- /admin/*
+- preview routes
+- login
+- API routes
+- private routes
+
+Do not claim that every page was modified today.
+
+If safe without production-domain knowledge, make lastmod reflect real content/revision dates.
+If this would require a broader schema/data migration, DO NOT perform the migration now. Leave it for production phase and report it.
+
+3. Trailing slash:
+
+If `/menu.html/` currently returns 200 while canonical is `/menu.html`, safely make:
+
+/menu.html/ → 301 → /menu.html
+
+Do not create redirect loops.
+
+Verify:
+- /menu.html remains 200
+- /menu.html/ becomes 301
+- / redirects correctly
+- /index.html continues its existing intended redirect behavior
+
+4. Metadata:
+
+Keep current good titles/descriptions.
+
+Do NOT rewrite the entire website copy.
+
+Do NOT keyword-stuff.
+
+5. H1:
+
+If changing the home H1 can be done without changing design/layout or business meaning, improve it to clearly identify Sutra Lounge and Hetauda.
+
+If the existing hero design strongly depends on the current text, DO NOT redesign it. Report it as optional.
+
+6. Home bestseller SEO:
+
+If feasible without redesigning or duplicating content, make important bestseller content available in server-rendered HTML rather than relying exclusively on client-side JS.
+
+Do NOT duplicate large amounts of content unnecessarily.
+
+If this requires architectural changes, leave it for a separate task and report it.
+
+==================================================
+PART D — llms.txt
+==================================================
+
+Add a simple, factual:
+
+/llms.txt
+
+ONLY using verified information already present in the repository.
+
+It should contain useful machine-readable information about:
+- Sutra Lounge
+- location
+- opening hours
+- contact information
+- website
+- menu
+- important public sections
+- ordering/reservation information
+- social links if already verified
+
+Do NOT include:
+- admin URLs
+- credentials
+- recovery information
+- internal APIs
+- private data
+- database details
+- secrets
+
+IMPORTANT:
+llms.txt is optional and is NOT a replacement for robots.txt or sitemap.xml.
+
+==================================================
+PART E — ROBOTS.TXT
+==================================================
+
+Do NOT unnecessarily change the already-working robots.txt.
+
+Preserve:
+
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /admin/api
+
+Sitemap declaration should remain present.
+
+Do NOT block:
+/
+/menu.html
+/css/
+/js/
+/img/
+/uploads/
+
+Do not add AI crawler blocks unless explicitly required by the production operator.
+
+The current preview environment may inject Cloudflare rules. Do not mistake preview infrastructure for application robots.txt.
+
+==================================================
+PART F — PRODUCTION-DOMAIN ITEMS — DO NOT IMPLEMENT NOW
+==================================================
+
+DO NOT hard-code a fake production domain.
+
+DO NOT invent a domain.
+
+DO NOT replace the current host-derived URLs with a placeholder domain.
+
+The following will be handled AFTER the real production domain is known:
+
+1. SITE_URL production environment variable
+2. final canonical domain
+3. www → non-www OR non-www → www 301 policy
+4. production sitemap absolute URL
+5. production robots sitemap URL
+6. production OG URLs
+7. final HTTPS canonicalization
+8. Search Console verification
+9. Search Console sitemap submission
+10. production-domain canonical testing
+11. production CDN/cache testing
+
+Keep these as a clearly documented production checklist.
+
+==================================================
+PART G — PERFORMANCE VERIFICATION
+==================================================
+
+Run safe static/runtime tests.
+
+Verify:
+
+- TypeScript compiles
+- JS syntax checks
+- git diff --check
+- robots.txt HTTP 200
+- sitemap.xml HTTP 200
+- llms.txt HTTP 200
+- home HTTP 200
+- menu HTTP 200
+- 404 returns HTTP 404
+- CSS/JS return 200
+- uploaded images return 200
+- correct MIME types
+- no broken internal image references
+- no broken public media URLs
+- no accidental noindex on public pages
+
+If a browser/PageSpeed tool is available, test it.
+
+If not available, DO NOT fabricate Lighthouse/PageSpeed scores.
+
+==================================================
+PART H — SECURITY / REGRESSION PROTECTION
+==================================================
+
+DO NOT modify:
+
+- admin authentication
+- password system
+- recovery code system
+- recovery hash
+- sessions
+- CSRF
+- rate limiting
+- security events
+- admin credentials
+- existing production DB content
+- existing security schema
+
+Do not reveal or print any password, recovery code, hash, session secret, or environment secret.
+
+Do not run:
+- git reset --hard
+- database reset
+- seed overwrite
+- production DELETE
+- production DROP
+- destructive migration
+
+Use temporary DB copies for destructive/testing operations when necessary.
+
+==================================================
+PART I — TEST FUTURE ADMIN IMAGE UPLOAD
+==================================================
+
+Create a safe test using a temporary/test DB and test media storage where possible.
+
+Simulate:
+
+1. Admin uploads image A.
+2. Public page displays image A.
+3. Admin replaces it with image B.
+4. Public page displays image B.
+5. Browser/public URL does not continue serving image A incorrectly.
+6. Restart server.
+7. Image B still displays.
+8. Add another image C.
+9. Existing A/B/C images remain accessible.
+10. Verify optimized file sizes and dimensions.
+
+Do NOT perform this destructive test against the real production DB.
+
+==================================================
+PART J — GIT SAFETY
+==================================================
+
+Before changes:
+- inspect git status
+- inspect current branch
+- inspect current repository state
+
+After changes:
+- git diff
+- git diff --check
+- git status
+
+DO NOT commit.
+DO NOT push.
+
+Do not modify unrelated files.
+
+==================================================
+FINAL REPORT REQUIRED
+==================================================
+
+At the end provide:
+
+1. Exact files changed.
+2. Media bug root cause.
+3. Exact media fix.
+4. Image optimization behavior.
+5. SEO fixes completed.
+6. llms.txt status.
+7. robots.txt status.
+8. Sitemap status.
+9. Items intentionally deferred until production domain.
+10. Tests performed and results.
+11. Any remaining warnings.
+12. Confirmation that admin/auth/recovery/security were not changed.
+13. Git status.
+14. Explicit statement:
+   - "NO COMMIT"
+   - "NO PUSH"
+
+CRITICAL:
+This is a targeted improvement task.
+Do NOT redesign.
+Do NOT reimplement the website.
+Do NOT change working features merely for style/preferences.
+Fix only verified problems and safe pre-production SEO/performance improvements.
