@@ -1,0 +1,431 @@
+FINAL PRODUCTION SAFETY AUDIT — DO NOT REDESIGN OR REIMPLEMENT
+
+Continue from the CURRENT implementation in "/workspace".
+
+Requirement 1 and Requirement 2 have already been implemented and E2E tested.
+
+Your job now is ONLY:
+
+1. Final code audit
+2. Production database migration safety verification
+3. Verify recovery-code initialization behavior
+4. Verify existing production data/admin account will remain intact
+5. Final deployment-readiness report
+
+ABSOLUTE RULES
+
+- DO NOT redesign anything.
+- DO NOT reimplement existing features.
+- DO NOT reset the production database.
+- DO NOT delete production data.
+- DO NOT reseed production.
+- DO NOT delete/recreate the existing admin account.
+- DO NOT overwrite existing credentials.
+- DO NOT change the recovery code.
+- DO NOT print or reveal the recovery code.
+- DO NOT print passwords.
+- DO NOT print password hashes.
+- DO NOT print recovery hashes.
+- DO NOT commit.
+- DO NOT push.
+- Do not modify unrelated code.
+- Do not modify "data/sutra.db" during testing.
+- Use a TEMPORARY database copy for all migration/E2E tests.
+
+---
+
+1. INSPECT CURRENT IMPLEMENTATION
+
+Review the final diff and confirm:
+
+- "src/lib/admin-security.ts"
+- "src/auth.ts"
+- "src/db/schema.ts"
+- "src/server.ts"
+- "src/routes/admin.ts"
+- "src/routes/api.ts"
+- "src/lib/validate.ts"
+- "src/config.ts"
+- admin security/recovery views
+- admin JS/CSS changes
+
+Confirm the implementation matches the existing project architecture.
+
+Do not make changes unless a real production-safety issue is found.
+
+---
+
+2. PRODUCTION DATABASE SAFETY
+
+The real database is:
+
+"data/sutra.db"
+
+FIRST create a byte-for-byte temporary copy outside the repository, for example:
+
+"/tmp/sutra-production-audit.db"
+
+Also copy any required SQLite WAL/SHM state safely if present.
+
+NEVER run migration tests directly against "data/sutra.db".
+
+Record a safe baseline from the temporary copy:
+
+- admin account count
+- admin username (username is not secret)
+- CMS/content row counts
+- dishes count
+- reviews count
+- gallery count
+- opening-hours count
+- media count
+- system revision pointer
+- existing revision max ID
+- existing database tables
+
+DO NOT record:
+
+- passwords
+- password hashes
+- recovery hashes
+- session secrets
+- recovery code
+
+---
+
+3. MIGRATION TEST
+
+Run the current application/schema initialization against the TEMPORARY COPY.
+
+The migration must be ADDITIVE.
+
+Verify:
+
+- Existing tables remain.
+- Existing rows remain.
+- Existing admin account remains.
+- Existing CMS data remains.
+- Existing revisions remain.
+- "system.revisionPointer" remains unchanged.
+- No seed overwrite occurs.
+- No destructive migration occurs.
+- No "DROP TABLE" against existing production tables.
+- No "DELETE" of existing admin/content rows.
+- No replacement of existing admin credentials.
+
+Confirm that the new security tables are created:
+
+- "admin_security"
+- "security_events"
+
+If the implementation intentionally initializes these tables through normal startup/schema initialization, verify that behavior on the temporary DB.
+
+---
+
+4. RECOVERY CODE INITIALIZATION
+
+Test using a TEMPORARY database only.
+
+Set:
+
+"ADMIN_RECOVERY_CODE=3718"
+
+IMPORTANT:
+
+Do NOT print "3718" in server output, audit logs, API responses, HTML, JavaScript, or the final report.
+
+Verify:
+
+- Recovery code is hashed before storage.
+- Plaintext code is never stored.
+- Existing recovery configuration is NOT overwritten on restart.
+- Re-running startup does not regenerate or replace the recovery hash.
+- There is no admin UI to change it.
+- There is no API to change it.
+- There is no DELETE/UPDATE/DROP path for "admin_security".
+- The code remains valid after server restart.
+
+When reporting, say only:
+
+"Recovery code initialization: PASS"
+
+Do not disclose the actual code.
+
+---
+
+5. EXISTING PRODUCTION DB WITHOUT RECOVERY TABLES
+
+This is especially important.
+
+Because the current production database previously did not contain:
+
+- "admin_security"
+- "security_events"
+
+verify that normal application startup can safely add those tables WITHOUT changing existing data.
+
+Use only the temporary production copy.
+
+After initialization compare the baseline with the migrated copy.
+
+Expected:
+
+- Existing rows unchanged.
+- Existing admin unchanged.
+- Existing credentials unchanged.
+- Existing content unchanged.
+- Only the intended security schema/configuration is added.
+
+If the application cannot safely perform this migration automatically, DO NOT force it.
+
+Instead document the exact safe deployment migration command/procedure that should be run.
+
+---
+
+6. EXISTING ADMIN LOGIN
+
+Using the TEMPORARY production DB copy:
+
+Verify the existing admin account can still authenticate with the existing configured credentials.
+
+Do NOT reveal the credentials in output.
+
+Verify:
+
+- successful login
+- session creation
+- "/admin" access
+- "/admin/security" access
+
+Do NOT change the credentials during this test.
+
+---
+
+7. RECOVERY FLOW
+
+On a separate TEMP DB, perform the complete recovery E2E again.
+
+Verify:
+
+- recovery page loads
+- incorrect code fails
+- rate limiting works
+- correct recovery authorization succeeds
+- direct step-2 POST without recovery authorization fails
+- username/password reset works
+- old credentials fail
+- new credentials work
+- all previous sessions are invalidated
+- recovery code remains valid after reset
+- recovery code remains unchanged after restart
+
+Do NOT print the recovery code in the report.
+
+---
+
+8. NORMAL CREDENTIAL MANAGEMENT
+
+Verify:
+
+Username
+
+- current password required
+- invalid username rejected
+- duplicate username rejected
+- valid username accepted
+- other sessions invalidated
+- CSRF enforced
+
+Password
+
+- current password required
+- weak password rejected
+- confirmation mismatch rejected
+- username-equal password rejected
+- valid password accepted
+- all sessions invalidated
+- old password rejected
+- new password accepted
+- CSRF enforced
+
+Use TEMP DB only.
+
+---
+
+9. SECRET-LEAK AUDIT
+
+Search the entire source tree.
+
+Confirm that NONE of the following are leaked:
+
+- recovery code
+- recovery hash
+- password
+- password hash
+- session secret
+- environment secrets
+
+Check:
+
+- console.log
+- console.error
+- audit events
+- API JSON
+- HTML
+- frontend JS
+- error messages
+
+A static label such as "password required" is fine.
+
+Secrets themselves must never appear.
+
+---
+
+10. IMMUTABILITY AUDIT
+
+Search for any code path capable of:
+
+- changing "admin_security.recovery_hash"
+- deleting the recovery configuration
+- dropping the recovery table
+- regenerating the recovery code
+
+Expected result:
+
+No such admin UI/API/path exists.
+
+"ensureRecoveryCode()" must only initialize when configuration does not already exist.
+
+---
+
+11. REQUIREMENT 1 REGRESSION
+
+Do NOT modify Requirement 1.
+
+Verify:
+
+- "/admin/preview"
+- "/admin/preview/menu"
+- "/css/style.css"
+- "/css/menu.css"
+- "/js/main.js"
+- review images
+- dish images
+- gallery images
+- hero image
+
+All public assets must remain outside "/admin/preview/...".
+
+Verify no CSS regression.
+
+---
+
+12. STATIC CHECKS
+
+Run:
+
+"npx tsc --noEmit"
+
+"node --check js/main.js"
+
+"node --check js/admin.js"
+
+"git diff --check"
+
+Also run the project's existing relevant test suite if available.
+
+---
+
+13. GIT / DATA SAFETY
+
+At the end:
+
+"git status --short"
+
+Confirm:
+
+- No commit.
+- No push.
+- No accidental database modification.
+- No generated production DB files.
+- No temporary DB files inside repository.
+- No secret files accidentally created.
+
+If "data/sutra.db" changed accidentally during testing, restore ONLY from the original state and verify it again.
+
+Do not use destructive reset commands blindly.
+
+---
+
+14. FINAL REPORT
+
+Produce a strict report with:
+
+Production Safety
+
+PASS/FAIL
+
+Migration Safety
+
+PASS/FAIL
+
+Existing Admin Preservation
+
+PASS/FAIL
+
+Recovery Initialization
+
+PASS/FAIL
+
+Recovery Immutability
+
+PASS/FAIL
+
+Credential Management
+
+PASS/FAIL
+
+Session Security
+
+PASS/FAIL
+
+CSRF
+
+PASS/FAIL
+
+Rate Limiting
+
+PASS/FAIL
+
+Secret Leak Audit
+
+PASS/FAIL
+
+Requirement 1 Regression
+
+PASS/FAIL
+
+Static Checks
+
+PASS/FAIL
+
+Data Integrity
+
+Report only non-secret counts/metadata.
+
+Git Status
+
+List modified/untracked files.
+
+Deployment Instructions
+
+If everything is safe, give the exact safe production deployment/migration sequence.
+
+If anything is unsafe, DO NOT claim production-ready. Clearly identify the blocker and explain the safest fix.
+
+IMPORTANT:
+Do not expose the recovery code or any password/hash in the report.
+
+DO NOT COMMIT OR PUSH.
+
+START WITH THE TEMPORARY PRODUCTION DATABASE COPY.

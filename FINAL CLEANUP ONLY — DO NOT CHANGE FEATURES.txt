@@ -1,0 +1,141 @@
+FINAL CLEANUP ONLY — DO NOT CHANGE FEATURES
+
+The previous production audit is complete and PASS.
+
+There is now only one cleanup issue:
+
+"data/sutra.db-wal" and "data/sutra.db-shm" were modified because an external "tsx watch src/server.ts" process was still running against the live database.
+
+DO NOT implement anything new.
+
+RULES
+
+- Do NOT modify source code.
+- Do NOT modify features.
+- Do NOT reset the database.
+- Do NOT reseed.
+- Do NOT delete any production data.
+- Do NOT change admin credentials.
+- Do NOT change the recovery configuration.
+- Do NOT expose any password, hash, recovery code, or secret.
+- Do NOT commit.
+- Do NOT push.
+
+STEP 1 — FIND RUNNING DEV SERVER
+
+Inspect running processes for:
+
+- "tsx watch"
+- "src/server.ts"
+- any development server using "data/sutra.db"
+
+Identify the external process that is using the live DB.
+
+Stop ONLY that development/watch process.
+
+Do not kill unrelated processes.
+
+STEP 2 — VERIFY DATABASE
+
+After stopping the process:
+
+Check:
+
+- "data/sutra.db"
+- "data/sutra.db-wal"
+- "data/sutra.db-shm"
+
+The base database "data/sutra.db" MUST remain unchanged.
+
+Verify against:
+
+"HEAD:data/sutra.db"
+
+using a safe comparison.
+
+If WAL/SHM are only temporary sidecar files created by the external dev server and the committed/base state has no required live WAL/SHM state, restore ONLY those sidecar files to the repository baseline.
+
+DO NOT restore or checkout "data/sutra.db".
+
+DO NOT use "git reset --hard".
+
+STEP 3 — DATABASE INTEGRITY
+
+Run a read-only integrity check against the live DB.
+
+Verify:
+
+- SQLite integrity_check = ok
+- admin account still exists
+- admin is active
+- existing CMS data remains
+- 11 dishes
+- 5 reviews
+- 8 gallery rows
+- 7 opening-hours rows
+- existing settings remain
+- revision pointer remains unchanged
+- no unexpected deletion occurred
+
+Do not print passwords or hashes.
+
+STEP 4 — VERIFY NO SECURITY DATA WAS LOST
+
+Confirm the current live DB state safely.
+
+If "admin_security" and "security_events" are not yet present in the live DB, DO NOT manually create them during this cleanup.
+
+The production audit already verified that normal application startup creates them additively.
+
+Do NOT run the migration against the live DB in this cleanup task.
+
+STEP 5 — FINAL STATIC CHECKS
+
+Run:
+
+npx tsc --noEmit
+
+node --check js/main.js
+
+node --check js/admin.js
+
+git diff --check
+
+STEP 6 — FINAL GIT STATUS
+
+Run:
+
+git status --short
+
+Expected result should NOT contain:
+
+- "data/sutra.db-wal"
+- "data/sutra.db-shm"
+
+The task instruction file may remain untracked.
+
+Do not remove the task instruction file unless explicitly required.
+
+STEP 7 — FINAL REPORT
+
+Report:
+
+- external dev server stopped: PASS/FAIL
+- live DB base file unchanged: PASS/FAIL
+- WAL/SHM cleanup: PASS/FAIL
+- SQLite integrity: PASS/FAIL
+- production data integrity: PASS/FAIL
+- TypeScript: PASS/FAIL
+- JS syntax: PASS/FAIL
+- git diff check: PASS/FAIL
+- final git status
+- whether it is now SAFE TO COMMIT
+
+If everything passes, explicitly say:
+
+"READY FOR COMMIT/PUSH"
+
+If anything fails, say exactly what failed.
+
+DO NOT COMMIT.
+DO NOT PUSH.
