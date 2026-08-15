@@ -1,0 +1,612 @@
+SUTRA LOUNGE — COMPLETE SEO AUDIT ONLY
+DO NOT MODIFY CODE / DO NOT MODIFY DATABASE / DO NOT REDESIGN
+
+You are performing a READ-ONLY, production-safety SEO audit of the existing Sutra Lounge website.
+
+IMPORTANT:
+This is an AUDIT-ONLY task.
+
+DO NOT:
+- modify any source code
+- modify HTML/EJS/CSS/JS
+- modify database/data
+- modify images or uploads
+- modify routes
+- modify existing SEO implementation
+- modify robots.txt
+- modify sitemap.xml
+- create or modify llms.txt
+- change metadata
+- change schema
+- install packages
+- run migrations
+- seed/reset/recreate the database
+- change admin/security functionality
+- redesign anything
+- commit
+- push
+- auto-fix anything
+
+Read the existing project files and inspect the actual implementation.
+If something is wrong, REPORT it only. Do not fix it.
+
+==================================================
+GOAL
+==================================================
+
+Perform a COMPLETE SEO + LOCAL SEO + TECHNICAL SEO + AI/LLM DISCOVERABILITY audit for Sutra Lounge in Hetauda.
+
+Audit the EXISTING implementation against current best practices.
+
+The previous project work already contains important fixes and security/admin functionality.
+DO NOT break or redesign any of it.
+
+==================================================
+1. TECHNICAL SEO
+==================================================
+
+Audit:
+
+- HTTPS/canonical host handling
+- HTTP → HTTPS behavior if applicable
+- www/non-www consistency
+- canonical URLs
+- duplicate URLs
+- redirect chains
+- redirect loops
+- HTTP status codes
+- 200/301/302/404 behavior
+- branded 404 page
+- trailing-slash consistency
+- localhost references
+- development URLs
+- absolute vs relative URLs
+- crawlable public pages
+- internal links
+- orphan pages
+- broken links
+- broken images
+- server-rendered content
+- JavaScript-dependent SEO content
+- accidental noindex
+- accidental robots blocking
+- pagination if present
+- query-parameter duplicate URLs if present
+
+Report every issue with:
+FILE/ROUTE + CURRENT BEHAVIOR + SEO IMPACT + RECOMMENDATION.
+
+==================================================
+2. robots.txt — HIGH PRIORITY
+==================================================
+
+Inspect the actual /robots.txt response and source implementation.
+
+Verify:
+
+- HTTP 200
+- valid robots.txt syntax
+- User-agent rules
+- public pages are crawlable
+- admin routes are appropriately protected
+- admin preview routes are appropriately handled
+- sensitive/private routes are not unnecessarily crawlable
+- sitemap declaration exists
+- sitemap URL is absolute and correct
+- no localhost URL
+- no incorrect production hostname
+- no accidental Disallow covering public website content
+- no contradictory rules
+
+IMPORTANT:
+Do NOT assume robots.txt is correct.
+Actually inspect it.
+
+Report the exact current contents/behavior and PASS/FAIL for every check.
+
+==================================================
+3. sitemap.xml — HIGH PRIORITY
+==================================================
+
+Inspect actual /sitemap.xml response and implementation.
+
+Verify:
+
+- HTTP 200
+- valid XML
+- correct namespace
+- valid URL entries
+- canonical public URLs only
+- no admin URLs
+- no preview URLs
+- no localhost URLs
+- correct production hostname
+- no duplicate URLs
+- no broken URLs
+- no redirected URLs where avoidable
+- no 404 URLs
+- appropriate lastmod behavior if used
+- sitemap matches the actual public site
+- sitemap is referenced from robots.txt
+
+Check whether the sitemap is dynamically generated and whether host is derived safely from the request.
+
+Do not modify it.
+
+==================================================
+4. llms.txt — AI/LLM DISCOVERABILITY
+==================================================
+
+Inspect whether /llms.txt currently exists.
+
+If it exists:
+- verify HTTP status
+- inspect syntax/content
+- verify no secrets
+- verify no inaccurate information
+- verify business information is consistent
+- verify links are valid
+- verify it does not contain private/admin content
+- report whether the content is useful and well structured
+
+If it DOES NOT exist:
+- DO NOT create it.
+- Report:
+  "llms.txt: NOT PRESENT"
+- Explain whether adding one would be useful as an optional AI/LLM discoverability measure.
+- Do NOT treat absence of llms.txt as a Google SEO failure.
+
+Also inspect whether the public website itself provides clear, crawlable business information useful to AI/search systems.
+
+==================================================
+5. TITLE + META SEO
+==================================================
+
+Audit every important public page.
+
+Check:
+
+- unique title
+- useful title
+- Sutra Lounge branding
+- Hetauda/local intent where appropriate
+- correct length
+- unique meta description
+- useful meta description
+- no keyword stuffing
+- canonical
+- robots meta
+- viewport
+- language
+- charset
+- duplicate metadata
+
+Report page-by-page.
+
+==================================================
+6. HEADING SEO
+==================================================
+
+Audit:
+
+- H1 count
+- H1 quality
+- heading hierarchy
+- H2/H3 structure
+- duplicate headings
+- missing headings
+- keyword stuffing
+- headings that are only visual instead of semantic
+
+Pay special attention to:
+
+- Home
+- Menu
+- Reviews
+- Gallery
+- Contact/location
+
+==================================================
+7. LOCAL SEO — VERY IMPORTANT
+==================================================
+
+Sutra Lounge is a local business in Hetauda.
+
+Verify consistent:
+
+- business name
+- Hetauda location
+- complete address if available
+- phone number
+- website URL
+- opening hours
+- map/location information
+- NAP consistency
+- contact information
+- social links if present
+
+Opening hours must be checked carefully against the existing project requirement:
+
+Monday–Sunday:
+8:00 AM – 9:00 PM
+
+Report any mismatch.
+
+Do not invent missing business information.
+
+==================================================
+8. STRUCTURED DATA / JSON-LD
+==================================================
+
+Inspect every JSON-LD/schema implementation.
+
+Check:
+
+- valid JSON-LD
+- appropriate schema type
+- Restaurant/LocalBusiness suitability
+- business name
+- address
+- telephone
+- URL
+- image
+- opening hours
+- geo if available
+- menu if applicable
+- sameAs if applicable
+- consistency with visible page content
+- no fake ratings
+- no fabricated reviews
+- no misleading structured data
+- duplicate/conflicting schema
+- syntax errors
+
+Report exact schema types currently implemented.
+
+==================================================
+9. MENU SEO
+==================================================
+
+Verify:
+
+- menu content is crawlable HTML
+- dish names are text
+- descriptions are text
+- prices are text
+- categories are semantic headings
+- images have useful alt text
+- menu isn't unnecessarily image-only
+- no duplicate menu content
+- menu URLs are crawlable
+- internal links are correct
+
+Do not change menu content.
+
+==================================================
+10. IMAGE SEO
+==================================================
+
+Audit:
+
+- hero image
+- dish images
+- gallery images
+- review images
+- logos
+
+Check:
+
+- broken images
+- alt attributes
+- meaningful alt text
+- empty alt for decorative images where appropriate
+- dimensions
+- lazy loading
+- loading priority
+- image formats
+- image compression
+- oversized images
+- external image dependencies
+- missing upload files
+- filenames where relevant
+
+Report pre-existing image issues separately from newly introduced issues.
+
+==================================================
+11. OPEN GRAPH / SOCIAL SEO
+==================================================
+
+Check:
+
+- og:title
+- og:description
+- og:image
+- og:url
+- og:type
+- Twitter/X metadata if applicable
+- correct canonical hostname
+- image availability
+- no localhost URLs
+
+Do not modify.
+
+==================================================
+12. INTERNAL LINKING
+==================================================
+
+Audit navigation and links between:
+
+- Home
+- Menu
+- Reviews
+- Gallery
+- Contact
+- Location/map
+- Other public pages
+
+Check:
+
+- broken links
+- descriptive anchors
+- crawlability
+- unnecessary JavaScript-only links
+- orphan pages
+- excessive links
+- correct destination URLs
+
+==================================================
+13. MOBILE SEO
+==================================================
+
+Inspect implementation for:
+
+- responsive design
+- viewport
+- mobile navigation
+- content parity
+- horizontal overflow
+- readable text
+- clickable controls
+- image sizing
+- map behavior
+- menu behavior
+
+If browser-level visual testing is unavailable, clearly state that limitation.
+
+Do NOT claim visual PASS without actual browser verification.
+
+==================================================
+14. PERFORMANCE / CORE WEB VITALS
+==================================================
+
+Audit implementation for:
+
+- LCP risks
+- INP risks
+- CLS risks
+- render-blocking CSS
+- JavaScript size
+- unused JS/CSS
+- image size
+- image loading
+- fonts
+- third-party scripts
+- Google Maps impact
+- external Unsplash/network dependencies
+- caching headers if inspectable
+- compression if inspectable
+
+Do not change anything.
+
+If real Lighthouse/PageSpeed testing is unavailable, explicitly say:
+"Not browser/PageSpeed verified."
+
+Do not fabricate scores.
+
+==================================================
+15. SECURITY + SEO INTERACTION
+==================================================
+
+Verify that security controls do not accidentally hurt public SEO.
+
+Check:
+
+- CSP
+- robots behavior
+- admin protection
+- preview noindex
+- public CSS/JS/image accessibility
+- Google Maps/CSP compatibility
+- no sensitive information exposed
+- no private admin content crawlable
+
+Do not change security code.
+
+==================================================
+16. AI SEARCH / LLM READINESS
+==================================================
+
+Audit public content for machine-readable business information:
+
+- business identity
+- location
+- opening hours
+- contact information
+- menu
+- services
+- images
+- reviews
+- structured data
+- canonical URLs
+- sitemap
+- robots
+- llms.txt status
+
+IMPORTANT:
+Do not claim llms.txt is a Google ranking requirement.
+
+Separate:
+A) Google SEO requirements
+B) Optional AI/LLM discoverability improvements
+
+==================================================
+17. INTERNATIONAL / LANGUAGE SEO
+==================================================
+
+Inspect:
+
+- html lang
+- Nepali/English content
+- language consistency
+- hreflang if applicable
+- duplicate translated content
+- translation quality
+- whether Nepali content is actually indexable
+
+Do not add hreflang unless there are genuinely separate language URLs.
+
+==================================================
+18. GOOGLE SEARCH CONSOLE READINESS
+==================================================
+
+Verify whether the implementation is ready for:
+
+- sitemap submission
+- URL inspection
+- indexing
+- canonical selection
+- structured data
+- Core Web Vitals monitoring
+
+Do NOT claim actual Google indexing/ranking unless Search Console data is available.
+
+==================================================
+19. SEO REGRESSION SAFETY
+==================================================
+
+Because this project already has verified admin/security work:
+
+Confirm that the SEO audit finds NO need to modify:
+
+- admin authentication
+- recovery code
+- credential management
+- sessions
+- CSRF
+- database schema
+- existing Requirement 1 CSS/asset fixes
+- preview functionality
+
+If an SEO issue appears related to these systems, REPORT it only.
+
+==================================================
+20. FINAL REPORT FORMAT
+==================================================
+
+Return a detailed report with exactly these sections:
+
+# SUTRA LOUNGE — COMPLETE SEO AUDIT REPORT
+
+## Executive Summary
+Overall SEO readiness:
+PASS / PASS WITH WARNINGS / FAIL
+
+## P0 — Critical Issues
+List only genuine critical issues.
+
+## P1 — Important Issues
+List important issues.
+
+## P2 — Recommendations
+Optional improvements.
+
+## robots.txt
+PASS/FAIL table.
+
+## sitemap.xml
+PASS/FAIL table.
+
+## llms.txt
+PRESENT / NOT PRESENT + assessment.
+
+## Technical SEO
+PASS/FAIL table.
+
+## Metadata
+Page-by-page results.
+
+## Headings
+Page-by-page results.
+
+## Local SEO
+Detailed result.
+
+## Structured Data
+Detailed result.
+
+## Menu SEO
+Detailed result.
+
+## Image SEO
+Detailed result.
+
+## Open Graph
+Detailed result.
+
+## Internal Linking
+Detailed result.
+
+## Mobile SEO
+Detailed result.
+
+## Performance
+Detailed result and clearly state whether browser/PageSpeed testing was available.
+
+## AI/LLM Readiness
+Separate confirmed requirements from optional recommendations.
+
+## Google Search Console Readiness
+Detailed result.
+
+## Existing Known Issues
+Clearly separate pre-existing issues from SEO issues discovered in this audit.
+
+## Files/Routes Inspected
+List the actual files/routes inspected.
+
+## Changes Made
+MUST SAY:
+"NONE — AUDIT ONLY"
+
+## Git Safety
+Confirm:
+- git status
+- no source modifications
+- no database modifications
+- no commit
+- no push
+
+==================================================
+FINAL HARD RULE
+==================================================
+
+DO NOT FIX ANYTHING.
+
+This task is ONLY to inspect, test, analyze and report.
+
+Do not create files.
+Do not edit files.
+Do not migrate database.
+Do not seed database.
+Do not reset database.
+Do not commit.
+Do not push.
+
+If a problem is found, report it with:
+1. Severity
+2. Exact file/route
+3. Current behavior
+4. SEO impact
+5. Recommended fix
+
+Then STOP.
