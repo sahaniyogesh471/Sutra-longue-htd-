@@ -1,0 +1,42 @@
+name: Deploy to Fly.io
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Create app if missing
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          flyctl apps list --json | grep -q '"Name":"sutra-lounge"' || flyctl apps create sutra-lounge
+
+      - name: Create volume if missing
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          flyctl volumes list --json | grep -q '"Name":"sutra_data"' || flyctl volumes create sutra_data --region bom --size 1
+
+      - name: Set deployment secrets
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          flyctl secrets set \
+            SESSION_SECRET="${{ secrets.SESSION_SECRET || 'H1wzY-m9eyISsR6o4SjiTmBtcc5jXe9GE6D3IL54eilr9yKDC6WltGTVgQ0vWoLv' }}" \
+            ADMIN_PASSWORD="${{ secrets.ADMIN_PASSWORD || 'l95K4b3LJx5Kf4NGRJTc' }}" \
+            ADMIN_RECOVERY_CODE="${{ secrets.ADMIN_RECOVERY_CODE || '3718' }}"
+
+      - name: Deploy
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: flyctl deploy --remote-only
