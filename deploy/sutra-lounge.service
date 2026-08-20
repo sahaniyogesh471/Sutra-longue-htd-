@@ -1,0 +1,22 @@
+[Unit]
+Description=Sutra Lounge website
+After=network.target
+
+[Service]
+Type=simple
+User=sutra
+WorkingDirectory=/opt/sutra-lounge
+EnvironmentFile=/opt/sutra-lounge/.env
+ExecStart=/usr/bin/node dist/server.js
+Restart=always
+RestartSec=5
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/sutra-lounge/data
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,43 @@
+# Render blueprint for Sutra Lounge.
+#
+# IMPORTANT — storage:
+#   This app stores content in a SQLite file (data/sutra.db) and uploaded
+#   images in data/uploads. Render's FREE instance type cannot attach a
+#   persistent disk, so on the free plan every restart/redeploy resets the
+#   database and deletes uploaded images.
+#
+#   - plan: starter  -> $7/mo, keeps the `disk` below = data is safe.
+#   - plan: free     -> $0, but you MUST delete the `disk:` block, and all
+#                       admin edits are temporary (fine for a demo/preview).
+#
+services:
+  - type: web
+    name: sutra-lounge
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    region: singapore
+    healthCheckPath: /api/health
+    autoDeploy: true
+    disk:
+      name: sutra-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "4173"
+      - key: SUTRA_DB_PATH
+        value: /app/data/sutra.db
+      - key: SESSION_SECURE
+        value: "true"
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_USERNAME
+        value: admin
+      # Set these in the Render dashboard (Environment -> Add secret).
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_RECOVERY_CODE
+        sync: false

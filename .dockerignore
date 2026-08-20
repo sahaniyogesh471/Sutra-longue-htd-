@@ -1,0 +1,15 @@
+node_modules
+dist
+.git
+.github
+data/*.db
+data/*.db-shm
+data/*.db-wal
+.env
+.env.local
+*.txt
+*.Txt
+*.md
+!README.md
+docs
+WEBSITE_QA_REPORT.md
