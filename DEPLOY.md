@@ -35,17 +35,22 @@ site perfectly, but treat any admin edit as temporary.
 
 ## Option A — Oracle Cloud Always Free VM (recommended: free + persistent)
 
+> 📘 **Full step-by-step walkthrough: [ORACLE_CLOUD_GUIDE.md](./ORACLE_CLOUD_GUIDE.md)**
+> — signup, firewall rules, SSH, domain, HTTPS, backups and troubleshooting.
+> The summary below is the short version.
+
 1. Sign up at <https://cloud.oracle.com> → *Always Free* tier.
    Card is used for identity verification only; Always Free resources never bill.
-2. Create a **VM instance**: shape `VM.Standard.A1.Flex` (ARM, 1 OCPU / 6 GB is
-   within Always Free), image **Ubuntu 24.04**. Download the SSH key.
+2. Create a **VM instance**: shape `VM.Standard.A1.Flex` (ARM), image
+   **Ubuntu 24.04**. Set **2 OCPU / 12 GB** — Oracle halved the ARM Always Free
+   allowance from 4/24 to 2/12 on 18 August 2026. Download the SSH key.
 3. In the instance's subnet **security list**, add ingress rules for TCP **80**
    and **443** from `0.0.0.0/0`.
 4. SSH in and run the setup script:
 
    ```bash
-   ssh -i your-key.pem ubuntu@<SERVER_IP>
-   sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/sahaniyogesh471/Sutra-longue-htd-/main/deploy/setup-vps.sh)" _ https://github.com/sahaniyogesh471/Sutra-longue-htd-.git
+   ssh -i your-key.key ubuntu@<SERVER_IP>
+   sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/sahaniyogesh471/Sutra-longue-htd-/arena/01a00549-sutra-longue-htd/deploy/setup-vps.sh)" _ https://github.com/sahaniyogesh471/Sutra-longue-htd-.git arena/01a00549-sutra-longue-htd
    ```
 
    The script installs Node 22, nginx, and a firewall; builds the app; generates
