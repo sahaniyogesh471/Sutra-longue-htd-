@@ -276,6 +276,16 @@ scp -i your-key.key ubuntu@YOUR_SERVER_IP:/opt/sutra-backups/*.tar.gz ~/Desktop/
 
 ---
 
+## Step 9 — Put Cloudflare in front (recommended, free)
+
+Once the domain works, add Cloudflare's free plan for a global CDN, managed SSL,
+DDoS protection, and — most importantly — to **hide your server's IP** so
+attackers cannot reach it directly.
+
+Takes ~15 minutes, costs nothing: **[CLOUDFLARE_SETUP.md](./CLOUDFLARE_SETUP.md)**
+
+---
+
 ## Day-to-day operations
 
 | Task | Command (on the server) |

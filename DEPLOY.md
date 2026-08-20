@@ -18,6 +18,11 @@ renders pages from a database.
 
 ---
 
+> 🏗️ **Comparing architectures?** See
+> [ARCHITECTURE_OPTIONS.md](./ARCHITECTURE_OPTIONS.md) — evaluates splitting the
+> stack across free platforms (Turso, Cloudflare R2, static-frontend split) and
+> explains which version is worth doing for this codebase.
+
 ## Choosing a host
 
 | Option | Cost | Data safe? | Card needed | Verdict |
