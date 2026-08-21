@@ -1,43 +1,52 @@
-# Render blueprint for Sutra Lounge.
+# Render Blueprint for Sutra Lounge — FREE plan, no credit card.
 #
-# IMPORTANT — storage:
-#   This app stores content in a SQLite file (data/sutra.db) and uploaded
-#   images in data/uploads. Render's FREE instance type cannot attach a
-#   persistent disk, so on the free plan every restart/redeploy resets the
-#   database and deletes uploaded images.
+# Storage model:
+#   Render's free instances have an EPHEMERAL filesystem, so the SQLite file
+#   would be wiped on every restart/redeploy. Instead the app connects to a
+#   managed Turso (libSQL) database via TURSO_URL — set those two secrets in the
+#   Render dashboard and all content survives restarts.
 #
-#   - plan: starter  -> $7/mo, keeps the `disk` below = data is safe.
-#   - plan: free     -> $0, but you MUST delete the `disk:` block, and all
-#                       admin edits are temporary (fine for a demo/preview).
+# Setup:
+#   1. Create the Turso database and copy its URL + auth token
+#      (see TURSO_RENDER_SETUP.md)
+#   2. Render Dashboard -> New -> Blueprint -> pick this repo
+#   3. Fill in the secrets marked `sync: false` when prompted
 #
+# Note: free instances sleep after 15 minutes of inactivity. Add a free uptime
+# monitor (UptimeRobot / cron-job.org) pinging /api/health every 10 minutes.
+
 services:
   - type: web
     name: sutra-lounge
-    runtime: docker
-    dockerfilePath: ./Dockerfile
-    plan: starter
+    runtime: node
+    plan: free
     region: singapore
+    branch: arena/01a00549-sutra-longue-htd
+    buildCommand: npm ci && npm run build
+    startCommand: node dist/server.js
     healthCheckPath: /api/health
     autoDeploy: true
-    disk:
-      name: sutra-data
-      mountPath: /app/data
-      sizeGB: 1
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: "4173"
-      - key: SUTRA_DB_PATH
-        value: /app/data/sutra.db
+      - key: NODE_VERSION
+        value: "22"
+      # Render provides PORT automatically; the app reads it.
       - key: SESSION_SECURE
         value: "true"
       - key: SESSION_SECRET
         generateValue: true
       - key: ADMIN_USERNAME
         value: admin
-      # Set these in the Render dashboard (Environment -> Add secret).
+      # ---- Set these in the Render dashboard (Environment -> Secret) ----
+      # Turso database connection (required — without it data is lost on restart)
+      - key: TURSO_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+      # Initial admin account (read only on the very first start)
       - key: ADMIN_PASSWORD
         sync: false
+      # Permanent 4-digit recovery code — cannot be changed later
       - key: ADMIN_RECOVERY_CODE
         sync: false

@@ -1,6 +1,6 @@
 import fs from 'node:fs';
-import Database from 'better-sqlite3';
-import { DATA_DIR, DB_PATH } from '../config.js';
+import Database from 'libsql';
+import { DATA_DIR, DB_PATH, TURSO_URL, TURSO_AUTH_TOKEN } from '../config.js';
 import { SCHEMA_SQL } from './schema.js';
 import { DISH_NP, REVIEW_NP } from './translations.js';
 
@@ -8,8 +8,36 @@ export type DB = Database.Database;
 
 let _db: DB | null = null;
 
+/**
+ * Opens the database.
+ *
+ * Two modes, chosen by environment:
+ *  - **Turso (remote)** when TURSO_URL is set — used in production on hosts with
+ *    an ephemeral filesystem, so content survives restarts and redeploys.
+ *  - **Local SQLite file** otherwise — used for development.
+ *
+ * `libsql` is a drop-in, fully synchronous replacement for `better-sqlite3`, so
+ * every existing `.prepare().get()/.all()/.run()` call and `db.transaction()`
+ * keeps working unchanged.
+ */
 export function getDb(): DB {
   if (_db) return _db;
+
+  if (TURSO_URL) {
+    // Remote Turso database. WAL/journal settings are managed server-side and
+    // do not apply to a remote connection.
+    //
+    // `authToken` is cast because libsql ships better-sqlite3's type
+    // definitions, which omit the option — the runtime does read it
+    // (node_modules/libsql/index.js: `opts?.authToken`).
+    const db = new Database(TURSO_URL, {
+      authToken: TURSO_AUTH_TOKEN,
+    } as ConstructorParameters<typeof Database>[1]);
+    db.pragma('foreign_keys = ON');
+    _db = db;
+    return db;
+  }
+
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }

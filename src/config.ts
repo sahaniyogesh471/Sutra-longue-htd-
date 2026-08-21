@@ -12,6 +12,12 @@ export const DB_PATH = process.env.SUTRA_DB_PATH || path.join(DATA_DIR, 'sutra.d
 
 export const PORT = Number(process.env.PORT || 4173);
 
+/** Turso (libSQL) remote database. When TURSO_URL is set the app uses the
+ *  managed database instead of a local SQLite file — required on hosts with an
+ *  ephemeral filesystem (Render, Koyeb, etc.). Leave unset for local dev. */
+export const TURSO_URL = process.env.TURSO_URL || '';
+export const TURSO_AUTH_TOKEN = process.env.TURSO_AUTH_TOKEN || '';
+
 export const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-insecure-session-secret-change-me';
 
 export const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
