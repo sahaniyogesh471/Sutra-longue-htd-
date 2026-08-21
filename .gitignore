@@ -5,3 +5,6 @@ data/*.db-shm
 data/*.db-wal
 .env
 .env.local
+
+# User-uploaded media (lives on the server's persistent disk, never in Git)
+data/uploads/
