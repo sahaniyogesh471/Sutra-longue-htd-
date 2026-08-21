@@ -8,3 +8,7 @@ data/*.db-wal
 
 # User-uploaded media (lives on the server's persistent disk, never in Git)
 data/uploads/
+
+# Database dumps (contain the admin password hash — never commit)
+sutra-dump.sql
+*.dump.sql
