@@ -110,6 +110,7 @@
       'contact.socialLabel': 'Follow the flavour',
       'contact.formTitle': 'Request a Reservation',
       'contact.fName': 'Full name', 'contact.fPhone': 'Phone number', 'contact.fDate': 'Date',
+      'contact.errPhone': 'Enter a valid Nepali number, e.g. 9812345678 or 057-522111',
       'contact.fTime': 'Time', 'contact.fGuests': 'Guests', 'contact.fNote': 'Special requests',
       'contact.optional': '(optional)',
       'contact.submit': 'Send Reservation via WhatsApp',
@@ -228,6 +229,7 @@
       'contact.socialLabel': 'स्वाद पछ्याउनुहोस्',
       'contact.formTitle': 'रिजर्भेसन अनुरोध गर्नुहोस्',
       'contact.fName': 'पूरा नाम', 'contact.fPhone': 'फोन नम्बर', 'contact.fDate': 'मिति',
+      'contact.errPhone': 'मान्य नेपाली नम्बर लेख्नुहोस्, जस्तै 9812345678 वा 057-522111',
       'contact.fTime': 'समय', 'contact.fGuests': 'पाहुना', 'contact.fNote': 'विशेष अनुरोध',
       'contact.optional': '(ऐच्छिक)',
       'contact.submit': 'ह्वाट्सएपमार्फत रिजर्भेसन पठाउनुहोस्',
@@ -527,9 +529,42 @@
     return String(h12).padStart(2, '0') + ':' + m + ' ' + period;
   };
 
-  /* Normalised digit count — the basis for phone validation. */
+  /* Phone validation for Nepali numbers.
+     Accepts the formats guests actually use:
+       mobile     98XXXXXXXX / 97XXXXXXXX / 96XXXXXXXX  (10 digits, starts 96-98)
+       landline   0XX-XXXXXX                            (8-9 digits, leading 0)
+       with code  +977 98XXXXXXXX / 977XXXXXXXXX
+     Rejects obvious junk: repeated digits (0000000000), sequential runs
+     (1234567890) and anything too long to be a real number. */
   const phoneDigits = (v) => v.replace(/[^\d]/g, '');
-  const isValidPhone = (v) => /^[0-9+\s\-()]+$/.test(v) && phoneDigits(v).length >= 7 && phoneDigits(v).length <= 15;
+
+  const isValidPhone = (v) => {
+    if (!/^[0-9+\s\-()]+$/.test(v)) return false;
+
+    let d = phoneDigits(v);
+    if (!d) return false;
+
+    // Drop the Nepal country code so the national number can be checked.
+    if (d.startsWith('977')) d = d.slice(3);
+    // A leading 00 international prefix.
+    else if (d.startsWith('00977')) d = d.slice(5);
+
+    // Reject placeholders: every digit the same, or a straight run.
+    if (/^(\d)\1+$/.test(d)) return false;
+    if ('01234567890'.includes(d) && d.length >= 7) return false;
+    if ('98765432109'.includes(d) && d.length >= 7) return false;
+
+    // Mobile: 10 digits beginning 96, 97 or 98.
+    if (/^9[678]\d{8}$/.test(d)) return true;
+
+    // Landline: leading 0 with an area code, 8-10 digits total.
+    if (/^0\d{7,9}$/.test(d)) return true;
+
+    // Landline written without the leading 0 (e.g. 57522111).
+    if (/^[1-9]\d{7,8}$/.test(d)) return true;
+
+    return false;
+  };
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
