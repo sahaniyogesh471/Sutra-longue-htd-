@@ -300,12 +300,21 @@
   function applyDishTranslations(lang) {
     NP_ATTRS.forEach(([npAttr, enAttr]) => {
       document.querySelectorAll('[' + npAttr + ']').forEach((el) => {
-        if (!el.getAttribute(enAttr)) el.setAttribute(enAttr, el.textContent);
+        // The server renders data-en-* alongside data-np-*, so the English text
+        // is always available. Only fall back to capturing the current text if
+        // the attribute is absent (e.g. cards built client-side), and never
+        // capture while showing Nepali or the English copy would be lost.
+        if (el.getAttribute(enAttr) === null && lang !== 'np') {
+          el.setAttribute(enAttr, el.textContent);
+        }
         if (lang === 'np') {
           const np = el.getAttribute(npAttr);
           if (np) el.textContent = np;
         } else {
-          el.textContent = el.getAttribute(enAttr) || '';
+          const en = el.getAttribute(enAttr);
+          // Keep the existing text when no English copy is known, rather than
+          // blanking the element.
+          if (en !== null && en !== '') el.textContent = en;
         }
       });
     });

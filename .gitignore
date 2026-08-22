@@ -12,4 +12,5 @@ data/uploads/
 # Database dumps (contain the admin password hash — never commit)
 sutra-dump.sql
 sutra-dump-slim.sql
+restore-content.sql
 *.dump.sql

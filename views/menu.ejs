@@ -66,7 +66,7 @@
           <div class="menu-cat" id="<%= group.category.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-') %>">
             <div class="menu-cat-head">
               <span class="menu-cat-dot" aria-hidden="true"></span>
-              <h2 data-np-cat="<%= group.category_np %>"><%= group.category %></h2>
+              <h2 data-np-cat="<%= group.category_np %>" data-en-cat="<%= group.category %>"><%= group.category %></h2>
               <span class="menu-cat-line" aria-hidden="true"></span>
             </div>
             <% if (group.sub) { %>
@@ -81,12 +81,12 @@
                       <img src="<%= dish.image_url %>" alt="<%= dish.name %>" loading="lazy" />
                     <% } %>
                     <% if (dish.badge) { %>
-                      <span class="dish-tag" data-np-badge="<%= dish.badge_np %>"><%= dish.badge %></span>
+                      <span class="dish-tag" data-np-badge="<%= dish.badge_np %>" data-en-badge="<%= dish.badge %>"><%= dish.badge %></span>
                     <% } %>
                   </div>
                   <div class="dish-body">
-                    <h3 data-np-name="<%= dish.name_np %>"><%= dish.name %></h3>
-                    <p data-np-desc="<%= dish.description_np %>"><%= dish.description %></p>
+                    <h3 data-np-name="<%= dish.name_np %>" data-en-name="<%= dish.name %>"><%= dish.name %></h3>
+                    <p data-np-desc="<%= dish.description_np %>" data-en-desc="<%= dish.description %>"><%= dish.description %></p>
                     <div class="dish-foot">
                       <% if (dish.price) { %>
                         <span class="dish-price"><%= dish.price %></span>
@@ -260,12 +260,18 @@
         dishAttrs.forEach(function (pair) {
           var npAttr = pair[0], enAttr = pair[1];
           document.querySelectorAll('[' + npAttr + ']').forEach(function (el) {
-            if (!el.getAttribute(enAttr)) el.setAttribute(enAttr, el.textContent);
+            // data-en-* is rendered by the server, so English is always known.
+            // Only capture from the DOM when it is missing, and never while
+            // Nepali is displayed or the English copy would be overwritten.
+            if (el.getAttribute(enAttr) === null && lang !== 'np') {
+              el.setAttribute(enAttr, el.textContent);
+            }
             if (lang === 'np') {
               var np = el.getAttribute(npAttr);
               if (np) el.textContent = np;
             } else {
-              el.textContent = el.getAttribute(enAttr) || '';
+              var en = el.getAttribute(enAttr);
+              if (en !== null && en !== '') el.textContent = en;
             }
           });
         });
