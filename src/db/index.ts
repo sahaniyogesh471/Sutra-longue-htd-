@@ -205,17 +205,22 @@ const DEFAULT_SETTINGS: Record<string, string> = {
 };
 
 function backfillSettings(db: DB): void {
-  const rows = db.prepare('SELECT key FROM settings').all() as { key: string }[];
-  const existing = new Set(rows.map((r) => r.key));
+  // Alias the column: `key` is a reserved word in some engines, and remote
+  // libsql can return it with different casing, which broke the
+  // already-exists check and caused a UNIQUE constraint failure.
+  const rows = db.prepare('SELECT key AS k FROM settings').all() as { k: string }[];
+  const existing = new Set(rows.map((r) => r.k));
   // Fresh databases are handled by the full seed — backfill only applies to
   // already-seeded databases that were created before these keys existed.
-  const hasRealContent = rows.some((r) => r.key !== 'system.revisionPointer' && !(r.key in DEFAULT_SETTINGS));
+  const hasRealContent = rows.some((r) => r.k !== 'system.revisionPointer' && !(r.k in DEFAULT_SETTINGS));
   if (!hasRealContent) return;
+  // INSERT OR IGNORE keeps this idempotent even if the read above is
+  // incomplete for any reason — a re-run must never crash startup.
   const ins = db.prepare(
-    "INSERT INTO settings (key, value, updated_at) VALUES (?, ?, datetime('now'))"
+    "INSERT OR IGNORE INTO settings (key, value, updated_at) VALUES (?, ?, datetime('now'))"
   );
   const insBase = db.prepare(
-    "INSERT INTO settings_baseline (key, value, captured_at) VALUES (?, ?, datetime('now'))"
+    "INSERT OR IGNORE INTO settings_baseline (key, value, captured_at) VALUES (?, ?, datetime('now'))"
   );
   for (const [key, value] of Object.entries(DEFAULT_SETTINGS)) {
     if (existing.has(key)) continue;
