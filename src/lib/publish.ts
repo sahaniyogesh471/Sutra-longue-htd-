@@ -16,7 +16,7 @@ const POINTER_KEY = 'system.revisionPointer';
 export type Kind = 'settings' | 'dishes' | 'reviews' | 'gallery' | 'hours';
 
 export interface SiteSnapshot {
-  settings: { key: string; value: string | null }[];
+  settings: { k: string; v: string | null }[];
   dishes: Record<string, unknown>[];
   reviews: Record<string, unknown>[];
   gallery: Record<string, unknown>[];
@@ -26,11 +26,11 @@ export interface SiteSnapshot {
 /* ---------------- Effective state (published + draft overrides) ---------------- */
 
 export function effectiveSettings(db: DB): Record<string, string | null> {
-  const rows = db.prepare('SELECT key, value FROM settings').all() as { key: string; value: string | null }[];
+  const rows = db.prepare('SELECT key AS k, value AS v FROM settings').all() as { k: string; v: string | null }[];
   const out: Record<string, string | null> = {};
-  for (const r of rows) out[r.key] = r.value;
-  const drafts = db.prepare('SELECT key, value FROM settings_draft').all() as { key: string; value: string | null }[];
-  for (const d of drafts) out[d.key] = d.value;
+  for (const r of rows) out[r.k] = r.v;
+  const drafts = db.prepare('SELECT key AS k, value AS v FROM settings_draft').all() as { k: string; v: string | null }[];
+  for (const d of drafts) out[d.k] = d.v;
   delete out[POINTER_KEY];
   return out;
 }
@@ -336,7 +336,7 @@ export function restoreOriginalRow(db: DB, kind: Kind, id: number): boolean {
 /* ---------------- Snapshots & revisions ---------------- */
 function captureSnapshot(db: DB): SiteSnapshot {
   return {
-    settings: (db.prepare('SELECT key, value FROM settings WHERE key != ?').all(POINTER_KEY) as { key: string; value: string | null }[]),
+    settings: (db.prepare('SELECT key AS k, value AS v FROM settings WHERE key != ?').all(POINTER_KEY) as { k: string; v: string | null }[]),
     dishes: db.prepare('SELECT * FROM dishes').all() as Record<string, unknown>[],
     reviews: db.prepare('SELECT * FROM reviews').all() as Record<string, unknown>[],
     gallery: db.prepare('SELECT * FROM gallery').all() as Record<string, unknown>[],
@@ -349,7 +349,7 @@ function applySnapshot(db: DB, snap: SiteSnapshot): void {
   runInTransaction(db, () => {
     clear('settings');
     const insSettings = db.prepare('INSERT INTO settings (key, value, updated_at) VALUES (?, ?, datetime(\'now\'))');
-    for (const r of snap.settings) insSettings.run(r.key, r.value);
+    for (const r of snap.settings) insSettings.run(r.k, r.v);
 
     clear('dishes');
     const insDish = prepareNamed(db, 
@@ -461,12 +461,12 @@ export function publishAll(db: DB, by?: string): { published: string[]; count: n
 
   runInTransaction(db, () => {
     // settings
-    const drafts = db.prepare('SELECT key, value FROM settings_draft').all() as { key: string; value: string | null }[];
+    const drafts = db.prepare('SELECT key AS k, value AS v FROM settings_draft').all() as { k: string; v: string | null }[];
     const upsertSetting = db.prepare(
       `INSERT INTO settings (key, value, updated_at) VALUES (?, ?, datetime('now'))
        ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at`
     );
-    for (const d of drafts) upsertSetting.run(d.key, d.value);
+    for (const d of drafts) upsertSetting.run(d.k, d.v);
     if (drafts.length) applied.push('settings');
 
     // dishes
@@ -595,8 +595,8 @@ export function resetAll(db: DB, by?: string): { ok: boolean } {
   runInTransaction(db, () => {
     db.prepare('DELETE FROM settings').run();
     const insSetting = db.prepare('INSERT INTO settings (key, value, updated_at) VALUES (?, ?, datetime(\'now\'))');
-    for (const r of db.prepare('SELECT key, value FROM settings_baseline').all() as { key: string; value: string | null }[]) {
-      insSetting.run(r.key, r.value);
+    for (const r of db.prepare('SELECT key AS k, value AS v FROM settings_baseline').all() as { k: string; v: string | null }[]) {
+      insSetting.run(r.k, r.v);
     }
 
     db.prepare('DELETE FROM dishes').run();

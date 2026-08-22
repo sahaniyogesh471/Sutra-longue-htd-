@@ -68,9 +68,9 @@ const BS_CAT_MAP: Record<string, string> = {
 };
 
 export function loadSettings(db: DB): Settings {
-  const rows = db.prepare('SELECT key, value FROM settings WHERE key != ?').all('system.revisionPointer') as { key: string; value: string | null }[];
+  const rows = db.prepare('SELECT key AS k, value AS v FROM settings WHERE key != ?').all('system.revisionPointer') as { k: string; v: string | null }[];
   const out: Settings = {};
-  for (const r of rows) if (r.value != null) out[r.key] = r.value;
+  for (const r of rows) if (r.v != null) out[r.k] = r.v;
   return out;
 }
 

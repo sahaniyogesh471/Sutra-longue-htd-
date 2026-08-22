@@ -334,12 +334,12 @@ adminRouter.get('/settings', (req, res) => {
   const db = getDb();
   const effective = effectiveSettings(db);
   const published: Record<string, string | null> = {};
-  for (const r of db.prepare('SELECT key, value FROM settings').all() as { key: string; value: string | null }[]) {
-    published[r.key] = r.value;
+  for (const r of db.prepare('SELECT key AS k, value AS v FROM settings').all() as { k: string; v: string | null }[]) {
+    published[r.k] = r.v;
   }
   const baseline: Record<string, string | null> = {};
-  for (const r of db.prepare('SELECT key, value FROM settings_baseline').all() as { key: string; value: string | null }[]) {
-    baseline[r.key] = r.value;
+  for (const r of db.prepare('SELECT key AS k, value AS v FROM settings_baseline').all() as { k: string; v: string | null }[]) {
+    baseline[r.k] = r.v;
   }
   const dirtyKeys = ALL_SETTING_KEYS.filter((k) => (effective[k] ?? null) !== (published[k] ?? null));
   res.render('admin/settings', {

@@ -83,16 +83,16 @@ const ALL_KEYS = ALL_SETTING_KEYS;
 
 function publishedSettings(db: DB): Record<string, string | null> {
   const out: Record<string, string | null> = {};
-  for (const r of db.prepare('SELECT key, value FROM settings').all() as { key: string; value: string | null }[]) {
-    out[r.key] = r.value;
+  for (const r of db.prepare('SELECT key AS k, value AS v FROM settings').all() as { k: string; v: string | null }[]) {
+    out[r.k] = r.v;
   }
   return out;
 }
 
 function baselineSettings(db: DB): Record<string, string | null> {
   const out: Record<string, string | null> = {};
-  for (const r of db.prepare('SELECT key, value FROM settings_baseline').all() as { key: string; value: string | null }[]) {
-    out[r.key] = r.value;
+  for (const r of db.prepare('SELECT key AS k, value AS v FROM settings_baseline').all() as { k: string; v: string | null }[]) {
+    out[r.k] = r.v;
   }
   return out;
 }
