@@ -27,6 +27,7 @@ import {
   restoreRevision,
 } from '../lib/publish.js';
 import { upload, registerMedia, pruneOrphanMedia, validateImageFile, optimizeImageFile } from '../lib/media.js';
+import { cloudinaryEnabled, uploadToCloudinary, cleanupTempFile, deleteFromCloudinary } from '../lib/cloudinary.js';
 import {
   required,
   maxLen,
@@ -643,6 +644,35 @@ apiRouter.post('/upload', (req, res) => {
     }
     const db = getDb();
     const alt = String((req.body ?? {}).alt ?? '').trim().slice(0, 120);
+
+    // On an ephemeral host the local file is lost on the next redeploy, so
+    // push it to Cloudinary and store the CDN URL instead.
+    if (cloudinaryEnabled) {
+      try {
+        const uploaded = await uploadToCloudinary(req.file.path, req.file.originalname);
+        cleanupTempFile(req.file.path);
+        const id = registerMedia(
+          db,
+          {
+            ...req.file,
+            filename: uploaded.publicId,
+            size: uploaded.bytes,
+            mimetype: `image/${uploaded.format}`,
+          },
+          alt,
+          { width: uploaded.width, height: uploaded.height },
+          uploaded.url
+        );
+        ok(res, { url: uploaded.url, mediaId: id });
+        return;
+      } catch (uploadErr) {
+        cleanupTempFile(req.file.path);
+        console.error('[upload] Cloudinary upload failed:', (uploadErr as Error)?.message ?? uploadErr);
+        fail(res, 502, 'Image upload failed. Please try again.');
+        return;
+      }
+    }
+
     const dims = await optimizeImageFile(req.file);
     const id = registerMedia(db, req.file, alt, dims);
     ok(res, { url: `/uploads/${req.file.filename}`, mediaId: id });
@@ -651,11 +681,16 @@ apiRouter.post('/upload', (req, res) => {
 
 apiRouter.post('/media/prune', (req, res) => {
   const urlPath = String((req.body ?? {}).url ?? '');
-  if (!urlPath.startsWith('/uploads/')) {
+  const isLocal = urlPath.startsWith('/uploads/');
+  const isCloudinary = urlPath.startsWith('https://res.cloudinary.com/');
+  if (!isLocal && !isCloudinary) {
     fail(res, 400, 'Invalid media path.');
     return;
   }
   pruneOrphanMedia(getDb(), urlPath);
+  // Remove the remote copy too, so deleted images stop counting against the
+  // Cloudinary free quota.
+  if (isCloudinary) void deleteFromCloudinary(urlPath);
   ok(res);
 });
 

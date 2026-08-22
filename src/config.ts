@@ -33,6 +33,17 @@ function cleanEnv(name: string): string {
 export const TURSO_URL = cleanEnv('TURSO_URL');
 export const TURSO_AUTH_TOKEN = cleanEnv('TURSO_AUTH_TOKEN');
 
+/** Cloudinary media storage. When configured, uploaded images are stored on
+ *  Cloudinary's CDN instead of the local disk — required on hosts with an
+ *  ephemeral filesystem (Render free), where uploads are otherwise lost on every
+ *  redeploy. Leave unset to keep using local disk storage. */
+export const CLOUDINARY_CLOUD_NAME = cleanEnv('CLOUDINARY_CLOUD_NAME');
+export const CLOUDINARY_API_KEY = cleanEnv('CLOUDINARY_API_KEY');
+export const CLOUDINARY_API_SECRET = cleanEnv('CLOUDINARY_API_SECRET');
+export const CLOUDINARY_ENABLED = Boolean(
+  CLOUDINARY_CLOUD_NAME && CLOUDINARY_API_KEY && CLOUDINARY_API_SECRET
+);
+
 export const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-insecure-session-secret-change-me';
 
 export const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';

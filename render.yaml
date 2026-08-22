@@ -53,3 +53,11 @@ services:
       # Permanent 4-digit recovery code — cannot be changed later
       - key: ADMIN_RECOVERY_CODE
         sync: false
+      # Cloudinary media storage — without it, images uploaded through the
+      # admin panel are lost on every redeploy (ephemeral filesystem).
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false

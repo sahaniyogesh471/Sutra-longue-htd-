@@ -177,7 +177,10 @@ export function registerMedia(
   db: DB,
   file: Express.Multer.File,
   alt = '',
-  dims?: OptimizedImage | null
+  dims?: OptimizedImage | null,
+  /** Absolute URL when the image lives on a remote CDN (Cloudinary) rather
+   *  than on local disk. Falls back to the local /uploads path. */
+  remoteUrl?: string
 ): number {
   const info = db
     .prepare(
@@ -186,8 +189,8 @@ export function registerMedia(
     )
     .run(
       file.originalname,
-      file.path,
-      urlForFile(file),
+      remoteUrl ? '' : file.path,
+      remoteUrl ?? urlForFile(file),
       file.mimetype,
       file.size,
       dims?.width ?? null,
@@ -203,7 +206,12 @@ export function registerMedia(
  * replacing an image never destroys the previously stored file.
  */
 export function pruneOrphanMedia(db: DB, urlPath: string | null | undefined): void {
-  if (!urlPath || !urlPath.startsWith(UPLOADS_URL_PREFIX)) return;
+  // Accept both local /uploads paths and remote Cloudinary URLs; the file
+  // deletion below is skipped automatically for remote entries because their
+  // stored_path is empty.
+  if (!urlPath) return;
+  const isRemote = urlPath.startsWith('https://res.cloudinary.com/');
+  if (!isRemote && !urlPath.startsWith(UPLOADS_URL_PREFIX)) return;
   const refTables = [
     { t: 'gallery', col: 'image_url' },
     { t: 'reviews', col: 'image_url' },
