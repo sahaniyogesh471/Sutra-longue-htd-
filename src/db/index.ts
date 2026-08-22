@@ -285,6 +285,91 @@ export function setBaselineSetting(db: DB, key: string, value: string | null): v
  * backend that rejects those statements, and always rethrows the *original*
  * error rather than a rollback failure.
  */
+/**
+ * Rewrites `@name` placeholders into positional `?` parameters.
+ *
+ * Remote Turso does not bind libsql's named parameters the way a local file
+ * does — values silently arrive as NULL, which surfaced as
+ * `NOT NULL constraint failed: dishes.type` during seeding. Positional
+ * parameters behave identically on both backends, so statements are normalised
+ * before they are prepared.
+ *
+ * String literals and comments are skipped so a `@` inside text is untouched.
+ */
+export function toPositional(sql: string): { sql: string; names: string[] } {
+  const names: string[] = [];
+  let out = '';
+  let i = 0;
+  while (i < sql.length) {
+    const ch = sql[i];
+
+    // Skip over quoted literals / identifiers verbatim.
+    if (ch === "'" || ch === '"' || ch === '`') {
+      const quote = ch;
+      out += ch;
+      i++;
+      while (i < sql.length) {
+        out += sql[i];
+        if (sql[i] === quote) {
+          // Doubled quote is an escape, keep consuming.
+          if (sql[i + 1] === quote) {
+            out += sql[i + 1];
+            i += 2;
+            continue;
+          }
+          i++;
+          break;
+        }
+        i++;
+      }
+      continue;
+    }
+
+    // Skip line comments.
+    if (ch === '-' && sql[i + 1] === '-') {
+      while (i < sql.length && sql[i] !== '\n') out += sql[i++];
+      continue;
+    }
+
+    if (ch === '@') {
+      const m = /^@([A-Za-z_][A-Za-z0-9_]*)/.exec(sql.slice(i));
+      if (m) {
+        names.push(m[1]);
+        out += '?';
+        i += m[0].length;
+        continue;
+      }
+    }
+
+    out += ch;
+    i++;
+  }
+  return { sql: out, names };
+}
+
+/**
+ * Prepares a statement, transparently converting `@name` placeholders to
+ * positional ones. The returned object accepts the same object argument as
+ * before, so call sites do not change.
+ */
+export function prepareNamed(db: DB, sql: string) {
+  const { sql: converted, names } = toPositional(sql);
+  const stmt = db.prepare(converted);
+  if (names.length === 0) return stmt;
+
+  const bind = (params: Record<string, unknown>) =>
+    names.map((n) => {
+      const v = params[n];
+      return v === undefined ? null : v;
+    });
+
+  return {
+    run: (params: Record<string, unknown> = {}) => stmt.run(...bind(params)),
+    get: (params: Record<string, unknown> = {}) => stmt.get(...bind(params)),
+    all: (params: Record<string, unknown> = {}) => stmt.all(...bind(params)),
+  } as unknown as ReturnType<DB['prepare']>;
+}
+
 export function runInTransaction<T>(db: DB, fn: () => T): T {
   let began = false;
   try {

@@ -1,4 +1,4 @@
-import { DB, initSchema, getDb, setBaselineSetting, setSetting, runInTransaction } from './index.js';
+import { DB, initSchema, getDb, setBaselineSetting, setSetting, runInTransaction, prepareNamed } from './index.js';
 import { DISH_NP, REVIEW_NP } from './translations.js';
 
 /**
@@ -201,11 +201,11 @@ function seedSettings(db: DB, force: boolean): boolean {
 function seedDishes(db: DB, force: boolean): boolean {
   const count = (db.prepare('SELECT COUNT(*) AS c FROM dishes').get() as { c: number }).c;
   if (count > 0 && !force) return false;
-  const insertCurrent = db.prepare(
+  const insertCurrent = prepareNamed(db, 
     `INSERT INTO dishes (type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, is_visible, sort_order, created_at, updated_at)
      VALUES (@type, @name, @description, @name_np, @description_np, @price, @category, @category_np, @badge, @badge_np, @image_url, @is_featured, 1, @sort_order, datetime('now'), datetime('now'))`
   );
-  const insertBaseline = db.prepare(
+  const insertBaseline = prepareNamed(db, 
     `INSERT INTO dishes_baseline (baseline_ref, type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, sort_order, captured_at)
      VALUES (@id, @type, @name, @description, @name_np, @description_np, @price, @category, @category_np, @badge, @badge_np, @image_url, @is_featured, @sort_order, datetime('now'))`
   );
@@ -229,11 +229,11 @@ function seedDishes(db: DB, force: boolean): boolean {
 function seedReviews(db: DB, force: boolean): boolean {
   const count = (db.prepare('SELECT COUNT(*) AS c FROM reviews').get() as { c: number }).c;
   if (count > 0 && !force) return false;
-  const insertCurrent = db.prepare(
+  const insertCurrent = prepareNamed(db, 
     `INSERT INTO reviews (name, text, name_np, text_np, rating, image_url, is_visible, sort_order, created_at, updated_at)
      VALUES (@name, @text, @name_np, @text_np, @rating, @image_url, 1, @sort_order, datetime('now'), datetime('now'))`
   );
-  const insertBaseline = db.prepare(
+  const insertBaseline = prepareNamed(db, 
     `INSERT INTO reviews_baseline (baseline_ref, name, text, name_np, text_np, rating, image_url, sort_order, captured_at)
      VALUES (@id, @name, @text, @name_np, @text_np, @rating, @image_url, @sort_order, datetime('now'))`
   );
@@ -250,11 +250,11 @@ function seedReviews(db: DB, force: boolean): boolean {
 function seedGallery(db: DB, force: boolean): boolean {
   const count = (db.prepare('SELECT COUNT(*) AS c FROM gallery').get() as { c: number }).c;
   if (count > 0 && !force) return false;
-  const insertCurrent = db.prepare(
+  const insertCurrent = prepareNamed(db, 
     `INSERT INTO gallery (image_url, alt, is_featured, is_visible, sort_order, created_at, updated_at)
      VALUES (@image_url, @alt, @is_featured, 1, @sort_order, datetime('now'), datetime('now'))`
   );
-  const insertBaseline = db.prepare(
+  const insertBaseline = prepareNamed(db, 
     `INSERT INTO gallery_baseline (baseline_ref, image_url, alt, is_featured, sort_order, captured_at)
      VALUES (@id, @image_url, @alt, @is_featured, @sort_order, datetime('now'))`
   );
@@ -271,12 +271,12 @@ function seedGallery(db: DB, force: boolean): boolean {
 function seedHours(db: DB, force: boolean): boolean {
   const count = (db.prepare('SELECT COUNT(*) AS c FROM opening_hours').get() as { c: number }).c;
   if (count > 0 && !force) return false;
-  const upsertCurrent = db.prepare(
+  const upsertCurrent = prepareNamed(db, 
     `INSERT INTO opening_hours (day_index, day_name, is_open, open_time, close_time, updated_at)
      VALUES (@day_index, @day_name, 1, @open_time, @close_time, datetime('now'))
      ON CONFLICT(day_index) DO UPDATE SET day_name = excluded.day_name, open_time = excluded.open_time, close_time = excluded.close_time`
   );
-  const upsertBaseline = db.prepare(
+  const upsertBaseline = prepareNamed(db, 
     `INSERT INTO opening_hours_baseline (day_index, day_name, is_open, open_time, close_time, captured_at)
      VALUES (@day_index, @day_name, 1, @open_time, @close_time, datetime('now'))
      ON CONFLICT(day_index) DO UPDATE SET day_name = excluded.day_name, open_time = excluded.open_time, close_time = excluded.close_time`

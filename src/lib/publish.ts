@@ -1,4 +1,4 @@
-import { type DB, runInTransaction } from '../db/index.js';
+import { type DB, runInTransaction, prepareNamed } from '../db/index.js';
 
 /**
  * Draft / Publish / Revision engine.
@@ -178,7 +178,7 @@ export function saveDishDraft(
     sort_order: number;
   }
 ): void {
-  db.prepare(
+  prepareNamed(db, 
     `INSERT INTO dishes_draft (row_id, op, type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, is_visible, sort_order, updated_at)
      VALUES (@row_id, 'upsert', @type, @name, @description, @name_np, @description_np, @price, @category, @category_np, @badge, @badge_np, @image_url, @is_featured, @is_visible, @sort_order, datetime('now'))`
   ).run(input);
@@ -204,7 +204,7 @@ export function saveReviewDraft(
     sort_order: number;
   }
 ): void {
-  db.prepare(
+  prepareNamed(db, 
     `INSERT INTO reviews_draft (row_id, op, name, text, name_np, text_np, rating, image_url, is_visible, sort_order, updated_at)
      VALUES (@row_id, 'upsert', @name, @text, @name_np, @text_np, @rating, @image_url, @is_visible, @sort_order, datetime('now'))`
   ).run(input);
@@ -227,7 +227,7 @@ export function saveGalleryDraft(
     sort_order: number;
   }
 ): void {
-  db.prepare(
+  prepareNamed(db, 
     `INSERT INTO gallery_draft (row_id, op, image_url, alt, is_featured, is_visible, sort_order, updated_at)
      VALUES (@row_id, 'upsert', @image_url, @alt, @is_featured, @is_visible, @sort_order, datetime('now'))`
   ).run(input);
@@ -240,7 +240,7 @@ export function deleteGalleryDraft(db: DB, id: number): void {
 }
 
 export function saveHoursDraft(db: DB, rows: { day_index: number; day_name: string; is_open: number; open_time: string | null; close_time: string | null }[]): void {
-  const upsert = db.prepare(
+  const upsert = prepareNamed(db, 
     `INSERT INTO opening_hours_draft (day_index, day_name, is_open, open_time, close_time, updated_at)
      VALUES (@day_index, @day_name, @is_open, @open_time, @close_time, datetime('now'))
      ON CONFLICT(day_index) DO UPDATE SET day_name = excluded.day_name, is_open = excluded.is_open, open_time = excluded.open_time, close_time = excluded.close_time, updated_at = excluded.updated_at`
@@ -352,7 +352,7 @@ function applySnapshot(db: DB, snap: SiteSnapshot): void {
     for (const r of snap.settings) insSettings.run(r.key, r.value);
 
     clear('dishes');
-    const insDish = db.prepare(
+    const insDish = prepareNamed(db, 
       `INSERT INTO dishes (id, type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, is_visible, sort_order, created_at, updated_at)
        VALUES (@id, @type, @name, @description, @name_np, @description_np, @price, @category, @category_np, @badge, @badge_np, @image_url, @is_featured, @is_visible, @sort_order, @created_at, datetime('now'))`
     );
@@ -367,7 +367,7 @@ function applySnapshot(db: DB, snap: SiteSnapshot): void {
     }
 
     clear('reviews');
-    const insReview = db.prepare(
+    const insReview = prepareNamed(db, 
       `INSERT INTO reviews (id, name, text, name_np, text_np, rating, image_url, is_visible, sort_order, created_at, updated_at)
        VALUES (@id, @name, @text, @name_np, @text_np, @rating, @image_url, @is_visible, @sort_order, @created_at, datetime('now'))`
     );
@@ -380,14 +380,14 @@ function applySnapshot(db: DB, snap: SiteSnapshot): void {
     }
 
     clear('gallery');
-    const insGallery = db.prepare(
+    const insGallery = prepareNamed(db, 
       `INSERT INTO gallery (id, image_url, alt, is_featured, is_visible, sort_order, created_at, updated_at)
        VALUES (@id, @image_url, @alt, @is_featured, @is_visible, @sort_order, @created_at, datetime('now'))`
     );
     for (const r of snap.gallery) insGallery.run(r);
 
     clear('opening_hours');
-    const insHours = db.prepare(
+    const insHours = prepareNamed(db, 
       `INSERT INTO opening_hours (day_index, day_name, is_open, open_time, close_time, updated_at)
        VALUES (@day_index, @day_name, @is_open, @open_time, @close_time, datetime('now'))`
     );
@@ -471,11 +471,11 @@ export function publishAll(db: DB, by?: string): { published: string[]; count: n
 
     // dishes
     const dishDrafts = db.prepare('SELECT * FROM dishes_draft').all() as Record<string, unknown>[];
-    const insertDish = db.prepare(
+    const insertDish = prepareNamed(db, 
       `INSERT INTO dishes (type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, is_visible, sort_order, created_at, updated_at)
        VALUES (@type, @name, @description, @name_np, @description_np, @price, @category, @category_np, @badge, @badge_np, @image_url, @is_featured, @is_visible, @sort_order, datetime('now'), datetime('now'))`
     );
-    const updateDish = db.prepare(
+    const updateDish = prepareNamed(db, 
       `UPDATE dishes SET type=@type, name=@name, description=@description, name_np=@name_np, description_np=@description_np, price=@price, category=@category, category_np=@category_np, badge=@badge, badge_np=@badge_np, image_url=@image_url, is_featured=@is_featured, is_visible=@is_visible, sort_order=@sort_order, updated_at=datetime('now') WHERE id=@row_id`
     );
     const deleteDish = db.prepare('DELETE FROM dishes WHERE id = ?');
@@ -501,11 +501,11 @@ export function publishAll(db: DB, by?: string): { published: string[]; count: n
 
     // reviews
     const reviewDrafts = db.prepare('SELECT * FROM reviews_draft').all() as Record<string, unknown>[];
-    const insertReview = db.prepare(
+    const insertReview = prepareNamed(db, 
       `INSERT INTO reviews (name, text, name_np, text_np, rating, image_url, is_visible, sort_order, created_at, updated_at)
        VALUES (@name, @text, @name_np, @text_np, @rating, @image_url, @is_visible, @sort_order, datetime('now'), datetime('now'))`
     );
-    const updateReview = db.prepare(
+    const updateReview = prepareNamed(db, 
       `UPDATE reviews SET name=@name, text=@text, name_np=@name_np, text_np=@text_np, rating=@rating, image_url=@image_url, is_visible=@is_visible, sort_order=@sort_order, updated_at=datetime('now') WHERE id=@row_id`
     );
     const deleteReview = db.prepare('DELETE FROM reviews WHERE id = ?');
@@ -529,11 +529,11 @@ export function publishAll(db: DB, by?: string): { published: string[]; count: n
 
     // gallery
     const galleryDrafts = db.prepare('SELECT * FROM gallery_draft').all() as Record<string, unknown>[];
-    const insertGallery = db.prepare(
+    const insertGallery = prepareNamed(db, 
       `INSERT INTO gallery (image_url, alt, is_featured, is_visible, sort_order, created_at, updated_at)
        VALUES (@image_url, @alt, @is_featured, @is_visible, @sort_order, datetime('now'), datetime('now'))`
     );
-    const updateGallery = db.prepare(
+    const updateGallery = prepareNamed(db, 
       `UPDATE gallery SET image_url=@image_url, alt=@alt, is_featured=@is_featured, is_visible=@is_visible, sort_order=@sort_order, updated_at=datetime('now') WHERE id=@row_id`
     );
     const deleteGallery = db.prepare('DELETE FROM gallery WHERE id = ?');
@@ -552,7 +552,7 @@ export function publishAll(db: DB, by?: string): { published: string[]; count: n
 
     // hours
     const hourDrafts = db.prepare('SELECT * FROM opening_hours_draft').all() as Record<string, unknown>[];
-    const upsertHour = db.prepare(
+    const upsertHour = prepareNamed(db, 
       `INSERT INTO opening_hours (day_index, day_name, is_open, open_time, close_time, updated_at)
        VALUES (@day_index, @day_name, @is_open, @open_time, @close_time, datetime('now'))
        ON CONFLICT(day_index) DO UPDATE SET day_name = excluded.day_name, is_open = excluded.is_open, open_time = excluded.open_time, close_time = excluded.close_time, updated_at = excluded.updated_at`
@@ -600,7 +600,7 @@ export function resetAll(db: DB, by?: string): { ok: boolean } {
     }
 
     db.prepare('DELETE FROM dishes').run();
-    const insDish = db.prepare(
+    const insDish = prepareNamed(db, 
       `INSERT INTO dishes (id, type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, is_visible, sort_order, created_at, updated_at)
        VALUES (@id, @type, @name, @description, @name_np, @description_np, @price, @category, @category_np, @badge, @badge_np, @image_url, @is_featured, 1, @sort_order, datetime('now'), datetime('now'))`
     );
@@ -609,7 +609,7 @@ export function resetAll(db: DB, by?: string): { ok: boolean } {
     }
 
     db.prepare('DELETE FROM reviews').run();
-    const insReview = db.prepare(
+    const insReview = prepareNamed(db, 
       `INSERT INTO reviews (id, name, text, name_np, text_np, rating, image_url, is_visible, sort_order, created_at, updated_at)
        VALUES (@id, @name, @text, @name_np, @text_np, @rating, @image_url, 1, @sort_order, datetime('now'), datetime('now'))`
     );
@@ -618,7 +618,7 @@ export function resetAll(db: DB, by?: string): { ok: boolean } {
     }
 
     db.prepare('DELETE FROM gallery').run();
-    const insGallery = db.prepare(
+    const insGallery = prepareNamed(db, 
       `INSERT INTO gallery (id, image_url, alt, is_featured, is_visible, sort_order, created_at, updated_at)
        VALUES (@id, @image_url, @alt, @is_featured, 1, @sort_order, datetime('now'), datetime('now'))`
     );
@@ -627,7 +627,7 @@ export function resetAll(db: DB, by?: string): { ok: boolean } {
     }
 
     db.prepare('DELETE FROM opening_hours').run();
-    const insHour = db.prepare(
+    const insHour = prepareNamed(db, 
       `INSERT INTO opening_hours (day_index, day_name, is_open, open_time, close_time, updated_at)
        VALUES (@day_index, @day_name, @is_open, @open_time, @close_time, datetime('now'))`
     );

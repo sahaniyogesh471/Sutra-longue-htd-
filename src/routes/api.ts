@@ -2,7 +2,7 @@ import { Router } from 'express';
 import type { Request, Response } from 'express';
 import fs from 'node:fs';
 import rateLimit from 'express-rate-limit';
-import { getDb } from '../db/index.js';
+import { getDb, prepareNamed } from '../db/index.js';
 import {
   effectiveSettings,
   effectiveHours,
@@ -204,7 +204,7 @@ apiRouter.post('/dishes/save', (req, res) => {
 
   if (draftId) {
     // updating an existing new-item draft (not yet published)
-    db.prepare(
+    prepareNamed(db, 
       `UPDATE dishes_draft SET type=@type, name=@name, description=@description, name_np=@name_np,
        description_np=@description_np, price=@price, category=@category, category_np=@category_np,
        badge=@badge, badge_np=@badge_np, image_url=@image_url, is_featured=@is_featured,
@@ -292,7 +292,7 @@ apiRouter.post('/reviews/save', (req, res) => {
   };
 
   if (draftId) {
-    db.prepare(
+    prepareNamed(db, 
       `UPDATE reviews_draft SET name=@name, text=@text, name_np=@name_np, text_np=@text_np, rating=@rating, image_url=@image_url,
        is_visible=@is_visible, sort_order=@sort_order, updated_at=datetime('now')
        WHERE draft_id=@draft_id`
@@ -362,7 +362,7 @@ apiRouter.post('/gallery/save', (req, res) => {
   };
 
   if (draftId) {
-    db.prepare(
+    prepareNamed(db, 
       `UPDATE gallery_draft SET image_url=@image_url, alt=@alt, is_featured=@is_featured,
        is_visible=@is_visible, sort_order=@sort_order, updated_at=datetime('now')
        WHERE draft_id=@draft_id`
