@@ -1001,6 +1001,37 @@
     refreshAfterGlobalAction();
   }
 
+  function saveAsOriginalFlow() {
+    const m = openModal(
+      '<h3>Save current site as the original</h3>' +
+      '<p>This makes the site <strong>exactly as it looks right now</strong> the protected ORIGINAL. ' +
+      'From now on, "Reset entire website" will restore to this version instead of the old demo content.</p>' +
+      '<p>Do this once your real photos, dishes and reviews are live.</p>' +
+      '<div class="field"><label for="saveOrigConfirm">Type SAVE to confirm</label>' +
+      '<input id="saveOrigConfirm" type="text" autocomplete="off" data-saveorig-input>' +
+      '<p class="field-error" data-error="saveorig"></p></div>' +
+      '<div class="modal-actions">' +
+      '<button class="btn btn-ghost" data-close-modal type="button">Cancel</button>' +
+      '<button class="btn btn-gold" data-saveorig-go type="button" disabled>Save as original</button>' +
+      '</div>',
+      { size: 'modal-sm' }
+    );
+    const input = m.el.querySelector('[data-saveorig-input]');
+    const go = m.el.querySelector('[data-saveorig-go]');
+    const err = m.el.querySelector('[data-error="saveorig"]');
+    input.addEventListener('input', function () {
+      go.disabled = input.value.trim() !== 'SAVE';
+      err.textContent = '';
+    });
+    go.addEventListener('click', async function () {
+      const r = await api('/admin/api/save-as-original', { body: { confirm: input.value.trim() } });
+      if (!r.ok) { err.textContent = r.error || 'Could not save as original.'; return; }
+      toast('Saved. Reset will now restore the site to how it looks today.');
+      m.close();
+      refreshAfterGlobalAction();
+    });
+  }
+
   function resetFlow() {
     const m = openModal(
       '<h3>Reset entire website</h3>' +
@@ -1037,6 +1068,7 @@
     if (actionBtn) {
       const action = actionBtn.getAttribute('data-action');
       if (action === 'publish') publishChanges();
+      else if (action === 'save-as-original') saveAsOriginalFlow();
       else if (action === 'discard') discardDrafts();
       else if (action === 'undo') undoNow();
       else if (action === 'redo') redoNow();

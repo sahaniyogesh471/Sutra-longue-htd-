@@ -665,3 +665,94 @@ export function listRevisions(db: DB, limit = 50): { id: number; action: string;
     .all(limit) as { id: number; action: string; kind: string; created_at: string; created_by: string | null }[];
   return rows.map((r) => ({ ...r, current: r.id === pointer }));
 }
+
+/* ===================================================================== */
+/* SAVE CURRENT SITE AS THE ORIGINAL (baseline)                          */
+/* ===================================================================== */
+
+/**
+ * Captures the currently published site as the new "original".
+ *
+ * The baseline tables are normally written only once, when the database is
+ * first seeded, so "Reset entire website" always reverted to the seeded demo
+ * content — stock photos and placeholder reviews. After a restaurant has put
+ * its real photos, dishes and reviews live, that is the wrong thing to fall
+ * back to.
+ *
+ * This copies the live tables over the baseline ones, so a later reset returns
+ * the site to how it looks right now instead.
+ */
+export function saveCurrentAsBaseline(db: DB, by?: string): {
+  settings: number;
+  dishes: number;
+  reviews: number;
+  gallery: number;
+  hours: number;
+} {
+  const counts = { settings: 0, dishes: 0, reviews: 0, gallery: 0, hours: 0 };
+
+  runInTransaction(db, () => {
+    // ---- settings ----
+    db.prepare('DELETE FROM settings_baseline').run();
+    const insSetting = db.prepare(
+      "INSERT INTO settings_baseline (key, value, captured_at) VALUES (?, ?, datetime('now'))"
+    );
+    for (const r of db
+      .prepare('SELECT key AS k, value AS v FROM settings WHERE key != ?')
+      .all(POINTER_KEY) as { k: string; v: string | null }[]) {
+      insSetting.run(r.k, r.v);
+      counts.settings++;
+    }
+
+    // ---- dishes ----
+    db.prepare('DELETE FROM dishes_baseline').run();
+    const insDish = prepareNamed(
+      db,
+      `INSERT INTO dishes_baseline (baseline_ref, type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, sort_order, captured_at)
+       VALUES (@id, @type, @name, @description, @name_np, @description_np, @price, @category, @category_np, @badge, @badge_np, @image_url, @is_featured, @sort_order, datetime('now'))`
+    );
+    for (const r of db.prepare('SELECT * FROM dishes').all() as Record<string, unknown>[]) {
+      insDish.run(r);
+      counts.dishes++;
+    }
+
+    // ---- reviews ----
+    db.prepare('DELETE FROM reviews_baseline').run();
+    const insReview = prepareNamed(
+      db,
+      `INSERT INTO reviews_baseline (baseline_ref, name, text, name_np, text_np, rating, image_url, sort_order, captured_at)
+       VALUES (@id, @name, @text, @name_np, @text_np, @rating, @image_url, @sort_order, datetime('now'))`
+    );
+    for (const r of db.prepare('SELECT * FROM reviews').all() as Record<string, unknown>[]) {
+      insReview.run({ ...r, name_np: r.name_np ?? '', text_np: r.text_np ?? '' });
+      counts.reviews++;
+    }
+
+    // ---- gallery ----
+    db.prepare('DELETE FROM gallery_baseline').run();
+    const insGallery = prepareNamed(
+      db,
+      `INSERT INTO gallery_baseline (baseline_ref, image_url, alt, is_featured, sort_order, captured_at)
+       VALUES (@id, @image_url, @alt, @is_featured, @sort_order, datetime('now'))`
+    );
+    for (const r of db.prepare('SELECT * FROM gallery').all() as Record<string, unknown>[]) {
+      insGallery.run(r);
+      counts.gallery++;
+    }
+
+    // ---- opening hours ----
+    db.prepare('DELETE FROM opening_hours_baseline').run();
+    const insHour = prepareNamed(
+      db,
+      `INSERT INTO opening_hours_baseline (day_index, day_name, is_open, open_time, close_time, captured_at)
+       VALUES (@day_index, @day_name, @is_open, @open_time, @close_time, datetime('now'))`
+    );
+    for (const r of db.prepare('SELECT * FROM opening_hours').all() as Record<string, unknown>[]) {
+      insHour.run(r);
+      counts.hours++;
+    }
+  });
+
+  recordRevision(db, 'baseline', by);
+  return counts;
+}

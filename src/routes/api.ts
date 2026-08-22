@@ -24,8 +24,7 @@ import {
   resetAll,
   draftStatus,
   listRevisions,
-  restoreRevision,
-} from '../lib/publish.js';
+  restoreRevision, saveCurrentAsBaseline } from '../lib/publish.js';
 import { upload, registerMedia, pruneOrphanMedia, validateImageFile, optimizeImageFile } from '../lib/media.js';
 import { cloudinaryEnabled, uploadToCloudinary, cleanupTempFile, deleteFromCloudinary } from '../lib/cloudinary.js';
 import {
@@ -595,6 +594,20 @@ apiRouter.post('/restore-original', (req, res) => {
     return;
   }
   ok(res);
+});
+
+/* ===================================================================== */
+/* SAVE CURRENT SITE AS THE ORIGINAL                                     */
+/* ===================================================================== */
+
+apiRouter.post('/save-as-original', (req, res) => {
+  const confirm = String((req.body ?? {}).confirm ?? '');
+  if (confirm !== 'SAVE') {
+    res.status(400).json({ ok: false, error: 'Type SAVE to confirm making the current site the original.' });
+    return;
+  }
+  const counts = saveCurrentAsBaseline(getDb(), ADMIN(res));
+  ok(res, counts);
 });
 
 /* ===================================================================== */
