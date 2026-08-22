@@ -14,9 +14,24 @@ export const PORT = Number(process.env.PORT || 4173);
 
 /** Turso (libSQL) remote database. When TURSO_URL is set the app uses the
  *  managed database instead of a local SQLite file — required on hosts with an
- *  ephemeral filesystem (Render, Koyeb, etc.). Leave unset for local dev. */
-export const TURSO_URL = process.env.TURSO_URL || '';
-export const TURSO_AUTH_TOKEN = process.env.TURSO_AUTH_TOKEN || '';
+ *  ephemeral filesystem (Render, Koyeb, etc.). Leave unset for local dev.
+ *
+ *  Values are sanitised because pasting a token into a dashboard field very
+ *  easily introduces a trailing newline or surrounding quotes. A newline in the
+ *  auth token makes libsql fail with an opaque
+ *  `Hrana(Http("http::Error(InvalidHeaderValue)"))` at startup. */
+function cleanEnv(name: string): string {
+  const raw = process.env[name];
+  if (!raw) return '';
+  // Strip surrounding whitespace/newlines, then matching quotes, then trim again.
+  return raw
+    .trim()
+    .replace(/^(['"])([\s\S]*)\1$/, '$2')
+    .trim();
+}
+
+export const TURSO_URL = cleanEnv('TURSO_URL');
+export const TURSO_AUTH_TOKEN = cleanEnv('TURSO_AUTH_TOKEN');
 
 export const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-insecure-session-secret-change-me';
 

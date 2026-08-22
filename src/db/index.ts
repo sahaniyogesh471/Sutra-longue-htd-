@@ -26,14 +26,38 @@ export function getDb(): DB {
   if (TURSO_URL) {
     // Remote Turso database. WAL/journal settings are managed server-side and
     // do not apply to a remote connection.
-    //
+    if (!/^libsql:\/\/|^https:\/\//.test(TURSO_URL)) {
+      throw new Error(
+        `TURSO_URL must start with "libsql://" (or "https://"). Got: "${TURSO_URL.slice(0, 30)}..."`
+      );
+    }
+    if (!TURSO_AUTH_TOKEN) {
+      throw new Error('TURSO_URL is set but TURSO_AUTH_TOKEN is empty — the connection would be rejected.');
+    }
+
     // `authToken` is cast because libsql ships better-sqlite3's type
     // definitions, which omit the option — the runtime does read it
     // (node_modules/libsql/index.js: `opts?.authToken`).
     const db = new Database(TURSO_URL, {
       authToken: TURSO_AUTH_TOKEN,
     } as ConstructorParameters<typeof Database>[1]);
-    db.pragma('foreign_keys = ON');
+
+    try {
+      db.pragma('foreign_keys = ON');
+    } catch (err) {
+      // libsql surfaces a bad Authorization header as an opaque
+      // `InvalidHeaderValue`. Translate it into something actionable.
+      const msg = String((err as Error)?.message ?? err);
+      if (msg.includes('InvalidHeaderValue')) {
+        throw new Error(
+          'Could not connect to Turso: the auth token contains an invalid character ' +
+            '(usually a line break pasted along with the token). Re-copy TURSO_AUTH_TOKEN ' +
+            'as a single line with no spaces or newlines, then redeploy.'
+        );
+      }
+      throw err;
+    }
+
     _db = db;
     return db;
   }
