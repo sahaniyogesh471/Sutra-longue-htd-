@@ -2,19 +2,24 @@
  * Generates a portable SQL dump of the local SQLite database so it can be
  * imported into Turso without needing the `sqlite3` CLI installed.
  *
- *   node scripts/make-turso-dump.mjs [outputFile]
+ *   node scripts/make-turso-dump.mjs [outputFile] [--slim]
  *
  * Default output: sutra-dump.sql
  *
- * Session rows are intentionally skipped — they are transient login sessions,
- * not content, and importing them would carry stale sessions into production.
+ * `--slim` additionally drops edit history and audit rows (`revisions`,
+ * `security_events`). The schema is still created, so the app rebuilds them as
+ * you use it — this keeps the file small enough to paste into a web SQL console.
+ *
+ * Session rows are always skipped — they are transient logins, not content.
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import Database from 'libsql';
 
+const args = process.argv.slice(2);
+const SLIM = args.includes('--slim');
 const DB_PATH = process.env.SUTRA_DB_PATH || path.join(process.cwd(), 'data', 'sutra.db');
-const OUT = process.argv[2] || 'sutra-dump.sql';
+const OUT = args.find((a) => !a.startsWith('--')) || (SLIM ? 'sutra-dump-slim.sql' : 'sutra-dump.sql');
 
 if (!fs.existsSync(DB_PATH)) {
   console.error(`Database not found: ${DB_PATH}`);
@@ -33,6 +38,11 @@ function lit(v) {
 }
 
 const SKIP_DATA = new Set(['sessions']);
+if (SLIM) {
+  // Edit history and audit trail — safe to omit for a first deployment.
+  SKIP_DATA.add('revisions');
+  SKIP_DATA.add('security_events');
+}
 
 const objects = db
   .prepare(

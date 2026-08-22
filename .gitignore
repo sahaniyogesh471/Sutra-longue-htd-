@@ -11,4 +11,5 @@ data/uploads/
 
 # Database dumps (contain the admin password hash — never commit)
 sutra-dump.sql
+sutra-dump-slim.sql
 *.dump.sql
