@@ -22,7 +22,10 @@ services:
     plan: free
     region: singapore
     branch: arena/01a00549-sutra-longue-htd
-    buildCommand: npm ci && npm run build
+    # NODE_ENV=production makes `npm ci` skip devDependencies, but the build
+    # needs TypeScript and the @types packages from there — so install them
+    # explicitly with --include=dev, then prune them out of the runtime image.
+    buildCommand: npm ci --include=dev && npm run build && npm prune --omit=dev
     startCommand: node dist/server.js
     healthCheckPath: /api/health
     autoDeploy: true
