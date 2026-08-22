@@ -45,13 +45,21 @@ export function createApp() {
   // Cache policy: admin pages are private & never cached; public pages are
   // revalidated on every request (they are database-driven) but may still be
   // served from a CDN/proxy after revalidation.
+  // Static asset directories set their own long max-age further down; this
+  // middleware must not override it, otherwise CSS/JS/images are revalidated
+  // on every request and the `maxAge` below has no effect.
+  const STATIC_PREFIXES = ['/css/', '/js/', '/img/', '/uploads/'];
+
   app.use((req: Request, res: Response, next) => {
-    res.setHeader(
-      'Cache-Control',
-      req.path.startsWith('/admin')
-        ? 'no-store'
-        : 'public, no-cache, must-revalidate'
-    );
+    const isStatic = STATIC_PREFIXES.some((p) => req.path.startsWith(p));
+    if (!isStatic) {
+      res.setHeader(
+        'Cache-Control',
+        req.path.startsWith('/admin')
+          ? 'no-store'
+          : 'public, no-cache, must-revalidate'
+      );
+    }
     res.locals.requestHost = req.get('host') ?? '';
     res.locals.pathname = req.path;
     next();

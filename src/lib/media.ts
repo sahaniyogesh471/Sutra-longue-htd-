@@ -129,6 +129,24 @@ export interface OptimizedImage {
  * the best effort — the raw file is removed only after the smaller WebP is written).
  * Returns null when the WebP is not smaller than the original (rare), keeping the original.
  */
+/**
+ * Confirms the file is a real, decodable image rather than something that
+ * merely starts with the right magic bytes — a text file beginning "GIF89a"
+ * passes the header check but is not an image.
+ *
+ * Not exploitable on this stack (no interpreter runs uploaded files, and they
+ * are served with `X-Content-Type-Options: nosniff`), but rejecting them keeps
+ * junk out of storage and is one more layer of defence.
+ */
+export async function isDecodableImage(filePath: string): Promise<boolean> {
+  try {
+    const meta = await sharp(filePath, { limitInputPixels: 100 * 1000 * 1000 }).metadata();
+    return Boolean(meta.width && meta.height);
+  } catch {
+    return false;
+  }
+}
+
 export async function optimizeImageFile(file: Express.Multer.File): Promise<OptimizedImage | null> {
   const ext = path.extname(file.filename).toLowerCase();
   const base = path.basename(file.filename, ext);

@@ -315,7 +315,7 @@
 
       <div class="gallery-grid reveal">
         <% galleryItems.forEach(function (g, i) { %>
-          <button class="gallery-item<%= (i === 0 || i === 2 || i === 5) ? ' gallery-tall' : '' %>" type="button" data-full="<%= g.full %>">
+          <button class="gallery-item<%= (i === 0 || i === 2 || i === 5) ? ' gallery-tall' : '' %>" type="button" data-full="<%= g.full %>" aria-label="View larger image: <%= g.alt %>">
             <img src="<%= g.thumb %>" alt="<%= g.alt %>" loading="lazy" />
             <span class="gallery-hint"></span>
           </button>

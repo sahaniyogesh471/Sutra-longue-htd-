@@ -25,7 +25,7 @@ import {
   draftStatus,
   listRevisions,
   restoreRevision, saveCurrentAsBaseline } from '../lib/publish.js';
-import { upload, registerMedia, pruneOrphanMedia, validateImageFile, optimizeImageFile } from '../lib/media.js';
+import { upload, registerMedia, pruneOrphanMedia, validateImageFile, optimizeImageFile, isDecodableImage } from '../lib/media.js';
 import { cloudinaryEnabled, uploadToCloudinary, cleanupTempFile, deleteFromCloudinary } from '../lib/cloudinary.js';
 import {
   required,
@@ -645,8 +645,11 @@ apiRouter.post('/upload', (req, res) => {
       fail(res, 400, 'No file received. Please choose an image to upload.');
       return;
     }
-    // Never trust the browser-supplied MIME type — verify the real file signature.
-    if (!validateImageFile(req.file.path, req.file.mimetype)) {
+    // Never trust the browser-supplied MIME type — verify the real file
+    // signature, then confirm the bytes actually decode as an image (a text
+    // file starting with "GIF89a" passes the header check alone).
+    const headerOk = validateImageFile(req.file.path, req.file.mimetype);
+    if (!headerOk || !(await isDecodableImage(req.file.path))) {
       try {
         fs.rmSync(req.file.path, { force: true });
       } catch {
