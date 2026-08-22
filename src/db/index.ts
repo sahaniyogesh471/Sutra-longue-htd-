@@ -75,8 +75,25 @@ export function getDb(): DB {
 /** Adds columns that were introduced after the initial schema. */
 export function migrate(db: DB): void {
   const columnsOf = (table: string) => {
-    const rows = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
-    return new Set(rows.map((r) => r.name));
+    try {
+      const rows = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
+      return new Set(rows.map((r) => r.name));
+    } catch {
+      // Some remote backends do not expose PRAGMA through prepared statements.
+      // Fall back to reading the stored CREATE TABLE definition.
+      const row = db
+        .prepare(`SELECT sql FROM sqlite_master WHERE type='table' AND name=?`)
+        .get(table) as { sql?: string } | undefined;
+      const names = new Set<string>();
+      if (row?.sql) {
+        const body = row.sql.slice(row.sql.indexOf('(') + 1, row.sql.lastIndexOf(')'));
+        for (const part of body.split(',')) {
+          const m = part.trim().match(/^["`[]?([A-Za-z_][A-Za-z0-9_]*)["`\]]?/);
+          if (m) names.add(m[1]);
+        }
+      }
+      return names;
+    }
   };
 
   const addCols: Record<string, { name: string; def: string }[]> = {
@@ -207,7 +224,15 @@ function backfillSettings(db: DB): void {
   }
 }
 
-export function initSchema(db: DB): void {  db.exec(SCHEMA_SQL);
+export function initSchema(db: DB): void {
+  // A remote Turso connection rejects PRAGMA statements with
+  // `Sqlite3UnsupportedStatement` — journal mode and foreign-key enforcement
+  // are managed server-side there. They are only meaningful for a local file,
+  // where getDb() already applies them, so strip them from the schema script.
+  const sql = TURSO_URL
+    ? SCHEMA_SQL.replace(/^[ \t]*PRAGMA[^;]*;[ \t]*$/gim, '')
+    : SCHEMA_SQL;
+  db.exec(sql);
   migrate(db);
 }
 
