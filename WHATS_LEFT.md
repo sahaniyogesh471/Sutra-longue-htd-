@@ -43,18 +43,13 @@ Site पर 4 **काल्पनिक** reviews हैं:
 
 ### Backup लें
 
-Turso के free plan में सिर्फ़ **1 दिन** का restore है. हफ़्ते/महीने में एक बार:
+Turso के free plan में सिर्फ़ **1 दिन** का restore है — एक हफ़्ते बाद ग़लती
+पकड़ी तो वापस नहीं आएगी.
 
-```bash
-TURSO_URL="आपका-url" TURSO_AUTH_TOKEN="आपका-token" \
-  node scripts/backup-turso.mjs
-```
+📖 **पूरा तरीक़ा: `BACKUP_GUIDE.md`** — फ़ोन से भी हो जाता है (Turso के SQL
+Console में एक query, नतीजा Drive में save). कुछ install नहीं करना.
 
-`sutra-backup-YYYY-MM-DD.sql` file बनेगी — उसे अपने computer/Drive पर रखें.
-
-**Restore कैसे करें:** file की सामग्री Turso के SQL Console में paste करके Run.
-
-> बड़े content बदलाव से पहले backup ज़रूर लें.
+> बड़े content बदलाव से पहले भी backup ले लें.
 
 ### Admin password बदलें (सुझाव)
 
