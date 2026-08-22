@@ -133,6 +133,12 @@ const SETTINGS: Record<string, string> = {
 /** Demo reviews — clearly identified, safe to replace/remove. */
 const REVIEWS: { name: string; text: string; rating: number; image_url: string }[] = [
   {
+    name: 'Yogesh Sahani',
+    text: 'Really enjoyed my time at Sutra Lounge in Hetauda. The place has a really nice and comfortable vibe, and it’s a great spot to hang out with friends or family.\nThe food was tasty and nicely presented, and everything we ordered was enjoyable. I also liked the ambience and music—it made the whole experience feel relaxed and fun. The staff were friendly and the service was good too.\nOverall, I had a great experience at Sutra Lounge. Definitely a place I’d be happy to visit again when I’m in Hetauda. ❤️',
+    rating: 5,
+    image_url: 'img/review-yogesh.webp',
+  },
+  {
     name: 'Rabina Shrestha',
     text: 'The Sutra Fusion Mo:Mo Platter is unlike anything else in Hetauda. Warm service, great music, and an evening we are still talking about.',
     rating: 5,
@@ -168,6 +174,9 @@ const GALLERY: { image_url: string; alt: string; sort_order: number }[] = [
   { image_url: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=900&q=75', alt: 'Dessert plated with care', sort_order: 6 },
   { image_url: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=900&q=75', alt: 'Warm candlelit evening at the lounge', sort_order: 7 },
   { image_url: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=900&q=75', alt: 'A signature platter ready to serve', sort_order: 8 },
+  // Served from the repo rather than data/uploads/ so it survives a redeploy
+  // on hosts with an ephemeral filesystem.
+  { image_url: 'img/gallery-yogesh.webp', alt: 'Developer Yogesh', sort_order: 9 },
 ];
 
 const HOURS: { day_index: number; day_name: string; open_time: string; close_time: string }[] = [
