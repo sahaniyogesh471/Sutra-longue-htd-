@@ -43,9 +43,11 @@ for (const t of WIPE) {
 }
 
 // --- 2. Repoint uploaded images at assets that exist in the repo -----------
+// The original binaries were recovered from the main branch and committed to
+// img/, so the real photos are used rather than a placeholder.
 const REPLACE = {
-  '/uploads/1786781434442-c5fc4ad22e4b669f.webp': 'img/avatar-ys.svg',
-  '/uploads/1786781747263-45603cf39e8e9fe9.webp': 'img/avatar-ys.svg',
+  '/uploads/1786781434442-c5fc4ad22e4b669f.webp': 'img/review-yogesh.webp',
+  '/uploads/1786781747263-45603cf39e8e9fe9.webp': 'img/gallery-yogesh.webp',
 };
 const IMAGE_TABLES = [
   'reviews',
