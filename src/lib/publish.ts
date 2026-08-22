@@ -1,4 +1,4 @@
-import type { DB } from '../db/index.js';
+import { type DB, runInTransaction } from '../db/index.js';
 
 /**
  * Draft / Publish / Revision engine.
@@ -346,7 +346,7 @@ function captureSnapshot(db: DB): SiteSnapshot {
 
 function applySnapshot(db: DB, snap: SiteSnapshot): void {
   const clear = (t: string) => db.prepare(`DELETE FROM ${t}`).run();
-  const tx = db.transaction(() => {
+  runInTransaction(db, () => {
     clear('settings');
     const insSettings = db.prepare('INSERT INTO settings (key, value, updated_at) VALUES (?, ?, datetime(\'now\'))');
     for (const r of snap.settings) insSettings.run(r.key, r.value);
@@ -393,7 +393,6 @@ function applySnapshot(db: DB, snap: SiteSnapshot): void {
     );
     for (const r of snap.hours) insHours.run(r);
   });
-  tx();
 }
 
 function recordRevision(db: DB, action: string, by: string | undefined): number {
@@ -440,11 +439,10 @@ function restoreToRevision(db: DB, id: number, by: string | undefined): void {
 export function restoreRevision(db: DB, id: number, by?: string): boolean {
   const rev = getRevisionById(db, id);
   if (!rev) return false;
-  const tx = db.transaction(() => {
+  runInTransaction(db, () => {
     applySnapshot(db, JSON.parse(rev.snapshot) as SiteSnapshot);
     setPointer(db, id);
   });
-  tx();
   void by;
   return true;
 }
@@ -461,7 +459,7 @@ export function publishAll(db: DB, by?: string): { published: string[]; count: n
   const pending = draftStatus(db);
   const applied: string[] = [];
 
-  const tx = db.transaction(() => {
+  runInTransaction(db, () => {
     // settings
     const drafts = db.prepare('SELECT key, value FROM settings_draft').all() as { key: string; value: string | null }[];
     const upsertSetting = db.prepare(
@@ -568,7 +566,6 @@ export function publishAll(db: DB, by?: string): { published: string[]; count: n
       recordRevision(db, 'publish', by);
     }
   });
-  tx();
   return { published: applied, count: pending.count };
 }
 
@@ -595,7 +592,7 @@ export function redoRevision(db: DB): { ok: boolean; to: number } {
 }
 
 export function resetAll(db: DB, by?: string): { ok: boolean } {
-  const tx = db.transaction(() => {
+  runInTransaction(db, () => {
     db.prepare('DELETE FROM settings').run();
     const insSetting = db.prepare('INSERT INTO settings (key, value, updated_at) VALUES (?, ?, datetime(\'now\'))');
     for (const r of db.prepare('SELECT key, value FROM settings_baseline').all() as { key: string; value: string | null }[]) {
@@ -642,7 +639,6 @@ export function resetAll(db: DB, by?: string): { ok: boolean } {
     db.prepare('DELETE FROM revisions WHERE id > ?').run(getPointer(db));
     recordRevision(db, 'reset', by);
   });
-  tx();
   return { ok: true };
 }
 

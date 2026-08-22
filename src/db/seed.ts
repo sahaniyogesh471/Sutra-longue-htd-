@@ -1,4 +1,4 @@
-import { DB, initSchema, getDb, setBaselineSetting, setSetting } from './index.js';
+import { DB, initSchema, getDb, setBaselineSetting, setSetting, runInTransaction } from './index.js';
 import { DISH_NP, REVIEW_NP } from './translations.js';
 
 /**
@@ -209,7 +209,7 @@ function seedDishes(db: DB, force: boolean): boolean {
     `INSERT INTO dishes_baseline (baseline_ref, type, name, description, name_np, description_np, price, category, category_np, badge, badge_np, image_url, is_featured, sort_order, captured_at)
      VALUES (@id, @type, @name, @description, @name_np, @description_np, @price, @category, @category_np, @badge, @badge_np, @image_url, @is_featured, @sort_order, datetime('now'))`
   );
-  const tx = db.transaction(() => {
+  runInTransaction(db, () => {
     for (const d of DISHES) {
       const np = DISH_NP[d.name] ?? { name_np: '', description_np: '', category_np: '', badge_np: '' };
       const row = {
@@ -223,7 +223,6 @@ function seedDishes(db: DB, force: boolean): boolean {
       insertBaseline.run({ id: Number(info.lastInsertRowid), ...row });
     }
   });
-  tx();
   return true;
 }
 
@@ -238,14 +237,13 @@ function seedReviews(db: DB, force: boolean): boolean {
     `INSERT INTO reviews_baseline (baseline_ref, name, text, name_np, text_np, rating, image_url, sort_order, captured_at)
      VALUES (@id, @name, @text, @name_np, @text_np, @rating, @image_url, @sort_order, datetime('now'))`
   );
-  const tx = db.transaction(() => {
+  runInTransaction(db, () => {
     REVIEWS.forEach((r, i) => {
       const np = REVIEW_NP[r.name] ?? { name_np: '', text_np: '' };
       const info = insertCurrent.run({ name: r.name, text: r.text, name_np: np.name_np, text_np: np.text_np, rating: r.rating, image_url: r.image_url, sort_order: i + 1 });
       insertBaseline.run({ id: Number(info.lastInsertRowid), name: r.name, text: r.text, name_np: np.name_np, text_np: np.text_np, rating: r.rating, image_url: r.image_url, sort_order: i + 1 });
     });
   });
-  tx();
   return true;
 }
 
@@ -260,14 +258,13 @@ function seedGallery(db: DB, force: boolean): boolean {
     `INSERT INTO gallery_baseline (baseline_ref, image_url, alt, is_featured, sort_order, captured_at)
      VALUES (@id, @image_url, @alt, @is_featured, @sort_order, datetime('now'))`
   );
-  const tx = db.transaction(() => {
+  runInTransaction(db, () => {
     GALLERY.forEach((g, i) => {
       const isFeatured = i === 0 ? 1 : 0;
       const info = insertCurrent.run({ image_url: g.image_url, alt: g.alt, is_featured: isFeatured, sort_order: g.sort_order });
       insertBaseline.run({ id: Number(info.lastInsertRowid), image_url: g.image_url, alt: g.alt, is_featured: isFeatured, sort_order: g.sort_order });
     });
   });
-  tx();
   return true;
 }
 

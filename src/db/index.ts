@@ -272,3 +272,54 @@ export function setBaselineSetting(db: DB, key: string, value: string | null): v
      ON CONFLICT(key) DO UPDATE SET value = excluded.value`
   ).run(key, value);
 }
+
+/**
+ * Runs `fn` inside a database transaction.
+ *
+ * Why not `db.transaction()` directly: libsql's wrapper issues `BEGIN`, and on
+ * failure unconditionally issues `ROLLBACK`. Against a remote Turso connection
+ * the `ROLLBACK` can itself fail with "cannot rollback - no transaction is
+ * active", which replaces the original error and hides the real cause.
+ *
+ * This helper drives BEGIN/COMMIT/ROLLBACK explicitly, tolerates a remote
+ * backend that rejects those statements, and always rethrows the *original*
+ * error rather than a rollback failure.
+ */
+export function runInTransaction<T>(db: DB, fn: () => T): T {
+  let began = false;
+  try {
+    db.exec('BEGIN');
+    began = true;
+  } catch {
+    // Remote backends may manage transactions themselves; proceed without one.
+    began = false;
+  }
+
+  let result: T;
+  try {
+    result = fn();
+  } catch (err) {
+    if (began) {
+      try {
+        db.exec('ROLLBACK');
+      } catch {
+        // Ignore — surfacing the rollback failure would mask the real error.
+      }
+    }
+    throw err;
+  }
+
+  if (began) {
+    try {
+      db.exec('COMMIT');
+    } catch (err) {
+      try {
+        db.exec('ROLLBACK');
+      } catch {
+        /* ignore */
+      }
+      throw err;
+    }
+  }
+  return result;
+}
