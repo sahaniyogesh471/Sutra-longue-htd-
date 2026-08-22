@@ -1,116 +1,101 @@
 # अब क्या बाक़ी है?
 
-**हालत: website LIVE और काम कर रही है** ✅
-🌐 https://sutra-lounge.onrender.com
+**हालत: website LIVE है, सब कुछ काम कर रहा है** ✅
+**खर्च: ₹0/महीना · कोई credit card नहीं**
 
 ---
 
-## ✅ जो पूरा हो चुका
+## ✅ पूरा हो चुका
 
-| काम | हालत |
-|---|---|
-| Turso database (Mumbai) | ✅ |
-| Render deploy (free, no card) | ✅ |
-| UptimeRobot (site कभी नहीं सोती) | ✅ |
-| Title, address, phone, email, WhatsApp | ✅ |
-| सारे 11 dishes + दाम | ✅ |
-| Gallery (8 images) | ✅ |
-| Reviews दिख रहे | ✅ |
-| Opening hours | ✅ |
-| नेपाली ↔ English switch | ✅ |
-| Reservation form + phone validation | ✅ |
-| HTTPS | ✅ |
-| **खर्च** | **₹0/महीना** |
+Turso database · Render deploy · UptimeRobot · Cloudinary (तस्वीरें सुरक्षित) ·
+HTTPS · नेपाली↔English · phone validation · **`.com.np` domain** ·
+**Google Business Profile** · Yogesh का असली review
 
 ---
 
-## 🔴 ज़रूरी (पहले करें)
+## 🔴 आपके 2 काम (admin panel में)
 
 ### 1. नक़ली reviews हटाएँ ⚠️
 
-अभी site पर 4 **काल्पनिक** reviews हैं:
-- Rabina Shrestha · Prakash Adhikari · Sunita Gurung · Aayush Shrestha
+Site पर 4 **काल्पनिक** reviews हैं:
+**Rabina Shrestha · Prakash Adhikari · Sunita Gurung · Aayush Shrestha**
 
-ये असली ग्राहक नहीं हैं. असली restaurant पर नक़ली reviews:
-- ग्राहकों को गुमराह करते हैं
-- Google Business Profile पर penalty ला सकते हैं
+ये असली ग्राहक नहीं. असली restaurant पर नक़ली reviews ग्राहकों को गुमराह करते
+हैं और Google Business Profile पर penalty ला सकते हैं — और आपका profile तो
+पहले से है, तो जोखिम असली है.
 
 **करें:** Admin → Reviews → चारों delete → **Publish**
 
-### 2. Yogesh Sahani का असली review जोड़ें
+> 1 असली review (Yogesh का) 5 नक़ली से बेहतर है.
 
-आपका असली review अभी site पर नहीं है.
-
-**करें:** Admin → Reviews → **Add Review**
-- नाम: `Yogesh Sahani` · नेपाली: `योगेश साहनी`
-- Rating: 5
-- Text + नेपाली text (form दोनों माँगेगा)
-- Photo: `img/review-yogesh.webp` (repo में मौजूद है)
-
-### 3. असली food photos डालें
+### 2. असली food photos डालें ⭐
 
 अभी सारी तस्वीरें **Unsplash की stock photos** हैं — असली Sutra Lounge की नहीं.
-यह सबसे बड़ा सुधार है जो आप कर सकते हैं.
+अब Cloudinary लगा है, तो तस्वीरें **हमेशा सुरक्षित** रहेंगी.
 
 **करें:** Admin → Dishes / Gallery → असली तस्वीरें upload करें
 
-> ⚠️ **ध्यान:** Render का disk ephemeral है — admin से upload की तस्वीरें
-> redeploy पर मिट जाएँगी. स्थायी हल के लिए नीचे "Cloudinary" देखें.
+यह सबसे बड़ा सुधार है जो अब बचा है.
 
 ---
 
-## 🟡 अगले हफ़्ते
+## 🟡 महीने में एक बार
 
-### 4. `.com.np` domain (free)
+### Backup लें
 
-अभी URL `sutra-lounge.onrender.com` है. सरकारी free domain लें:
+Turso के free plan में सिर्फ़ **1 दिन** का restore है. हफ़्ते/महीने में एक बार:
 
-1. **Cloudflare** पर free signup → 2 nameservers मिलेंगे
-2. **<https://register.com.np>** → apply करें (वही nameservers डालें)
-   - चाहिए: citizenship scan + cover letter
-   - Approval: 1-3 दिन
-3. Render → Settings → **Custom Domain** → जोड़ें
+```bash
+TURSO_URL="आपका-url" TURSO_AUTH_TOKEN="आपका-token" \
+  node scripts/backup-turso.mjs
+```
 
-पूरी जानकारी: `CLOUDFLARE_SETUP.md`
+`sutra-backup-YYYY-MM-DD.sql` file बनेगी — उसे अपने computer/Drive पर रखें.
 
-### 5. Google पर दिखें
+**Restore कैसे करें:** file की सामग्री Turso के SQL Console में paste करके Run.
 
-- **Google Business Profile** बनाएँ/claim करें ⭐ local restaurant के लिए सबसे ज़रूरी
-- **Google Search Console** → site verify करें → sitemap submit करें:
-  `https://sutra-lounge.onrender.com/sitemap.xml`
+> बड़े content बदलाव से पहले backup ज़रूर लें.
 
-### 6. Photos स्थायी बनाएँ (Cloudinary)
+### Admin password बदलें (सुझाव)
 
-Admin से upload की तस्वीरें redeploy पर मिटती हैं. Cloudinary (free, कोई card
-नहीं) से यह हमेशा के लिए ठीक हो जाएगा — ~1 घंटे का काम.
+पुराने git commits में पुराना password hash है. एक बार password बदल देने से वो
+बेकार हो जाएगा.
 
----
-
-## 🟢 बाद में (वैकल्पिक)
-
-- **Backup** — Turso का free plan 1 दिन का point-in-time restore देता है.
-  महीने में एक बार manual export भी कर लें.
-- **Admin password बदलें** — पुराने commits में पुराना hash है. एक बार बदल
-  देने से वो बेकार हो जाएगा.
-- **Menu और दाम जाँचें** — Admin → Dishes में सब सही है या नहीं
+**करें:** Admin → Security → Change password
 
 ---
 
-## 📋 सबसे छोटा रास्ता
+## 🟢 वैकल्पिक
 
-अगर सिर्फ़ **आज** एक काम करना हो:
-
-> **Admin में जाकर 4 नक़ली reviews हटा दें.**
-
-बाक़ी सब site को बेहतर बनाते हैं, पर ये एक भरोसे का सवाल है.
+- **Menu और दाम जाँचें** — Admin → Dishes में सब सही है?
+- **Google Search Console** — sitemap submit करें:
+  `https://आपका-domain/sitemap.xml`
+- **Opening hours** — त्योहारों में बदलें तो admin से update कर दें
 
 ---
 
-## 🔧 रोज़मर्रा के काम
+## 📌 अगर आज सिर्फ़ एक काम
+
+> **4 नक़ली reviews हटा दें.** बाक़ी सब बेहतरी है — यह भरोसे का सवाल है.
+
+---
+
+## 🔧 रोज़मर्रा
 
 | काम | कहाँ |
 |---|---|
 | Content बदलना | `/admin` → बदलें → **Publish** |
-| Site की हालत | Render dashboard → Logs |
+| तस्वीर बदलना | `/admin` → upload (Cloudinary पर जाएगी) |
+| Site की हालत | Render → Logs |
 | Uptime | UptimeRobot dashboard |
-| Code update | GitHub push → Render अपने आप deploy |
+| Backup | `node scripts/backup-turso.mjs` |
+
+---
+
+## 📚 Guides
+
+| File | किसलिए |
+|---|---|
+| `CLOUDINARY_SETUP.md` | तस्वीरों की setup |
+| `CLOUDFLARE_SETUP.md` | CDN + सुरक्षा (चाहें तो) |
+| `WEBSITE_ANALYSIS.md` | performance/SEO/security जाँच |
