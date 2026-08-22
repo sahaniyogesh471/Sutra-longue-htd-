@@ -14,3 +14,4 @@ sutra-dump.sql
 sutra-dump-slim.sql
 restore-content.sql
 *.dump.sql
+turso-import.sql
