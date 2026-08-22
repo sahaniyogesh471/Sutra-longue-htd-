@@ -9,13 +9,11 @@ data/*.db-wal
 # User-uploaded media (lives on the server's persistent disk, never in Git)
 data/uploads/
 
-# turso-upload.db is intentionally tracked: it is content-only (admin
-# accounts, sessions and logs stripped) so it can be downloaded and
-# uploaded to Turso.
-
-# Database dumps (contain the admin password hash — never commit)
+# Database dumps and backups (may contain credentials — never commit)
 sutra-dump.sql
 sutra-dump-slim.sql
+sutra-backup-*.sql
 restore-content.sql
-*.dump.sql
 turso-import.sql
+turso-upload.db
+*.dump.sql
