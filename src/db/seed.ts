@@ -303,11 +303,24 @@ export function seedAll(db: DB, opts: SeedOptions = {}): { seeded: boolean; tabl
   const seededTables: string[] = [];
   const mark = (table: string, seeded: boolean) => { if (seeded) seededTables.push(table); };
 
-  mark('settings', seedSettings(db, opts.force ?? false));
-  mark('dishes', seedDishes(db, opts.force ?? false));
-  mark('reviews', seedReviews(db, opts.force ?? false));
-  mark('gallery', seedGallery(db, opts.force ?? false));
-  mark('opening_hours', seedHours(db, opts.force ?? false));
+  // Each table is seeded independently so a database that is only partially
+  // populated (for example when an earlier deploy failed midway) repairs the
+  // missing tables instead of staying broken. A failure in one table must not
+  // stop the others, otherwise a single error leaves the site with no settings,
+  // reviews or opening hours.
+  const step = (table: string, fn: () => boolean) => {
+    try {
+      mark(table, fn());
+    } catch (err) {
+      console.error(`[seed] Failed to seed ${table}:`, (err as Error)?.message ?? err);
+    }
+  };
+
+  step('settings', () => seedSettings(db, opts.force ?? false));
+  step('dishes', () => seedDishes(db, opts.force ?? false));
+  step('reviews', () => seedReviews(db, opts.force ?? false));
+  step('gallery', () => seedGallery(db, opts.force ?? false));
+  step('opening_hours', () => seedHours(db, opts.force ?? false));
 
   return { seeded: seededTables.length > 0, tables: seededTables };
 }
