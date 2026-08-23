@@ -141,6 +141,50 @@ export function migrate(db: DB): void {
   backfillDishNp(db);
   backfillReviewNp(db);
   backfillSettings(db);
+  repairMissingUploads(db);
+}
+
+/**
+ * Repoints image references at files that no longer exist.
+ *
+ * Uploads written to data/uploads/ are lost whenever an ephemeral host
+ * redeploys, but the database keeps pointing at them, so those images render
+ * as broken. The two originals were recovered into img/, which ships with the
+ * repo; anything else is blanked so the UI falls back cleanly instead of
+ * showing a broken image icon.
+ */
+const UPLOAD_REPLACEMENTS: Record<string, string> = {
+  '/uploads/1786781434442-c5fc4ad22e4b669f.webp': 'img/review-yogesh.webp',
+  '/uploads/1786781747263-45603cf39e8e9fe9.webp': 'img/gallery-yogesh.webp',
+};
+
+function repairMissingUploads(db: DB): void {
+  const tables = [
+    'reviews', 'reviews_baseline', 'reviews_draft',
+    'gallery', 'gallery_baseline', 'gallery_draft',
+    'dishes', 'dishes_baseline', 'dishes_draft',
+  ];
+
+  for (const t of tables) {
+    for (const [from, to] of Object.entries(UPLOAD_REPLACEMENTS)) {
+      try {
+        db.prepare(`UPDATE "${t}" SET image_url = ? WHERE image_url = ?`).run(to, from);
+      } catch {
+        /* table or column absent in this schema version */
+      }
+    }
+  }
+
+  // Settings (e.g. hero.image, design.logo) can also reference a lost upload.
+  for (const t of ['settings', 'settings_baseline', 'settings_draft']) {
+    for (const [from, to] of Object.entries(UPLOAD_REPLACEMENTS)) {
+      try {
+        db.prepare(`UPDATE "${t}" SET value = ? WHERE value = ?`).run(to, from);
+      } catch {
+        /* ignore */
+      }
+    }
+  }
 }
 
 /**
