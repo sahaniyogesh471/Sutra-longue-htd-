@@ -199,9 +199,13 @@ function backfillReviewNp(db: DB): void {
   }
 }
 
-/** New settings keys added after the initial seed — safe to re-run. */
+/** New settings keys added after the initial seed — safe to re-run.
+ *  Anything added here is inserted into both `settings` and
+ *  `settings_baseline` on databases that were seeded before the key existed,
+ *  so the admin "Restore original" button has a value to restore to. */
 const DEFAULT_SETTINGS: Record<string, string> = {
   'design.primary_color': '#c9a35c',
+  'design.logo': 'img/logo-gold.png',
 };
 
 function backfillSettings(db: DB): void {
@@ -210,10 +214,11 @@ function backfillSettings(db: DB): void {
   // already-exists check and caused a UNIQUE constraint failure.
   const rows = db.prepare('SELECT key AS k FROM settings').all() as { k: string }[];
   const existing = new Set(rows.map((r) => r.k));
-  // Fresh databases are handled by the full seed — backfill only applies to
-  // already-seeded databases that were created before these keys existed.
-  const hasRealContent = rows.some((r) => r.k !== 'system.revisionPointer' && !(r.k in DEFAULT_SETTINGS));
-  if (!hasRealContent) return;
+  // Only skip a completely empty database — the full seed handles those. A
+  // previously guard also bailed out whenever every existing key happened to
+  // be a known default, which meant normally-seeded databases never received
+  // newly added keys and their "Restore original" buttons stayed disabled.
+  if (rows.length === 0) return;
   // INSERT OR IGNORE keeps this idempotent even if the read above is
   // incomplete for any reason — a re-run must never crash startup.
   const ins = db.prepare(
@@ -222,10 +227,15 @@ function backfillSettings(db: DB): void {
   const insBase = db.prepare(
     "INSERT OR IGNORE INTO settings_baseline (key, value, captured_at) VALUES (?, ?, datetime('now'))"
   );
+  // Baseline rows are tracked separately: a key can already exist in
+  // `settings` (so the value renders) while its baseline row is missing,
+  // which leaves "Restore original" permanently disabled.
+  const baseRows = db.prepare('SELECT key AS k FROM settings_baseline').all() as { k: string }[];
+  const existingBaseline = new Set(baseRows.map((r) => r.k));
+
   for (const [key, value] of Object.entries(DEFAULT_SETTINGS)) {
-    if (existing.has(key)) continue;
-    ins.run(key, value);
-    insBase.run(key, value);
+    if (!existing.has(key)) ins.run(key, value);
+    if (!existingBaseline.has(key)) insBase.run(key, value);
   }
 }
 
