@@ -22,7 +22,7 @@ export const SETTING_GROUPS: Record<string, string[]> = {
     'contact.maps_url',
   ],
   social: ['social.facebook', 'social.instagram', 'social.tiktok', 'social.youtube'],
-  design: ['design.primary_color'],
+  design: ['design.primary_color', 'design.logo'],
 };
 
 export const ALL_SETTING_KEYS = Object.values(SETTING_GROUPS).flat();
@@ -36,6 +36,7 @@ export const SETTING_RULES: Record<string, (v: unknown) => string | null> = {
   'hero.heading': (v) => required(v) ?? maxLen(v, 200),
   'hero.subheading': (v) => required(v) ?? maxLen(v, 600),
   'hero.image': (v) => isUrl(v, true),
+  'design.logo': (v) => isUrl(v, true),
   'hero.video': (v) => isUrl(v),
   'contact.phone': (v) => required(v) ?? isPhone(v),
   'contact.whatsapp': (v) => required(v) ?? isPhone(v),

@@ -881,8 +881,12 @@
       });
     });
 
-    const uploadInput = form.querySelector('[data-upload-input="hero.image"]');
-    if (uploadInput) {
+    /* Image upload buttons — driven by the field key so any image setting
+       (hero image, website logo, ...) reuses the same flow. */
+    form.querySelectorAll('[data-upload-input]').forEach(function (uploadInput) {
+      const key = uploadInput.getAttribute('data-upload-input');
+      const label = (form.querySelector('label[for="' + key + '"]') || {}).textContent || key;
+      const niceName = label.replace('Restore original', '').trim().toLowerCase() || key;
       uploadInput.addEventListener('click', function () {
         const input = hiddenFileInput();
         input.addEventListener('change', function () {
@@ -890,18 +894,20 @@
           if (!file) return;
           if (!file.type.startsWith('image/')) { toast('Please choose an image file.', 'error'); return; }
           if (file.size > 8 * 1024 * 1024) { toast('Image must be under 8 MB.', 'error'); return; }
-          uploadImage(file, 'hero image').then(function (r) {
+          uploadImage(file, niceName).then(function (r) {
             if (!r.ok) { toast(r.error || 'Upload failed.', 'error'); return; }
-            const field = form.querySelector('[data-field="hero.image"]');
+            const field = form.querySelector('[data-field="' + key + '"]');
             if (field) field.value = r.url;
-            const box = form.querySelector('[data-field-wrap="hero.image"] .img-preview');
-            if (box) box.innerHTML = '<img src="' + esc(r.url) + '" alt="Hero image preview" data-preview="hero.image">';
+            const box = form.querySelector('[data-field-wrap="' + key + '"] .img-preview');
+            if (box) {
+              box.innerHTML = '<img src="' + esc(r.url) + '" alt="' + esc(niceName) + ' preview" data-preview="' + esc(key) + '">';
+            }
             toast('Image uploaded. Save the settings to keep it.');
           });
         });
         input.click();
       });
-    }
+    });
 
     form.querySelectorAll('[data-submit]').forEach(function (btn) {
       btn.addEventListener('click', async function () {

@@ -82,6 +82,24 @@
       <div class="card">
         <h3>Design &amp; brand</h3>
         <p class="muted">The primary color is used across the public website for buttons, headings, badges and highlights. It appears after the draft is published.</p>
+        <div class="field" data-field-wrap="design.logo">
+          <label for="design.logo">Website logo
+            <button class="link-restore" type="button" data-restore="design.logo" <%= baseline['design.logo'] != null ? '' : 'disabled' %>>Restore original</button>
+          </label>
+          <p class="muted">Shown in the header and footer of every page. A wide (landscape) transparent PNG works best — it is displayed 44px tall. Leave blank to use the bundled logo.</p>
+          <div class="input-row">
+            <input id="design.logo" name="design.logo" type="text" value="<%= settings['design.logo'] || '' %>" data-field="design.logo">
+            <button class="btn btn-ghost btn-small" type="button" data-upload-input="design.logo">Upload logo</button>
+          </div>
+          <div class="img-preview img-preview-logo">
+            <% if (settings['design.logo']) { %>
+              <img src="<%= settings['design.logo'] %>" alt="Website logo preview" data-preview="design.logo">
+            <% } else { %>
+              <span class="muted">No logo set — the site uses the bundled Sutra Lounge wordmark.</span>
+            <% } %>
+          </div>
+          <p class="field-error" data-error="design.logo"></p>
+        </div>
         <div class="field" data-field-wrap="design.primary_color">
           <label for="design.primary_color">Primary color
             <button class="link-restore" type="button" data-restore="design.primary_color" <%= baseline['design.primary_color'] != null ? '' : 'disabled' %>>Restore original</button>

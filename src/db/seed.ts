@@ -128,6 +128,9 @@ const SETTINGS: Record<string, string> = {
   'social.tiktok': 'https://www.tiktok.com/@sutralounge',
   'social.youtube': 'https://youtu.be/2sRGneKpy_k',
   'design.primary_color': '#c9a35c',
+  // Brand logo shown in the header and footer. Blank falls back to the
+  // bundled wordmark in img/.
+  'design.logo': 'img/logo-gold.png',
 };
 
 /** Demo reviews — clearly identified, safe to replace/remove. */

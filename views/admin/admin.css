@@ -207,6 +207,11 @@ a:hover { color: var(--gold-soft); }
 .img-preview { margin-top: 10px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); max-height: 200px; }
 .img-preview img { width: 100%; display: block; object-fit: cover; max-height: 200px; }
 
+/* Logo preview: show the whole wordmark (not cropped) on a dark backdrop,
+   since the brand logo is gold-on-transparent and would vanish otherwise. */
+.img-preview-logo { background: #0d0a07; padding: 14px; max-height: 140px; }
+.img-preview-logo img { object-fit: contain; max-height: 92px; width: auto; margin: 0 auto; }
+
 .upload-block { display: flex; align-items: center; gap: 14px; margin-top: 6px; flex-wrap: wrap; }
 .upload-preview { width: 92px; height: 72px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: rgba(0,0,0,.2); flex: none; }
 .upload-preview.round { width: 76px; height: 76px; border-radius: 50%; }
