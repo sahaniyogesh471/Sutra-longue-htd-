@@ -86,14 +86,6 @@
 
       'reviews.kicker': 'Guest Stories',
       'reviews.title': 'Loved by Hetauda',
-      'reviews.r1.text': 'The Sutra Fusion Mo:Mo Platter is unlike anything else in Hetauda. Warm service, great music, and an evening we are still talking about.',
-      'reviews.r1.tag': 'Dinner with family',
-      'reviews.r2.text': "Best sizzlers in town, without a doubt. The clay-oven pizza tastes like it was flown in from Kathmandu's top kitchens.",
-      'reviews.r2.tag': 'Weekend regular',
-      'reviews.r3.text': 'Perfect for a family dinner or a date night. The staff treated us like guests, not customers — and the mocktails were superb.',
-      'reviews.r3.tag': 'Date night',
-      'reviews.r4.text': 'The lounge transforms into a proper party spot after dark. Great vibe, great drinks, and the crispy chilli chicken is addictive.',
-      'reviews.r4.tag': 'Night out with friends',
 
       'visit.kicker': 'Find Us',
       'visit.title': 'In the Heart of Hupra, Hetauda',
@@ -205,14 +197,6 @@
 
       'reviews.kicker': 'पाहुनाका अनुभव',
       'reviews.title': 'हेटौंडाको माया',
-      'reviews.r1.text': 'सुत्र फ्युजन म:म प्लेटर हेटौंडामा अरू कतै छैन। न्यानो सेवा, उत्कृष्ट संगीत र अहिले पनि सम्झिरहने एउटा साँझ।',
-      'reviews.r1.tag': 'परिवारसँग डिनर',
-      'reviews.r2.text': 'शहरकै उत्कृष्ट सिजलर, कुनै शंका छैन। क्ले-ओभन पिज्जा काठमाडौंका उत्कृष्ट किचनबाट ल्याइएजस्तै लाग्छ।',
-      'reviews.r2.tag': 'सप्ताहन्ते ग्राहक',
-      'reviews.r3.text': 'पारिवारिक भोज वा डेट नाइटका लागि उत्तम। स्टाफले ग्राहक होइन, पाहुनाजस्तै व्यवहार गरे — मकटेल पनि उत्कृष्ट।',
-      'reviews.r3.tag': 'डेट नाइट',
-      'reviews.r4.text': 'रात पर्दा लाउन्ज साँच्चै पार्टी स्पटमा बदलिन्छ। उत्कृष्ट भाइब, उत्कृष्ट पेय, र क्रिस्पी चिली चिकन त झनै लत लगाउने।',
-      'reviews.r4.tag': 'साथीहरूसँग रात',
 
       'visit.kicker': 'हामीलाई भेट्नुहोस्',
       'visit.title': 'हुप्रा, हेटौंडाको मुटुमा',

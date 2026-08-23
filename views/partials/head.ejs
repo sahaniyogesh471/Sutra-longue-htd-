@@ -51,6 +51,7 @@
 <% var region = addrParts.length >= 3 ? addrParts[addrParts.length - 2] : ''; %>
 <% var socialsList = (typeof socials !== 'undefined' ? socials : {}); %>
 <% var sameAs = [socialsList.facebook, socialsList.instagram, socialsList.tiktok, socialsList.youtube].filter(Boolean); %>
+<% var gr = (typeof googleReviews !== 'undefined') ? googleReviews : null; %>
 <% var ld = {
   '@context': 'https://schema.org',
   '@type': 'Restaurant',
@@ -61,6 +62,13 @@
   url: canonical || undefined,
   image: ogImage || undefined,
   sameAs: sameAs.length ? sameAs : undefined,
+  aggregateRating: gr ? {
+    '@type': 'AggregateRating',
+    ratingValue: gr.rating,
+    reviewCount: gr.count,
+    bestRating: '5',
+    worstRating: '1'
+  } : undefined,
   address: {
     '@type': 'PostalAddress',
     streetAddress: addr,

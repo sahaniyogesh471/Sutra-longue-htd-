@@ -289,6 +289,7 @@ export interface PublicContent {
   bestsellers: Dish[];
   menuGroups: MenuGroup[];
   reviews: Review[];
+  googleReviews: { rating: string; count: string; url: string; stars: number } | null;
   gallery: GalleryItem[];
   galleryFull: GalleryItem[];
   galleryItems: { thumb: string; full: string; alt: string; is_featured: number }[];
@@ -373,6 +374,27 @@ export function buildMenuGroups(bestsellers: Dish[]): MenuGroup[] {
   return groups;
 }
 
+/**
+ * Google Business Profile rating shown as a verified badge. Returns null when
+ * the rating is not configured so the badge (and its structured data) simply
+ * disappears rather than advertising a made-up score.
+ */
+function buildGoogleReviews(
+  s: (k: string, fallback?: string) => string
+): { rating: string; count: string; url: string; stars: number } | null {
+  const rating = s('reviews.google_rating').trim();
+  const value = Number(rating);
+  if (!rating || !Number.isFinite(value) || value <= 0 || value > 5) return null;
+  const count = s('reviews.google_count').trim();
+  if (!/^\d+$/.test(count) || Number(count) <= 0) return null;
+  return {
+    rating: value.toFixed(1),
+    count,
+    url: s('reviews.google_url') || s('contact.maps_url'),
+    stars: Math.round(value),
+  };
+}
+
 export function buildPublicContent(db: DB, opts: { draft?: boolean } = {}): PublicContent {
   const draft = opts.draft ?? false;
 
@@ -415,6 +437,7 @@ export function buildPublicContent(db: DB, opts: { draft?: boolean } = {}): Publ
     image_url: publicImage(r.image_url),
   }));
   const gallery = galleryFromRows(galleryRaw);
+  const googleReviews = buildGoogleReviews(s);
   const hours = hoursFromRows(hoursRaw);
 
   const phoneRaw = s('contact.phone');
@@ -490,6 +513,7 @@ export function buildPublicContent(db: DB, opts: { draft?: boolean } = {}): Publ
     bestsellers,
     menuGroups: buildMenuGroups(bestsellers),
     reviews,
+    googleReviews,
     gallery,
     galleryFull,
     galleryItems,

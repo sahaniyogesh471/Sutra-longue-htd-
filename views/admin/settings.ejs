@@ -80,6 +80,14 @@
       </div>
 
       <div class="card">
+        <h3>Google rating badge</h3>
+        <p class="muted">Shown above the guest reviews on the homepage and sent to Google as structured data, so the stars can appear in search results. Copy the numbers exactly as they appear on your Google Business Profile — never estimate them. Leave the rating blank to hide the badge.</p>
+        <% textField('reviews.google_rating', 'Rating out of 5 (e.g. 4.0)', false, '4.0'); %>
+        <% textField('reviews.google_count', 'Number of Google reviews (e.g. 272)', false, '272'); %>
+        <% textField('reviews.google_url', 'Link to your Google listing', false, 'https://share.google/...'); %>
+      </div>
+
+      <div class="card">
         <h3>Design &amp; brand</h3>
         <p class="muted">The primary color is used across the public website for buttons, headings, badges and highlights. It appears after the draft is published.</p>
         <div class="field" data-field-wrap="design.logo">

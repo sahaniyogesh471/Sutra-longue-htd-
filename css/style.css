@@ -555,7 +555,29 @@ html[data-theme="dark"] .gallery { background: linear-gradient(180deg, #0d0a07, 
    TESTIMONIALS
    ============================================================ */
 .testimonials { background: var(--bg); }
+/* Google Business Profile rating badge — real, verifiable social proof. */
+.google-rating {
+  display: inline-flex; align-items: center; gap: 14px;
+  margin: 0 0 30px;
+  padding: 12px 20px 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform .3s var(--ease), border-color .3s;
+}
+.google-rating:hover { transform: translateY(-3px); border-color: var(--border-strong); }
+.google-rating-mark { display: flex; flex: none; }
+.google-rating-body { display: grid; gap: 2px; }
+.google-rating-top { display: flex; align-items: center; gap: 8px; }
+.google-rating-top strong { font-size: 19px; line-height: 1; }
+.google-rating-stars { color: var(--gold); font-size: 14px; letter-spacing: 2px; }
+.google-rating-sub { font-size: 12.5px; color: var(--text-mute); }
+
 .review-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+/* A lone review would otherwise sit in a half-width column with dead space. */
+.review-card:only-child { grid-column: 1 / -1; }
 .review-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -572,6 +594,8 @@ html[data-theme="dark"] .gallery { background: linear-gradient(180deg, #0d0a07, 
 }
 .review-card:hover { transform: translateY(-6px); border-color: var(--border-strong); }
 .review-stars { color: var(--gold); font-size: 17px; letter-spacing: 3px; margin-bottom: 14px; }
+/* Unearned stars must read as empty — otherwise a 3-star review looks like 5. */
+.review-stars .star-empty, .google-rating-stars .star-empty { color: var(--border-strong); }
 .review-text { font-size: 16px; color: var(--text-soft); margin-bottom: 22px; line-height: 1.65; }
 .review-author { display: flex; align-items: center; gap: 14px; }
 .review-avatar {
@@ -1041,6 +1065,7 @@ html[data-theme="light"] .bs-cat { background: rgba(255,255,255,.72); color: #8a
   .hero-content { padding-top: 110px; }
   .form-row, .form-row.cols-3 { grid-template-columns: 1fr; }
   .review-grid { grid-template-columns: 1fr; }
+  .google-rating { width: 100%; justify-content: center; border-radius: var(--radius); }
   .mobile-bar { display: flex; padding-bottom: env(safe-area-inset-bottom, 0px); }
   .mobile-bar-btn { min-height: 54px; }
   .to-top { right: 16px; bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }

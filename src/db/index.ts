@@ -142,6 +142,45 @@ export function migrate(db: DB): void {
   backfillReviewNp(db);
   backfillSettings(db);
   repairMissingUploads(db);
+  removePlaceholderReviews(db);
+}
+
+/**
+ * Removes the four invented testimonials that shipped with the original demo
+ * content. They were never real customers, so publishing them breaches Google's
+ * review policies and consumer-protection rules. Matching is deliberately
+ * strict — name AND the exact seeded text — so a genuine review from a guest
+ * who happens to share a name is never deleted.
+ */
+const PLACEHOLDER_REVIEWS: { name: string; text: string }[] = [
+  {
+    name: 'Rabina Shrestha',
+    text: 'The Sutra Fusion Mo:Mo Platter is unlike anything else in Hetauda. Warm service, great music, and an evening we are still talking about.',
+  },
+  {
+    name: 'Prakash Adhikari',
+    text: "Best sizzlers in town, without a doubt. The clay-oven pizza tastes like it was flown in from Kathmandu's top kitchens.",
+  },
+  {
+    name: 'Sunita Gurung',
+    text: 'Perfect for a family dinner or a date night. The staff treated us like guests, not customers — and the mocktails were superb.',
+  },
+  {
+    name: 'Aayush Shrestha',
+    text: 'The lounge transforms into a proper party spot after dark. Great vibe, great drinks, and the crispy chilli chicken is addictive.',
+  },
+];
+
+function removePlaceholderReviews(db: DB): void {
+  for (const table of ['reviews', 'reviews_baseline', 'reviews_draft']) {
+    for (const r of PLACEHOLDER_REVIEWS) {
+      try {
+        db.prepare(`DELETE FROM "${table}" WHERE name = ? AND text = ?`).run(r.name, r.text);
+      } catch {
+        /* table absent in this schema version */
+      }
+    }
+  }
 }
 
 /**
@@ -250,6 +289,9 @@ function backfillReviewNp(db: DB): void {
 const DEFAULT_SETTINGS: Record<string, string> = {
   'design.primary_color': '#c9a35c',
   'design.logo': 'img/logo-gold.png',
+  'reviews.google_rating': '4.0',
+  'reviews.google_count': '272',
+  'reviews.google_url': 'https://share.google/speFf7KuYEt1DNfTv',
 };
 
 function backfillSettings(db: DB): void {

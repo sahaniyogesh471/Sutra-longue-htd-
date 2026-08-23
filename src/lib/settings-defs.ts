@@ -1,4 +1,4 @@
-import { required, maxLen, isEmail, isUrl, isPhone, isHexColor } from './validate.js';
+import { required, maxLen, isEmail, isUrl, isPhone, isHexColor, isRating, isCount } from './validate.js';
 
 /**
  * Shared definition of the editable restaurant settings fields.
@@ -23,6 +23,7 @@ export const SETTING_GROUPS: Record<string, string[]> = {
   ],
   social: ['social.facebook', 'social.instagram', 'social.tiktok', 'social.youtube'],
   design: ['design.primary_color', 'design.logo'],
+  reviews: ['reviews.google_rating', 'reviews.google_count', 'reviews.google_url'],
 };
 
 export const ALL_SETTING_KEYS = Object.values(SETTING_GROUPS).flat();
@@ -49,6 +50,9 @@ export const SETTING_RULES: Record<string, (v: unknown) => string | null> = {
   'social.tiktok': (v) => isUrl(v),
   'social.youtube': (v) => isUrl(v),
   'design.primary_color': (v) => isHexColor(v),
+  'reviews.google_rating': (v) => isRating(v),
+  'reviews.google_count': (v) => isCount(v),
+  'reviews.google_url': (v) => isUrl(v),
 };
 
 export interface SettingsPageData {

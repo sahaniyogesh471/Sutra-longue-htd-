@@ -327,6 +327,24 @@
           <h2 class="section-title" data-i18n="reviews.title">Loved by Hetauda</h2>
         </div>
 
+        <% if (googleReviews) { %>
+          <a class="google-rating reveal" href="<%= googleReviews.url %>" target="_blank" rel="noopener nofollow"
+             aria-label="Rated <%= googleReviews.rating %> out of 5 from <%= googleReviews.count %> Google reviews — read them on Google">
+            <span class="google-rating-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5a5.6 5.6 0 0 1-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.8Z"/><path fill="#34A853" d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.9-3a7.2 7.2 0 0 1-10.7-3.8H1.3v3.1A12 12 0 0 0 12 24Z"/><path fill="#FBBC05" d="M5.3 14.3a7.1 7.1 0 0 1 0-4.6V6.6H1.3a12 12 0 0 0 0 10.8l4-3.1Z"/><path fill="#EA4335" d="M12 4.8c1.8 0 3.4.6 4.6 1.8l3.5-3.5A12 12 0 0 0 1.3 6.6l4 3.1A7.2 7.2 0 0 1 12 4.8Z"/></svg>
+            </span>
+            <span class="google-rating-body">
+              <span class="google-rating-top">
+                <strong><%= googleReviews.rating %></strong>
+                <span class="google-rating-stars" aria-hidden="true"><% for (let i = 1; i <= 5; i++) { %><span class="<%= i <= googleReviews.stars ? '' : 'star-empty' %>">★</span><% } %></span>
+              </span>
+              <span class="google-rating-sub"
+                    data-np-text="<%= googleReviews.count %> गुगल रिभ्युमा आधारित"
+                    data-en-text="Based on <%= googleReviews.count %> Google reviews"><%= googleReviews.count %> Google reviews</span>
+            </span>
+          </a>
+        <% } %>
+
         <div class="review-grid">
           <% reviews.forEach(function (r) { %>
             <article class="review-card reveal">
@@ -341,7 +359,7 @@
                   <span class="review-avatar"><img src="<%= r.image_url %>" alt="Portrait of <%= r.name %>" loading="lazy" /></span>
                 <% } %>
                 <div>
-                  <strong data-np-name="<%= r.name_np %>" data-en-name="<%= r.name %>" data-en-name="<%= r.name %>"><%= r.name %></strong>
+                  <strong data-np-name="<%= r.name_np %>" data-en-name="<%= r.name %>"><%= r.name %></strong>
                 </div>
               </div>
             </article>

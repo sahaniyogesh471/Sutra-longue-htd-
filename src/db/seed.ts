@@ -131,39 +131,26 @@ const SETTINGS: Record<string, string> = {
   // Brand logo shown in the header and footer. Blank falls back to the
   // bundled wordmark in img/.
   'design.logo': 'img/logo-gold.png',
+  // Google Business Profile rating, shown as a verified badge above the
+  // testimonials and published as aggregateRating structured data. Update
+  // these from the admin panel whenever the listing's numbers change.
+  'reviews.google_rating': '4.0',
+  'reviews.google_count': '272',
+  'reviews.google_url': 'https://share.google/speFf7KuYEt1DNfTv',
 };
 
-/** Demo reviews — clearly identified, safe to replace/remove. */
+/**
+ * Seed reviews. Only genuine, first-hand reviews belong here — the four
+ * placeholder testimonials that used to sit in this list were invented
+ * marketing copy and were removed. New reviews are added from the admin panel
+ * once a real guest has given permission to publish theirs.
+ */
 const REVIEWS: { name: string; text: string; rating: number; image_url: string }[] = [
   {
     name: 'Yogesh Sahani',
     text: 'Really enjoyed my time at Sutra Lounge in Hetauda. The place has a really nice and comfortable vibe, and it’s a great spot to hang out with friends or family.\nThe food was tasty and nicely presented, and everything we ordered was enjoyable. I also liked the ambience and music—it made the whole experience feel relaxed and fun. The staff were friendly and the service was good too.\nOverall, I had a great experience at Sutra Lounge. Definitely a place I’d be happy to visit again when I’m in Hetauda. ❤️',
     rating: 5,
     image_url: 'img/review-yogesh.webp',
-  },
-  {
-    name: 'Rabina Shrestha',
-    text: 'The Sutra Fusion Mo:Mo Platter is unlike anything else in Hetauda. Warm service, great music, and an evening we are still talking about.',
-    rating: 5,
-    image_url: 'img/avatar-rs.jpg',
-  },
-  {
-    name: 'Prakash Adhikari',
-    text: "Best sizzlers in town, without a doubt. The clay-oven pizza tastes like it was flown in from Kathmandu's top kitchens.",
-    rating: 5,
-    image_url: 'img/avatar-pa.jpg',
-  },
-  {
-    name: 'Sunita Gurung',
-    text: 'Perfect for a family dinner or a date night. The staff treated us like guests, not customers — and the mocktails were superb.',
-    rating: 5,
-    image_url: 'img/avatar-sg.jpg',
-  },
-  {
-    name: 'Aayush Shrestha',
-    text: 'The lounge transforms into a proper party spot after dark. Great vibe, great drinks, and the crispy chilli chicken is addictive.',
-    rating: 5,
-    image_url: 'img/avatar-as.jpg',
   },
 ];
 

@@ -63,6 +63,22 @@ export function isHexColor(value: unknown): string | null {
   return HEX_COLOR_RE.test(s) ? null : 'Please enter a valid hex color, e.g. #C9A35C.';
 }
 
+/** Star rating between 0 and 5, at most one decimal place. Blank hides the badge. */
+export function isRating(value: unknown): string | null {
+  const s = typeof value === 'string' ? value.trim() : '';
+  if (!s) return null;
+  if (!/^[0-5](\.\d)?$/.test(s)) return 'Enter a rating between 0 and 5, e.g. 4.0.';
+  return null;
+}
+
+/** Whole number of reviews. Blank hides the count. */
+export function isCount(value: unknown): string | null {
+  const s = typeof value === 'string' ? value.trim() : '';
+  if (!s) return null;
+  if (!/^\d{1,7}$/.test(s)) return 'Enter a whole number, e.g. 272.';
+  return null;
+}
+
 export function isIntRange(value: unknown, min: number, max: number): string | null {
   const n = Number(value);
   if (!Number.isFinite(n) || n < min || n > max) return `Must be between ${min} and ${max}.`;
