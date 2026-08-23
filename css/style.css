@@ -248,6 +248,19 @@ main { flex: 1 0 auto; }
 .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 
 .brand { display: inline-flex; align-items: center; gap: 12px; }
+/* Brand logo image (replaces the old letter mark + text) */
+.brand-logo {
+  height: 44px;
+  width: auto;
+  max-width: 200px;
+  display: block;
+  object-fit: contain;
+}
+.brand-footer .brand-logo { height: 40px; }
+@media (max-width: 560px) {
+  .brand-logo { height: 34px; max-width: 150px; }
+}
+
 .brand-mark {
   width: 44px; height: 44px; flex: none;
   display: grid; place-items: center;
