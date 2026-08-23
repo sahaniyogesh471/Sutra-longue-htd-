@@ -103,6 +103,7 @@
       'contact.kicker': 'Reservations',
       'contact.title': 'Book Your Table Tonight',
       'contact.sub': 'Tables fill fast on weekends. Send a request and our team will confirm on WhatsApp — or call us and we will sort it in a minute.',
+      'contact.subMsgr': 'Tables fill fast on weekends. Send a request and our team will confirm on Messenger — or call us and we will sort it in a minute.',
       'contact.callLabel': 'Call us', 'contact.waLabel': 'WhatsApp', 'contact.msgrLabel': 'Messenger', 'contact.emailLabel': 'Write to us',
       'contact.socialLabel': 'Follow the flavour',
       'contact.formTitle': 'Request a Reservation',
@@ -111,6 +112,7 @@
       'contact.fTime': 'Time', 'contact.fGuests': 'Guests', 'contact.fNote': 'Special requests',
       'contact.optional': '(optional)',
       'contact.submit': 'Send Reservation via WhatsApp',
+      'contact.submitMsgr': 'Send Reservation via Messenger',
       'contact.alt': 'Prefer to talk? Call <a href="tel:057522111">057-522111</a> — we answer every call.',
 
       'footer.tag': 'Premium multi-cuisine resto-lounge & bar. Sumptuous food, great music, unforgettable times.',
@@ -219,6 +221,7 @@
       'contact.kicker': 'रिजर्भेसन',
       'contact.title': 'आज रात तपाईंको टेबल बुक गर्नुहोस्',
       'contact.sub': 'सप्ताहन्तमा टेबल चाँडै भरिन्छन्। अनुरोध पठाउनुहोस् — हाम्रो टोलीले ह्वाट्सएपमा पुष्टि गर्नेछ, वा कल गर्नुहोस् र एकै मिनेटमा मिलाइदिन्छौं।',
+      'contact.subMsgr': 'सप्ताहन्तमा टेबल चाँडै भरिन्छन्। अनुरोध पठाउनुहोस् — हाम्रो टोलीले म्यासेन्जरमा पुष्टि गर्नेछ, वा कल गर्नुहोस् र एकै मिनेटमा मिलाइदिन्छौं।',
       'contact.callLabel': 'कल गर्नुहोस्', 'contact.waLabel': 'ह्वाट्सएप', 'contact.msgrLabel': 'म्यासेन्जर', 'contact.emailLabel': 'इमेल गर्नुहोस्',
       'contact.socialLabel': 'स्वाद पछ्याउनुहोस्',
       'contact.formTitle': 'रिजर्भेसन अनुरोध गर्नुहोस्',
@@ -227,6 +230,7 @@
       'contact.fTime': 'समय', 'contact.fGuests': 'पाहुना', 'contact.fNote': 'विशेष अनुरोध',
       'contact.optional': '(ऐच्छिक)',
       'contact.submit': 'ह्वाट्सएपमार्फत रिजर्भेसन पठाउनुहोस्',
+      'contact.submitMsgr': 'म्यासेन्जरमार्फत रिजर्भेसन पठाउनुहोस्',
       'contact.alt': 'कुरा गर्न चाहनुहुन्छ? <a href="tel:057522111">057-522111</a> मा कल गर्नुहोस् — हरेक कलको जवाफ दिन्छौं।',
 
       'footer.tag': 'प्रिमियम मल्टि-क्युजिन रेस्टो-लाउन्ज र बार। स्वादिलो खाना, उत्कृष्ट संगीत, अविस्मरणीय क्षण।',
@@ -542,7 +546,7 @@
     return waLink(text);
   }
 
-  /* ---------- 11. Reservation form -> WhatsApp ---------- */
+  /* ---------- 11. Reservation form -> WhatsApp / Messenger ---------- */
   const form = document.getElementById('reserveForm');
   const WA_NUMBER = (window.SUTRA_CONTACT && window.SUTRA_CONTACT.wa) || '97757522111';
 
