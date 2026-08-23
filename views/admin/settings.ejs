@@ -67,7 +67,8 @@
         <% textField('contact.email', 'Email address', true); %>
         <% textField('contact.address', 'Address', true); %>
         <% textField('contact.city', 'City / area', true); %>
-        <% textField('contact.maps_url', 'Google Maps link', false); %>
+        <% textField('contact.maps_url', 'Google Maps link', false, 'https://www.google.com/maps/...'); %>
+        <p class="muted">Must be a real Maps address (google.com/maps/..., maps.app.goo.gl/...). A share.google/... shortlink often opens Google <em>search</em> instead of Maps, so those are ignored and the site searches Maps for the restaurant name instead. Leave blank to always use the name-based search.</p>
       </div>
 
       <div class="card">

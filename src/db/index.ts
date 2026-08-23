@@ -140,6 +140,7 @@ export function migrate(db: DB): void {
 
   backfillDishNp(db);
   backfillReviewNp(db);
+  dropBlankSettingKeys(db);
   backfillSettings(db);
   repairMissingUploads(db);
   removePlaceholderReviews(db);
@@ -295,6 +296,43 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   'reviews.google_count': '272',
   'reviews.google_url': 'https://share.google/speFf7KuYEt1DNfTv',
 };
+
+/**
+ * Clears settings rows with a blank key.
+ *
+ * Restoring a revision captured before `key`/`value` were aliased to k/v read
+ * the wrong properties and inserted one empty-keyed row per setting, leaving
+ * the site with no readable settings at all. The rows carry no recoverable
+ * information, and removing them lets backfillSettings() and the seed restore
+ * the defaults on the next start.
+ */
+function dropBlankSettingKeys(db: DB): void {
+  let removed = 0;
+  for (const t of ['settings', 'settings_baseline', 'settings_draft']) {
+    try {
+      const info = db.prepare(`DELETE FROM "${t}" WHERE key IS NULL OR TRIM(key) = ''`).run();
+      if (t === 'settings') removed = Number(info.changes ?? 0);
+    } catch {
+      /* table absent in this schema version */
+    }
+  }
+
+  // The blank rows replaced real settings, so the site is now missing them.
+  // settings_baseline is never touched by a restore, so it still holds the
+  // protected originals — copy back anything that is gone. Existing values are
+  // left alone so a genuine edit is never overwritten.
+  if (removed === 0) return;
+  try {
+    db.prepare(
+      `INSERT INTO settings (key, value, updated_at)
+       SELECT b.key, b.value, datetime('now') FROM settings_baseline b
+       WHERE b.key IS NOT NULL AND TRIM(b.key) != ''
+         AND NOT EXISTS (SELECT 1 FROM settings s WHERE s.key = b.key)`
+    ).run();
+  } catch {
+    /* best effort — backfillSettings() and the seed still run afterwards */
+  }
+}
 
 function backfillSettings(db: DB): void {
   // Alias the column: `key` is a reserved word in some engines, and remote
@@ -468,11 +506,27 @@ export function prepareNamed(db: DB, sql: string) {
   } as unknown as ReturnType<DB['prepare']>;
 }
 
+/**
+ * Tracks which connections already have a transaction open, so a nested
+ * runInTransaction() joins the outer one instead of issuing a second BEGIN.
+ *
+ * Without this, the inner call's BEGIN fails, the inner block records
+ * `began = false` and never commits, and the outer COMMIT lands on work the
+ * inner block believed it had already finalised — which is how undo/redo could
+ * report success while leaving the site unchanged.
+ */
+const openTransactions = new WeakSet<object>();
+
 export function runInTransaction<T>(db: DB, fn: () => T): T {
+  // Already inside a transaction on this connection: just run the body and let
+  // the outermost caller commit or roll back the whole unit of work.
+  if (openTransactions.has(db as unknown as object)) return fn();
+
   let began = false;
   try {
     db.exec('BEGIN');
     began = true;
+    openTransactions.add(db as unknown as object);
   } catch {
     // Remote backends may manage transactions themselves; proceed without one.
     began = false;
@@ -483,6 +537,7 @@ export function runInTransaction<T>(db: DB, fn: () => T): T {
     result = fn();
   } catch (err) {
     if (began) {
+      openTransactions.delete(db as unknown as object);
       try {
         db.exec('ROLLBACK');
       } catch {
@@ -493,6 +548,7 @@ export function runInTransaction<T>(db: DB, fn: () => T): T {
   }
 
   if (began) {
+    openTransactions.delete(db as unknown as object);
     try {
       db.exec('COMMIT');
     } catch (err) {

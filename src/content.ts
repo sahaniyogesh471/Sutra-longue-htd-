@@ -337,6 +337,7 @@ export interface PublicContent {
   email: string;
   address: string;
   mapsUrl: string;
+  mapsEmbedQuery: string;
   socials: { facebook: string; instagram: string; tiktok: string; youtube: string };
   videoShowcase: string;
   videoModal: string;
@@ -431,6 +432,36 @@ function buildGoogleReviews(
   };
 }
 
+/**
+ * Search string that pins the restaurant rather than the neighbourhood.
+ *
+ * The address alone ("Hupra, Hetauda-4, Makwanpur, Nepal") is an area, not a
+ * place, so Google drops the pin somewhere in the ward. Leading with the
+ * business name makes Google resolve the actual listing.
+ */
+function mapsQuery(name: string, address: string): string {
+  return [name, address].filter(Boolean).join(', ');
+}
+
+/**
+ * Link for the "Get Directions" buttons.
+ *
+ * A share.google/... shortlink copied from a phone often expands to a Google
+ * *search* page rather than Maps, which drops visitors on search results with
+ * no route. Those are ignored in favour of a Maps search for the business
+ * name, which opens the listing with a working Directions button. A real Maps
+ * URL that the owner sets is always respected.
+ */
+function buildMapsUrl(configured: string, name: string, address: string): string {
+  const url = (configured || '').trim();
+  const isRealMapsLink =
+    /^https?:\/\/((www\.)?google\.[a-z.]+\/maps|maps\.google\.[a-z.]+|maps\.app\.goo\.gl|goo\.gl\/maps)/i.test(url);
+  if (isRealMapsLink) return url;
+  const q = mapsQuery(name, address);
+  if (!q) return url;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+}
+
 export function buildPublicContent(db: DB, opts: { draft?: boolean } = {}): PublicContent {
   const draft = opts.draft ?? false;
 
@@ -496,7 +527,8 @@ export function buildPublicContent(db: DB, opts: { draft?: boolean } = {}): Publ
   const phoneRaw = s('contact.phone');
   const waRaw = s('contact.whatsapp', digitsOnly(phoneRaw));
   const address = s('contact.address');
-  const mapsUrl = s('contact.maps_url');
+  const mapsUrl = buildMapsUrl(s('contact.maps_url'), s('restaurant.name'), address);
+  const mapsEmbedQuery = mapsQuery(s('restaurant.name'), address);
 
   const galleryFull = gallery.map((g) => ({ ...g, image_url: publicImage(fullImage(g.image_url)) }));
   const galleryItems = gallery.map((g, i) => ({
@@ -591,6 +623,7 @@ export function buildPublicContent(db: DB, opts: { draft?: boolean } = {}): Publ
     email: s('contact.email'),
     address,
     mapsUrl,
+    mapsEmbedQuery,
     socials: {
       facebook: s('social.facebook'),
       instagram: s('social.instagram'),

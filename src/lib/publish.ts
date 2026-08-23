@@ -16,7 +16,9 @@ const POINTER_KEY = 'system.revisionPointer';
 export type Kind = 'settings' | 'dishes' | 'reviews' | 'gallery' | 'hours';
 
 export interface SiteSnapshot {
-  settings: { k: string; v: string | null }[];
+  // Older snapshots were captured before `key`/`value` were aliased to k/v for
+  // remote libsql, so both shapes exist in the revisions table.
+  settings: { k?: string; v?: string | null; key?: string; value?: string | null }[];
   dishes: Record<string, unknown>[];
   reviews: Record<string, unknown>[];
   gallery: Record<string, unknown>[];
@@ -349,7 +351,14 @@ function applySnapshot(db: DB, snap: SiteSnapshot): void {
   runInTransaction(db, () => {
     clear('settings');
     const insSettings = db.prepare('INSERT INTO settings (key, value, updated_at) VALUES (?, ?, datetime(\'now\'))');
-    for (const r of snap.settings) insSettings.run(r.k, r.v);
+    for (const r of snap.settings) {
+      // Revisions written before the k/v aliasing still use key/value; reading
+      // only k/v silently inserted a table full of empty keys, which wiped the
+      // whole site's settings on restore.
+      const key = r.k ?? r.key;
+      if (!key) continue;
+      insSettings.run(key, (r.v ?? r.value) ?? null);
+    }
 
     clear('dishes');
     const insDish = prepareNamed(db, 
@@ -426,8 +435,12 @@ function setPointer(db: DB, id: number): void {
 function restoreToRevision(db: DB, id: number, by: string | undefined): void {
   const rev = getRevisionById(db, id);
   if (!rev) return;
-  applySnapshot(db, JSON.parse(rev.snapshot) as SiteSnapshot);
-  setPointer(db, id);
+  // One unit of work: a half-applied snapshot with a moved pointer would leave
+  // the site in a state no revision describes.
+  runInTransaction(db, () => {
+    applySnapshot(db, JSON.parse(rev.snapshot) as SiteSnapshot);
+    setPointer(db, id);
+  });
   void by;
 }
 
