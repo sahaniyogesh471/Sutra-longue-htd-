@@ -148,6 +148,39 @@ export function waHref(phone: string, text: string): string {
   return `https://wa.me/${d}?text=${encodeURIComponent(text)}`;
 }
 
+/**
+ * Facebook Messenger deep link for a Page.
+ *
+ * `text` only pre-fills the message box for Pages with a configured Messenger
+ * app, and is silently ignored everywhere else, so `ref` carries the same
+ * context as a fallback — it always reaches the Page inbox and any automation
+ * listening on the messaging_referrals webhook.
+ */
+export function msgrHref(page: string, text: string, ref: string): string {
+  const handle = String(page || '')
+    .trim()
+    .replace(/^https?:\/\/(www\.|m\.)?(facebook|messenger)\.com\//i, '')
+    .replace(/^m\.me\//i, '')
+    .replace(/^@/, '')
+    .replace(/[/?#].*$/, '');
+  if (!handle) return '';
+  const params = new URLSearchParams();
+  if (text) params.set('text', text);
+  if (ref) params.set('ref', ref.slice(0, 200));
+  const q = params.toString();
+  return `https://m.me/${handle}${q ? `?${q}` : ''}`;
+}
+
+/** Slug used as the m.me `ref` value, e.g. "order-bamboo-biryani". */
+export function refSlug(prefix: string, name = ''): string {
+  const slug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40);
+  return slug ? `${prefix}-${slug}` : prefix;
+}
+
 export function fmt12(t: string | null | undefined): string {
   if (!t) return '';
   const m = t.match(/^(\d{1,2}):(\d{2})/);
@@ -298,6 +331,9 @@ export interface PublicContent {
   phone: { tel: string; display: string };
   whatsapp: { wa: string; href: string; hrefText: string };
   orderLink: (name: string, price: string) => string;
+  messenger: { page: string; href: string; hrefText: string };
+  ordering: { channel: 'whatsapp' | 'messenger' | 'both'; primary: 'whatsapp' | 'messenger'; showWhatsapp: boolean; showMessenger: boolean };
+  orderLinkMsgr: (name: string, price: string) => string;
   email: string;
   address: string;
   mapsUrl: string;
@@ -438,6 +474,23 @@ export function buildPublicContent(db: DB, opts: { draft?: boolean } = {}): Publ
   }));
   const gallery = galleryFromRows(galleryRaw);
   const googleReviews = buildGoogleReviews(s);
+
+  // Ordering channel. The restaurant's Messenger inbox runs automation, so it
+  // can lead, but WhatsApp stays reachable because m.me's `text` pre-fill is
+  // ignored unless the Page has a Messenger app configured — without a
+  // fallback a guest could land in an empty chat with no order details.
+  const msgrPage = s('ordering.messenger_page', 'SutraLounge');
+  const rawChannel = s('ordering.channel', 'both');
+  let channel = (['whatsapp', 'messenger', 'both'].includes(rawChannel) ? rawChannel : 'both') as
+    'whatsapp' | 'messenger' | 'both';
+  // A Messenger-only site with no Page handle would leave dead buttons.
+  if (!msgrPage && channel !== 'whatsapp') channel = 'whatsapp';
+  const ordering = {
+    channel,
+    primary: (channel === 'whatsapp' ? 'whatsapp' : 'messenger') as 'whatsapp' | 'messenger',
+    showWhatsapp: channel !== 'messenger',
+    showMessenger: channel !== 'whatsapp',
+  };
   const hours = hoursFromRows(hoursRaw);
 
   const phoneRaw = s('contact.phone');
@@ -527,6 +580,14 @@ export function buildPublicContent(db: DB, opts: { draft?: boolean } = {}): Publ
     },
     orderLink: (name: string, price: string) =>
       waHref(waRaw, `Hi Sutra Lounge! I would like to order the ${name} (${price}).`),
+    orderLinkMsgr: (name: string, price: string) =>
+      msgrHref(msgrPage, `Hi Sutra Lounge! I would like to order the ${name} (${price}).`, refSlug('order', name)),
+    messenger: {
+      page: msgrPage,
+      href: msgrHref(msgrPage, '', 'website'),
+      hrefText: msgrHref(msgrPage, 'Hi Sutra Lounge!', 'website-hello'),
+    },
+    ordering,
     email: s('contact.email'),
     address,
     mapsUrl,
@@ -544,7 +605,13 @@ export function buildPublicContent(db: DB, opts: { draft?: boolean } = {}): Publ
     year: new Date().getFullYear(),
     i18nOverrides,
     bestsellersJson: jsonSafe(bs),
-    contactJson: jsonSafe({ wa: digitsOnly(waRaw), phone: phoneRaw, email: s('contact.email') }),
+    contactJson: jsonSafe({
+      wa: digitsOnly(waRaw),
+      phone: phoneRaw,
+      email: s('contact.email'),
+      msgrPage,
+      ordering,
+    }),
     videoJson: jsonSafe({ modal: videoModal }),
     i18nJson: jsonSafe(i18nOverrides),
   };

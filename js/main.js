@@ -18,6 +18,7 @@
       'hero.sub': "Hupra's premier dining destination in Hetauda — handcrafted multi-cuisine dishes, wood-fired flavour, hand-mixed cocktails and a lounge soundtrack that keeps the night alive.",
       'hero.reserve': 'Reserve a Table',
       'hero.whatsapp': 'WhatsApp Us',
+      'hero.messenger': 'Message Us',
       'hero.meta1': 'Hupra, Hetauda-4 · Makwanpur',
       'hero.meta2': 'Open Daily 8 AM – 9 PM',
       'hero.video': 'Watch the Sutra Lounge Tour',
@@ -52,6 +53,10 @@
       'menu.order': 'Reserve to Taste',
       'menu.note': 'Craving something specific? Our full multi-cuisine menu spans Nepali, Chinese, Continental and more.',
       'menu.full': 'Get the full menu on WhatsApp',
+      'menu.fullMsgr': 'Get the full menu on Messenger',
+      'menu.orderMsgr': 'Order on Messenger',
+      'menu.msgrCta': 'Get the Complete Menu on Messenger',
+      'menu.msgrUs': 'Message Us',
 
       'bestsellers.kicker': 'Our Popular Selections',
       'bestsellers.title': 'Sutra Lounge Favorites',
@@ -98,7 +103,7 @@
       'contact.kicker': 'Reservations',
       'contact.title': 'Book Your Table Tonight',
       'contact.sub': 'Tables fill fast on weekends. Send a request and our team will confirm on WhatsApp — or call us and we will sort it in a minute.',
-      'contact.callLabel': 'Call us', 'contact.waLabel': 'WhatsApp', 'contact.emailLabel': 'Write to us',
+      'contact.callLabel': 'Call us', 'contact.waLabel': 'WhatsApp', 'contact.msgrLabel': 'Messenger', 'contact.emailLabel': 'Write to us',
       'contact.socialLabel': 'Follow the flavour',
       'contact.formTitle': 'Request a Reservation',
       'contact.fName': 'Full name', 'contact.fPhone': 'Phone number', 'contact.fDate': 'Date',
@@ -115,7 +120,7 @@
       'footer.rights': '© {{year}} Sutra Lounge. All rights reserved.',
       'footer.love': 'Made with flavour in Hetauda',
 
-      'mobile.call': 'Call', 'mobile.wa': 'WhatsApp', 'mobile.reserve': 'Reserve'
+      'mobile.call': 'Call', 'mobile.wa': 'WhatsApp', 'mobile.msgr': 'Messenger', 'mobile.reserve': 'Reserve'
     },
 
     np: {
@@ -129,6 +134,7 @@
       'hero.sub': 'हेटौंडाको हुप्रामा रहेको उत्कृष्ट डाइनिङ डेस्टिनेसन — हस्तनिर्मित मल्टि-क्युजिन परिकार, वुड-फायर्ड स्वाद, हातले बनाइएका ककटेल र रातभरि जीवन्त रहने लाउन्ज संगीत।',
       'hero.reserve': 'टेबल बुक गर्नुहोस्',
       'hero.whatsapp': 'ह्वाट्सएप गर्नुहोस्',
+      'hero.messenger': 'म्यासेन्जरमा सम्पर्क गर्नुहोस्',
       'hero.meta1': 'हुप्रा, हेटौंडा-४ · मकवानपुर',
       'hero.meta2': 'दैनिक बिहान ८ – राति ९ बजेसम्म',
       'hero.video': 'सुत्र लाउन्ज टुर हेर्नुहोस्',
@@ -163,6 +169,10 @@
       'menu.order': 'बुक गरी चाख्नुहोस्',
       'menu.note': 'विशेष केही चाहनुहुन्छ? हाम्रो पूर्ण मल्टि-क्युजिन मेनुमा नेपाली, चिनियाँ, कन्टिनेन्टल र थप समावेश छन्।',
       'menu.full': 'ह्वाट्सएपमा पूर्ण मेनु लिनुहोस्',
+      'menu.fullMsgr': 'म्यासेन्जरमा पूर्ण मेनु लिनुहोस्',
+      'menu.orderMsgr': 'म्यासेन्जरमा अर्डर गर्नुहोस्',
+      'menu.msgrCta': 'म्यासेन्जरमा पूर्ण मेनु लिनुहोस्',
+      'menu.msgrUs': 'म्यासेन्जरमा सम्पर्क गर्नुहोस्',
 
       'bestsellers.kicker': 'हाम्रा लोकप्रिय छनोटहरू',
       'bestsellers.title': 'सुत्र लाउन्जका मनपर्ने परिकार',
@@ -209,7 +219,7 @@
       'contact.kicker': 'रिजर्भेसन',
       'contact.title': 'आज रात तपाईंको टेबल बुक गर्नुहोस्',
       'contact.sub': 'सप्ताहन्तमा टेबल चाँडै भरिन्छन्। अनुरोध पठाउनुहोस् — हाम्रो टोलीले ह्वाट्सएपमा पुष्टि गर्नेछ, वा कल गर्नुहोस् र एकै मिनेटमा मिलाइदिन्छौं।',
-      'contact.callLabel': 'कल गर्नुहोस्', 'contact.waLabel': 'ह्वाट्सएप', 'contact.emailLabel': 'इमेल गर्नुहोस्',
+      'contact.callLabel': 'कल गर्नुहोस्', 'contact.waLabel': 'ह्वाट्सएप', 'contact.msgrLabel': 'म्यासेन्जर', 'contact.emailLabel': 'इमेल गर्नुहोस्',
       'contact.socialLabel': 'स्वाद पछ्याउनुहोस्',
       'contact.formTitle': 'रिजर्भेसन अनुरोध गर्नुहोस्',
       'contact.fName': 'पूरा नाम', 'contact.fPhone': 'फोन नम्बर', 'contact.fDate': 'मिति',
@@ -226,7 +236,7 @@
       'footer.rights': '© {{year}} सुत्र लाउन्ज। सर्वाधिकार सुरक्षित।',
       'footer.love': 'हेटौंडामा माया र स्वादले बनाइएको',
 
-      'mobile.call': 'कल', 'mobile.wa': 'ह्वाट्सएप', 'mobile.reserve': 'बुक गर्नुहोस्'
+      'mobile.call': 'कल', 'mobile.wa': 'ह्वाट्सएप', 'mobile.msgr': 'म्यासेन्जर', 'mobile.reserve': 'बुक गर्नुहोस्'
     }
   };
 
@@ -490,6 +500,48 @@
     }
   });
 
+  /* ---------- Ordering channel (WhatsApp / Messenger) ----------
+     The restaurant runs automation on its Messenger inbox, so Messenger can be
+     the primary channel. m.me only pre-fills `text` for Pages with a Messenger
+     app configured, so the same details are also passed as `ref`, which always
+     reaches the Page inbox. */
+  const ORDERING = (window.SUTRA_CONTACT && window.SUTRA_CONTACT.ordering) || {
+    channel: 'whatsapp', primary: 'whatsapp', showWhatsapp: true, showMessenger: false
+  };
+  const MSGR_PAGE = (window.SUTRA_CONTACT && window.SUTRA_CONTACT.msgrPage) || '';
+
+  function refSlug(prefix, name) {
+    const slug = String(name || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 40);
+    return slug ? prefix + '-' + slug : prefix;
+  }
+
+  function msgrLink(text, ref) {
+    if (!MSGR_PAGE) return '';
+    const params = [];
+    if (text) params.push('text=' + encodeURIComponent(text));
+    if (ref) params.push('ref=' + encodeURIComponent(String(ref).slice(0, 200)));
+    return 'https://m.me/' + MSGR_PAGE + (params.length ? '?' + params.join('&') : '');
+  }
+
+  function waLink(text) {
+    return 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(text);
+  }
+
+  /** Builds the link for an outgoing order/reservation on the primary channel. */
+  function channelLink(text, ref) {
+    if (ORDERING.primary === 'messenger') {
+      const url = msgrLink(text, ref);
+      // Never return an empty href — fall back to WhatsApp if the Page handle
+      // is missing so the button always does something.
+      if (url) return url;
+    }
+    return waLink(text);
+  }
+
   /* ---------- 11. Reservation form -> WhatsApp ---------- */
   const form = document.getElementById('reserveForm');
   const WA_NUMBER = (window.SUTRA_CONTACT && window.SUTRA_CONTACT.wa) || '97757522111';
@@ -605,7 +657,7 @@
     ];
     if (note) lines.push('Note: ' + note);
 
-    const url = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(lines.join('\n'));
+    const url = channelLink(lines.join('\n'), refSlug('reserve', name));
     window.open(url, '_blank', 'noopener');
   });
 
@@ -750,7 +802,7 @@
 
   function bsWaLink(item) {
     const msg = 'Hi Sutra Lounge! I would like to order the ' + item.name + ' (' + item.price + ').';
-    return 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(msg);
+    return channelLink(msg, refSlug('order', item.name));
   }
 
   function setActiveBsTab() {

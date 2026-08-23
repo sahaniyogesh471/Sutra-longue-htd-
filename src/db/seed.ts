@@ -123,6 +123,11 @@ const SETTINGS: Record<string, string> = {
   'contact.address': 'Hupra, Hetauda-4, Makwanpur, Nepal',
   'contact.city': 'Hetauda',
   'contact.maps_url': 'https://share.google/4oidZH9ykv71zNlzV',
+  // Where the order / reservation buttons send guests. The restaurant runs
+  // Messenger automation, so Messenger leads and WhatsApp stays as a fallback.
+  // 'whatsapp' | 'messenger' | 'both'
+  'ordering.channel': 'both',
+  'ordering.messenger_page': 'SutraLounge',
   'social.facebook': 'https://www.facebook.com/SutraLounge/',
   'social.instagram': 'https://www.instagram.com/sutraloungehetauda/',
   'social.tiktok': 'https://www.tiktok.com/@sutralounge',

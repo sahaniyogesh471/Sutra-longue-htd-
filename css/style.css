@@ -718,6 +718,11 @@ html[data-theme="dark"] .visit { background: linear-gradient(180deg, #0d0a07, #1
   color: var(--gold);
 }
 .contact-wa { background: linear-gradient(150deg, rgba(37,211,102,.2), rgba(37,211,102,.06)); border-color: rgba(37,211,102,.4); color: #25d366; }
+/* Messenger uses Meta's blue-to-purple brand gradient. */
+.contact-msgr { background: linear-gradient(150deg, rgba(0,132,255,.22), rgba(163,52,250,.08)); border-color: rgba(0,132,255,.42); color: #4b9bff; }
+/* The secondary channel button sits quieter than the primary one. */
+.btn-alt-channel { opacity: .82; }
+.btn-alt-channel:hover { opacity: 1; }
 .contact-meta { display: flex; flex-direction: column; line-height: 1.3; }
 .contact-meta small { font-size: 11.5px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-mute); font-weight: 700; }
 .contact-meta strong { font-size: 16px; word-break: break-word; }

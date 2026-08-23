@@ -80,6 +80,25 @@
       </div>
 
       <div class="card">
+        <h3>Orders &amp; reservations</h3>
+        <p class="muted">Where the "Order Now", "Reserve" and chat buttons send guests. Messenger is useful when your Page runs automated replies; WhatsApp is kept as a fallback because Messenger only pre-fills the order text for Pages with a Messenger app configured.</p>
+        <div class="field" data-field-wrap="ordering.channel">
+          <label for="ordering.channel">Ordering channel
+            <button class="link-restore" type="button" data-restore="ordering.channel" <%= baseline['ordering.channel'] != null ? '' : 'disabled' %>>Restore original</button>
+          </label>
+          <select id="ordering.channel" name="ordering.channel" data-field="ordering.channel">
+            <% var chan = settings['ordering.channel'] || 'both'; %>
+            <option value="both" <%= chan === 'both' ? 'selected' : '' %>>Both — Messenger first, WhatsApp as backup (recommended)</option>
+            <option value="messenger" <%= chan === 'messenger' ? 'selected' : '' %>>Messenger only</option>
+            <option value="whatsapp" <%= chan === 'whatsapp' ? 'selected' : '' %>>WhatsApp only</option>
+          </select>
+          <p class="field-error" data-error="ordering.channel"></p>
+        </div>
+        <% textField('ordering.messenger_page', 'Facebook Page username (for m.me links)', false, 'SutraLounge'); %>
+        <p class="muted">Find it in your Page URL: facebook.com/<strong>SutraLounge</strong> → enter <strong>SutraLounge</strong>. A full link or numeric Page ID also works.</p>
+      </div>
+
+      <div class="card">
         <h3>Google rating badge</h3>
         <p class="muted">Shown above the guest reviews on the homepage and sent to Google as structured data, so the stars can appear in search results. Copy the numbers exactly as they appear on your Google Business Profile — never estimate them. Leave the rating blank to hide the badge.</p>
         <% textField('reviews.google_rating', 'Rating out of 5 (e.g. 4.0)', false, '4.0'); %>

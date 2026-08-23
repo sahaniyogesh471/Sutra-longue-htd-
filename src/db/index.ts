@@ -289,6 +289,8 @@ function backfillReviewNp(db: DB): void {
 const DEFAULT_SETTINGS: Record<string, string> = {
   'design.primary_color': '#c9a35c',
   'design.logo': 'img/logo-gold.png',
+  'ordering.channel': 'both',
+  'ordering.messenger_page': 'SutraLounge',
   'reviews.google_rating': '4.0',
   'reviews.google_count': '272',
   'reviews.google_url': 'https://share.google/speFf7KuYEt1DNfTv',
