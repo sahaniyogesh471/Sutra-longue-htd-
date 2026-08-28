@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <%- include('partials/head', { title: title, description: description, pageCss: pageCss, canonical: canonical, noindex: noindex }); %>
+</head>
+<body class="error-page">
+
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="preloader-inner">
+      <img class="preloader-logo" src="/img/logo-gold.png" alt="" width="390" height="174" />
+      <span class="preloader-line"></span>
+    </div>
+  </div>
+
+  <!-- ============ HEADER ============ -->
+  <header class="header" id="header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="<%= typeof s === 'function' ? s('restaurant.name') : 'Sutra Lounge' %> — back to home">
+        <img class="brand-logo" src="/img/logo-gold.png" alt="<%= typeof s === 'function' ? s('restaurant.name') : 'Sutra Lounge' %>" width="390" height="174" />
+      </a>
+      <div class="header-tools">
+        <a href="/" class="btn btn-gold nav-reserve">Back to Home</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="error-404">
+      <div class="container">
+        <div class="error-code">500</div>
+        <h1 class="error-title">Something Went Wrong</h1>
+        <p class="error-sub">This page could not be loaded just now — the kitchen is looking into it.</p>
+        <p class="error-desc">Please try again in a moment. To reserve a table right away, call us on <a href="tel:057522111">057-522111</a>.</p>
+        <div class="error-cta">
+          <a href="/" class="btn btn-gold">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
+            Try the Homepage Again
+          </a>
+          <a href="/menu.html" class="btn btn-ghost">Explore the Menu</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>© <%= year %> <%= typeof s === 'function' ? s('restaurant.name') : 'Sutra Lounge' %>. All rights reserved.</p>
+        <p>Made with flavour in Hetauda</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var preloader = document.getElementById('preloader');
+      if (preloader) {
+        setTimeout(function () { preloader.classList.add('is-hidden'); }, 350);
+        setTimeout(function () { preloader.style.display = 'none'; }, 1200);
+      }
+    })();
+  </script>
+</body>
+</html>

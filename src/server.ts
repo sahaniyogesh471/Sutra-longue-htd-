@@ -217,20 +217,62 @@ export function createApp() {
     });
   });
 
+  // ---- Error handler ----
+  // Without this Express answers a bare "Internal Server Error" and the cause
+  // is never written anywhere, which made a database problem impossible to
+  // diagnose from the deploy logs. The stack is logged server-side only; the
+  // visitor gets the branded page and never sees internals.
+  app.use((err: unknown, req: Request, res: Response, _next: express.NextFunction) => {
+    console.error(`[error] ${req.method} ${req.originalUrl}:`, err);
+    if (res.headersSent) return;
+    res.status(500);
+    // The error page itself reads no database, so it still renders when the
+    // database is the thing that is broken.
+    try {
+      res.render('500', {
+        title: 'Something went wrong | Sutra Lounge',
+        description: 'This page could not be loaded. Please try again shortly.',
+        canonical: '',
+        noindex: true,
+        pageCss: '',
+        year: new Date().getFullYear(),
+        assetsV: res.locals.assetsV,
+        requestHost: res.locals.requestHost,
+      });
+    } catch {
+      res.type('text/plain').send('Something went wrong. Please try again shortly.');
+    }
+  });
+
   return app;
 }
 
 export function startServer() {
+  // Each startup step is isolated: previously a single failing statement threw
+  // before app.listen(), or left the schema half-built, and every page that
+  // reads the database answered 500 while /api/health still reported OK.
+  // Logging loudly and continuing means the site keeps serving whatever the
+  // database can still provide, and the cause is visible in the deploy logs.
+  const step = (name: string, run: () => void) => {
+    try {
+      run();
+    } catch (err) {
+      console.error(`[startup] ${name} failed:`, err);
+    }
+  };
+
   const db = getDb();
-  initSchema(db);
-  ensureUploadsDir();
-  const { seeded, tables } = seedAll(db);
-  if (seeded) {
-    console.log(`[seed] Baseline content created for: ${tables.join(', ')}`);
-    console.log('[seed] Review rows are DEMO content — replace/remove from the admin panel.');
-  }
-  ensureAdminUser();
-  ensureRecoveryCode(db);
+  step('initSchema', () => initSchema(db));
+  step('ensureUploadsDir', () => ensureUploadsDir());
+  step('seed', () => {
+    const { seeded, tables } = seedAll(db);
+    if (seeded) {
+      console.log(`[seed] Baseline content created for: ${tables.join(', ')}`);
+      console.log('[seed] Review rows are DEMO content — replace/remove from the admin panel.');
+    }
+  });
+  step('ensureAdminUser', () => ensureAdminUser());
+  step('ensureRecoveryCode', () => ensureRecoveryCode(db));
 
   const app = createApp();
   app.listen(PORT, () => {

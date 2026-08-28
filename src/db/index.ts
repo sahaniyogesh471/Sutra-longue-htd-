@@ -138,12 +138,25 @@ export function migrate(db: DB): void {
     }
   }
 
-  backfillDishNp(db);
-  backfillReviewNp(db);
-  dropBlankSettingKeys(db);
-  backfillSettings(db);
-  repairMissingUploads(db);
-  removePlaceholderReviews(db);
+  // Data repairs are best-effort. One failing on a backend that rejects its
+  // SQL must not abort migrate() — that would leave the schema half-migrated
+  // and take every database-backed page down with a 500 while /api/health,
+  // which touches no tables, kept reporting the service as healthy.
+  const repairs: [string, (db: DB) => void][] = [
+    ['backfillDishNp', backfillDishNp],
+    ['backfillReviewNp', backfillReviewNp],
+    ['dropBlankSettingKeys', dropBlankSettingKeys],
+    ['backfillSettings', backfillSettings],
+    ['repairMissingUploads', repairMissingUploads],
+    ['removePlaceholderReviews', removePlaceholderReviews],
+  ];
+  for (const [name, run] of repairs) {
+    try {
+      run(db);
+    } catch (err) {
+      console.error(`[db] startup repair "${name}" failed:`, err);
+    }
+  }
 }
 
 /**
@@ -309,11 +322,17 @@ const DEFAULT_SETTINGS: Record<string, string> = {
 function dropBlankSettingKeys(db: DB): void {
   let removed = 0;
   for (const t of ['settings', 'settings_baseline', 'settings_draft']) {
-    try {
-      const info = db.prepare(`DELETE FROM "${t}" WHERE key IS NULL OR TRIM(key) = ''`).run();
-      if (t === 'settings') removed = Number(info.changes ?? 0);
-    } catch {
-      /* table absent in this schema version */
+    // Remote libsql is stricter about which expressions may appear in a DELETE
+    // predicate, so try the trimming form first and fall back to plain
+    // equality. A repair that throws would take the whole site down.
+    for (const where of [`key IS NULL OR TRIM(key) = ''`, `key IS NULL OR key = ''`]) {
+      try {
+        const info = db.prepare(`DELETE FROM "${t}" WHERE ${where}`).run();
+        if (t === 'settings') removed = Math.max(removed, Number(info?.changes ?? 0));
+        break;
+      } catch {
+        /* try the simpler predicate, then give up on this table */
+      }
     }
   }
 
@@ -321,12 +340,24 @@ function dropBlankSettingKeys(db: DB): void {
   // settings_baseline is never touched by a restore, so it still holds the
   // protected originals — copy back anything that is gone. Existing values are
   // left alone so a genuine edit is never overwritten.
-  if (removed === 0) return;
+  //
+  // This also runs when nothing was deleted: a restore that hit the PRIMARY KEY
+  // on the second blank row rolled back and left `settings` simply empty, with
+  // no blank rows to find.
+  let liveCount = 0;
+  try {
+    liveCount = Number(
+      (db.prepare('SELECT COUNT(*) AS c FROM settings').get() as { c: number } | undefined)?.c ?? 0
+    );
+  } catch {
+    return;
+  }
+  if (removed === 0 && liveCount > 1) return;
   try {
     db.prepare(
       `INSERT INTO settings (key, value, updated_at)
        SELECT b.key, b.value, datetime('now') FROM settings_baseline b
-       WHERE b.key IS NOT NULL AND TRIM(b.key) != ''
+       WHERE b.key IS NOT NULL AND b.key != ''
          AND NOT EXISTS (SELECT 1 FROM settings s WHERE s.key = b.key)`
     ).run();
   } catch {
