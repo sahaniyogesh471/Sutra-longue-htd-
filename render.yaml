@@ -13,7 +13,15 @@
 #   3. Fill in the secrets marked `sync: false` when prompted
 #
 # Note: free instances sleep after 15 minutes of inactivity. Add a free uptime
-# monitor (UptimeRobot / cron-job.org) pinging /api/health every 10 minutes.
+# monitor (UptimeRobot / cron-job.org) pinging /api/ready every 5-10 minutes.
+#
+# Two endpoints, on purpose:
+#   /api/health - Render's healthCheckPath below. Liveness only; it must never
+#                 touch the database, or a recoverable database fault would
+#                 make Render restart the instance in a loop.
+#   /api/ready  - for the uptime monitor. Queries the database and returns 503
+#                 when it cannot serve pages, so the monitor alerts instead of
+#                 staying green through an outage.
 
 services:
   - type: web

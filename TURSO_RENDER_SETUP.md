@@ -120,11 +120,28 @@ Render free 15 मिनट बाद सो जाता है → पहल�
 2. **Add New Monitor**:
    - Type: **HTTP(s)**
    - Name: `Sutra Lounge`
-   - URL: `https://आपका-app.onrender.com/api/health`
+   - URL: `https://आपका-app.onrender.com/api/ready`
    - Interval: **5 minutes**
-3. Save
+3. **Alert Contacts** में अपना email चुनें → Save
 
 अब site कभी नहीं सोएगी — हमेशा तेज़ खुलेगी।
+
+### ⚠️ `/api/ready` ही रखें, `/api/health` नहीं
+
+दोनों endpoint अलग काम के लिए हैं:
+
+| Endpoint | कौन इस्तेमाल करता है | क्या जाँचता है |
+|---|---|---|
+| `/api/health` | **Render** (healthCheckPath) | सिर्फ़ यह कि process चल रहा है |
+| `/api/ready` | **UptimeRobot** (आप) | database भी चल रहा है या नहीं |
+
+`/api/health` जान-बूझकर database को नहीं छूता — अगर वह fail होता तो Render
+deploy को टूटा हुआ मानकर service को बार-बार restart करता रहता, और एक ठीक होने
+लायक database problem पूरा outage बन जाती।
+
+इसीलिए monitor **`/api/ready`** पर लगाएँ। एक बार site चल रही थी पर हर page 500
+दे रहा था, और `/api/health` हरा दिखता रहा — किसी को पता ही नहीं चला।
+`/api/ready` उस हालत में `503` देता है और आपको तुरंत email आ जाता है।
 
 ---
 
@@ -136,6 +153,7 @@ Render free 15 मिनट बाद सो जाता है → पहल�
 - [ ] `/menu.html` — menu दिखता है
 - [ ] `/admin` — login हो जाता है (username `admin`)
 - [ ] `/api/health` — `{"ok":true,...}`
+- [ ] `/api/ready` — `{"ok":true,"database":"ok",...}` (यह database भी जाँचता है)
 - [ ] नेपाली ↔ English switch चलता है
 - [ ] मोबाइल पर देखें
 

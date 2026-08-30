@@ -81,7 +81,7 @@ Render free 15 मिनट बाद सो जाता है → पहल�
 2. **Add New Monitor**:
    - Type: **HTTP(s)**
    - Name: `Sutra Lounge`
-   - URL: `https://आपका-app.onrender.com/api/health`
+   - URL: `https://आपका-app.onrender.com/api/ready`  ← database भी जाँचता है
    - Interval: **5 minutes**
 3. **Create Monitor**
 
@@ -98,6 +98,7 @@ Render free 15 मिनट बाद सो जाता है → पहल�
 - [ ] नेपाली ↔ English switch चलता है
 - [ ] `/admin` — login होता है (username: `admin`)
 - [ ] `/api/health` → `{"ok":true}`
+- [ ] `/api/ready` → `{"ok":true,"database":"ok"}`
 - [ ] मोबाइल पर भी ठीक दिखता है
 
 ### 🔥 सबसे ज़रूरी test — Turso सच में काम कर रहा?

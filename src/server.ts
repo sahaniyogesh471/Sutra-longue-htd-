@@ -109,6 +109,8 @@ export function createApp() {
       `Allow: /\n` +
       `Disallow: /admin\n` +
       `Disallow: /admin/api\n` +
+      // Probes, not content — keep them out of the index.
+      `Disallow: /api/\n` +
       `\n` +
       `Sitemap: ${base}/sitemap.xml\n`
     );
@@ -195,8 +197,62 @@ export function createApp() {
   app.use('/uploads', express.static(path.join(DATA_DIR, 'uploads'), { maxAge: isProd ? '30d' : 0 }));
 
   // ---- Health / status ----
+  //
+  // Two deliberately separate checks:
+  //
+  // /api/health is Render's healthCheckPath. It must stay a pure liveness
+  // probe: if it ever failed, Render would treat the deploy as broken and
+  // restart the instance in a loop, which turns a recoverable database problem
+  // into a hard outage. So it only proves the process is up.
   app.get('/api/health', (_req, res) => {
     res.json({ ok: true, service: 'sutra-lounge', time: new Date().toISOString() });
+  });
+
+  // /api/ready is the readiness probe for the uptime monitor. It actually
+  // queries the database, because the outage this was written after had every
+  // page returning 500 while /api/health happily reported OK — the monitor
+  // stayed green for hours while the site was down.
+  //
+  // It runs the same cheap read the homepage depends on, so "ready" means
+  // "the homepage can be built", not merely "the port is open".
+  app.get('/api/ready', (_req, res) => {
+    const started = Date.now();
+    try {
+      const db = getDb();
+      const row = db.prepare('SELECT COUNT(*) AS c FROM settings').get() as
+        | { c: number }
+        | undefined;
+      const settings = Number(row?.c ?? 0);
+      // An empty settings table means the site would render without its name,
+      // phone or address — broken in practice even though the query worked.
+      if (settings < 1) {
+        res.status(503).json({
+          ok: false,
+          service: 'sutra-lounge',
+          error: 'settings table is empty',
+          settings,
+          ms: Date.now() - started,
+        });
+        return;
+      }
+      res.json({
+        ok: true,
+        service: 'sutra-lounge',
+        database: 'ok',
+        settings,
+        ms: Date.now() - started,
+        time: new Date().toISOString(),
+      });
+    } catch (err) {
+      console.error('[ready] database check failed:', err);
+      res.status(503).json({
+        ok: false,
+        service: 'sutra-lounge',
+        database: 'error',
+        error: err instanceof Error ? err.message : String(err),
+        ms: Date.now() - started,
+      });
+    }
   });
 
   // ---- Branded 404 page (HTTP 404) ----
