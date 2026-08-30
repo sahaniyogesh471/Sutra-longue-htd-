@@ -20,28 +20,27 @@ Turso का free plan सिर्फ़ **1 दिन पीछे** तक �
 
 ---
 
-## तरीक़ा A — Turso Dashboard से (सबसे आसान) ⭐
+## तरीक़ा A — Admin panel से (सबसे आसान) ⭐
 
-फ़ोन से भी हो जाता है, कुछ install नहीं करना.
+फ़ोन से 10 सेकंड में हो जाता है.
 
-### Step 1 — यह query चलाएँ
+1. **`/admin`** में login करें
+2. Dashboard पर **Backup** card ढूँढें
+3. **Download backup** दबाएँ
 
-Turso → आपका database → **SQL Console** → यह पूरा paste करके **Run**:
+`sutra-backup-2026-08-30.sql` नाम की file download हो जाएगी.
 
-```
-SELECT 'INSERT INTO settings (key,value,updated_at) VALUES (' || quote("key") || ',' || quote("value") || ',' || quote("updated_at") || ');' AS sql_line FROM settings UNION ALL SELECT 'INSERT INTO dishes (id,type,name,description,price,category,badge,image_url,is_featured,is_visible,sort_order,created_at,updated_at,name_np,description_np,category_np,badge_np) VALUES (' || quote("id") || ',' || quote("type") || ',' || quote("name") || ',' || quote("description") || ',' || quote("price") || ',' || quote("category") || ',' || quote("badge") || ',' || quote("image_url") || ',' || quote("is_featured") || ',' || quote("is_visible") || ',' || quote("sort_order") || ',' || quote("created_at") || ',' || quote("updated_at") || ',' || quote("name_np") || ',' || quote("description_np") || ',' || quote("category_np") || ',' || quote("badge_np") || ');' FROM dishes UNION ALL SELECT 'INSERT INTO gallery (id,image_url,alt,is_featured,is_visible,sort_order,created_at,updated_at) VALUES (' || quote("id") || ',' || quote("image_url") || ',' || quote("alt") || ',' || quote("is_featured") || ',' || quote("is_visible") || ',' || quote("sort_order") || ',' || quote("created_at") || ',' || quote("updated_at") || ');' FROM gallery UNION ALL SELECT 'INSERT INTO reviews (id,name,text,rating,image_url,is_visible,sort_order,created_at,updated_at,name_np,text_np) VALUES (' || quote("id") || ',' || quote("name") || ',' || quote("text") || ',' || quote("rating") || ',' || quote("image_url") || ',' || quote("is_visible") || ',' || quote("sort_order") || ',' || quote("created_at") || ',' || quote("updated_at") || ',' || quote("name_np") || ',' || quote("text_np") || ');' FROM reviews UNION ALL SELECT 'INSERT INTO opening_hours (day_index,day_name,is_open,open_time,close_time,updated_at) VALUES (' || quote("day_index") || ',' || quote("day_name") || ',' || quote("is_open") || ',' || quote("open_time") || ',' || quote("close_time") || ',' || quote("updated_at") || ');' FROM opening_hours;
-```
+### file को सुरक्षित रखें
 
-### Step 2 — नतीजा सुरक्षित रखें
+फ़ोन में पड़ी रहने से कोई फ़ायदा नहीं — फ़ोन खो गया तो backup भी गया:
 
-लगभग **53 lines** दिखेंगी — हर line एक `INSERT INTO ...` statement.
-
-सब copy करके सुरक्षित जगह रखें:
-- Google Drive में एक text file
-- या अपने आप को email कर दें
-- नाम: `sutra-backup-2026-08-22.txt` (तारीख़ के साथ)
+- Google Drive में डाल दें, **या**
+- अपने आप को email कर दें (subject में तारीख़ लिख दें)
 
 **बस — backup हो गया** ✅
+
+> File में **कोई password नहीं** है (admin account, sessions और security log
+> जान-बूझकर छोड़े गए हैं), इसलिए इसे Drive या email में रखना सुरक्षित है.
 
 ---
 
@@ -50,48 +49,38 @@ SELECT 'INSERT INTO settings (key,value,updated_at) VALUES (' || quote("key") ||
 Node.js वाला computer हो तो:
 
 ```bash
+npm run build
 TURSO_URL="आपका-url" TURSO_AUTH_TOKEN="आपका-token" \
   node scripts/backup-turso.mjs
 ```
 
-`sutra-backup-YYYY-MM-DD.sql` file बन जाएगी.
+वही file बनती है जो admin panel देता है.
 
 ---
 
 ## 🔄 Restore कैसे करें (अगर कुछ बिगड़ जाए)
 
 1. Turso → **SQL Console**
-2. पहले पुराना हटाएँ (एक-एक line, अलग-अलग Run):
-   ```
-   DELETE FROM settings;
-   ```
-   ```
-   DELETE FROM dishes;
-   ```
-   ```
-   DELETE FROM gallery;
-   ```
-   ```
-   DELETE FROM reviews;
-   ```
-   ```
-   DELETE FROM opening_hours;
-   ```
-3. फिर अपनी backup file की सारी lines paste करके **Run**
-4. Render → **Manual Deploy** (ताज़ा data दिखाने के लिए)
+2. अपनी backup file **पूरी** copy करके paste करें → **Run**
+3. Render → **Manual Deploy** (ताज़ा data दिखाने के लिए)
 
-> ✅ मैंने यह restore test किया है — settings 21, dishes 11, gallery 9,
-> reviews 5, hours 7, नेपाली text और फ़ोन नंबर सब सही आए, integrity `ok`.
+पुराना data हटाने की अलग से ज़रूरत **नहीं** — file खुद हर table को पहले
+साफ़ करती है, इसलिए आधा-अधूरा restore या duplicate वाली error नहीं आएगी.
+
+> ✅ मैंने यह पूरा test किया है: सारा content मिटाकर सिर्फ़ इस file से वापस
+> लाया — settings 27, dishes 11, gallery 9, reviews, hours 7 सब वापस आए,
+> नेपाली text और ordering setting सही, integrity `ok`, और restore की हुई
+> database पर site पूरी चली.
 
 ---
 
 ## ⚠️ ध्यान रखें
 
-**Copy करते वक़्त line numbers न आएँ** — सिर्फ़ SQL text चाहिए.
-(पहले यही ग़लती से error आया था.)
-
 **Backup में क्या नहीं है:** admin password, sessions — जान-बूझकर छोड़े गए हैं
 ताकि file सुरक्षित रहे. Password Render के environment variables में है.
+
+**Turso console से copy करें तो line numbers न आएँ** — सिर्फ़ SQL text चाहिए.
+(admin panel वाली file में यह दिक़्क़त नहीं आती.)
 
 **तस्वीरें:** Cloudinary पर अलग सुरक्षित हैं, backup में नहीं चाहिए.
 

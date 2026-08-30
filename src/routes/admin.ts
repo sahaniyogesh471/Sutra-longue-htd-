@@ -21,6 +21,7 @@ import {
 } from '../lib/publish.js';
 import { ALL_SETTING_KEYS } from '../lib/settings-defs.js';
 import { buildPublicContent, pageLocals } from '../content.js';
+import { buildBackupSql, backupFilename, BackupIncompleteError } from '../lib/backup.js';
 
 export const adminRouter = Router();
 
@@ -387,6 +388,40 @@ adminRouter.get('/revisions', (req, res) => {
     ...pageBase(req, res, { title: 'Revision History', crumb: 'Undo, redo & restore previous states', active: 'revisions' }),
     revisions: listRevisions(getDb(), 100),
   });
+});
+
+/* ---- Content backup download ---- */
+
+/*
+ * Turso's free plan keeps only one day of point-in-time restore, so anything
+ * noticed later is gone. Taking a backup previously meant pasting a very long
+ * hand-written query into the Turso console, which is unrealistic from a
+ * phone — so in practice no backup was ever taken. This serves the same SQL as
+ * a downloadable file behind the existing admin session.
+ *
+ * GET is intentional: it must work from a plain link so the browser's download
+ * manager handles it. It only reads, and requireAuth above still applies.
+ */
+adminRouter.get('/backup.sql', (_req, res) => {
+  try {
+    const { sql, rows } = buildBackupSql(getDb());
+    const name = backupFilename();
+    res.setHeader('Content-Type', 'application/sql; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${name}"`);
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('X-Backup-Rows', String(rows));
+    res.send(sql);
+  } catch (err) {
+    console.error('[backup] could not build the backup:', err);
+    // Never hand back a partial file: it would look valid and only reveal the
+    // missing content during a restore.
+    const detail = err instanceof BackupIncompleteError ? `\n\n${err.message}` : '';
+    res.status(500).type('text/plain').send(
+      `Could not build a complete backup, so nothing was downloaded.${detail}\n\n` +
+      'Please try again in a moment. If it keeps failing, the database is not ' +
+      'fully readable — check the Render logs.'
+    );
+  }
 });
 
 /* ---- Draft preview of the public site (never indexed / cached) ---- */
