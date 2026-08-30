@@ -13,11 +13,11 @@
       <div class="card-head">
         <h3>Gallery</h3>
         <label class="btn btn-gold btn-small upload-label">
-          Upload image
-          <input type="file" accept="image/*" data-gallery-upload hidden>
+          Upload photos
+          <input type="file" accept="image/*" multiple data-gallery-upload hidden>
         </label>
       </div>
-      <p class="muted" style="margin:0 0 14px;">Drag images to reorder. The featured image appears first on the website.</p>
+      <p class="muted" style="margin:0 0 14px;">Pick several photos at once — they upload one after another. Drag images to reorder; the featured image appears first on the website. Remember to <strong>Publish</strong> when you are happy.</p>
       <div class="gallery-grid" data-table="gallery">
         <% items.forEach(function (g) { %>
           <div class="gallery-tile state-<%= g.draftState %>" draggable="true"

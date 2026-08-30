@@ -1145,19 +1145,55 @@
     const uploadLabel = e.target.closest('[data-gallery-upload]');
     if (uploadLabel) {
       const input = hiddenFileInput();
-      input.addEventListener('change', function () {
-        const file = input.files[0];
-        if (!file) return;
-        if (!file.type.startsWith('image/')) { toast('Please choose an image file.', 'error'); return; }
-        if (file.size > 8 * 1024 * 1024) { toast('Image must be under 8 MB.', 'error'); return; }
-        uploadImage(file, '').then(async function (r) {
-          if (!r.ok) { toast(r.error || 'Upload failed.', 'error'); return; }
-          const c = await api('/admin/api/gallery/create', { body: { image_url: r.url, alt: '', is_visible: 1 } });
-          if (!c.ok) { toast(c.error || 'Could not add the image.', 'error'); return; }
-          toast('Image added to the gallery (draft).');
+      // Photographing a restaurant produces a batch, not one picture. Uploading
+      // them one at a time — choose, wait, repeat — is why the gallery stayed
+      // full of stock photos, so the picker takes the whole set at once.
+      input.multiple = true;
+      input.addEventListener('change', async function () {
+        const files = Array.prototype.slice.call(input.files || []);
+        if (!files.length) return;
+
+        const valid = [];
+        const rejected = [];
+        files.forEach(function (f) {
+          if (!f.type || !f.type.startsWith('image/')) rejected.push(f.name + ' (not an image)');
+          else if (f.size > 8 * 1024 * 1024) rejected.push(f.name + ' (over 8 MB)');
+          else valid.push(f);
+        });
+        rejected.forEach(function (msg) { toast('Skipped ' + msg, 'error'); });
+        if (!valid.length) return;
+
+        // Uploaded in sequence, not in parallel: a phone on mobile data pushing
+        // fifteen photos at once tends to have some of them time out.
+        let added = 0;
+        const failed = [];
+        for (let i = 0; i < valid.length; i++) {
+          const file = valid[i];
+          if (valid.length > 1) toast('Uploading ' + (i + 1) + ' of ' + valid.length + '…');
+          try {
+            const r = await uploadImage(file, '');
+            if (!r.ok) { failed.push(file.name); continue; }
+            const c = await api('/admin/api/gallery/create', { body: { image_url: r.url, alt: '', is_visible: 1 } });
+            if (!c.ok) { failed.push(file.name); continue; }
+            added++;
+          } catch (err) {
+            failed.push(file.name);
+          }
+        }
+
+        // Report the real outcome — a partial batch must not look like success.
+        if (added) {
+          toast(added === 1
+            ? 'Photo added to the gallery (draft).'
+            : added + ' photos added to the gallery (draft).');
+        }
+        if (failed.length) {
+          toast(failed.length + ' could not be uploaded: ' + failed.join(', '), 'error');
+        }
+        if (added) {
           refreshList('gallery');
           refreshDraftBar();
-        });
+        }
       });
       input.click();
       return;
