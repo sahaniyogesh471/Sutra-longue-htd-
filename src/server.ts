@@ -326,18 +326,19 @@ export function startServer() {
     }
   };
 
-  const db = getDb();
-  step('initSchema', () => initSchema(db));
+  // getDb() is called per step rather than once up front: if a step replaces a
+  // dead connection, the following steps must use the new one.
+  step('initSchema', () => initSchema(getDb()));
   step('ensureUploadsDir', () => ensureUploadsDir());
   step('seed', () => {
-    const { seeded, tables } = seedAll(db);
+    const { seeded, tables } = seedAll(getDb());
     if (seeded) {
       console.log(`[seed] Baseline content created for: ${tables.join(', ')}`);
       console.log('[seed] Review rows are DEMO content — replace/remove from the admin panel.');
     }
   });
   step('ensureAdminUser', () => ensureAdminUser());
-  step('ensureRecoveryCode', () => ensureRecoveryCode(db));
+  step('ensureRecoveryCode', () => ensureRecoveryCode(getDb()));
 
   const app = createApp();
   app.listen(PORT, () => {
