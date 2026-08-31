@@ -8,11 +8,24 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * Sessions survive process restarts — no Redis or paid store needed.
  */
 export class SqliteSessionStore extends session.Store {
-  private db: DB;
+  /**
+   * Resolves the current connection on every use rather than holding the one
+   * handed in at construction.
+   *
+   * A remote Turso connection is replaced whenever its stream expires. Holding
+   * the original handle meant every request failed inside session lookup —
+   * before any page code ran — so the whole site, admin included, stayed down
+   * even though the database layer had already reconnected.
+   */
+  private readonly resolveDb: () => DB;
 
-  constructor(db: DB) {
+  constructor(db: DB | (() => DB)) {
     super();
-    this.db = db;
+    this.resolveDb = typeof db === 'function' ? db : () => db;
+  }
+
+  private get db(): DB {
+    return this.resolveDb();
   }
 
   private get select() {

@@ -13,7 +13,9 @@ export function sessionMiddleware() {
   return session({
     name: 'sutra.sid',
     secret: SESSION_SECRET,
-    store: new SqliteSessionStore(getDb()),
+    // Pass the resolver, not a handle: a reconnect must not leave the session
+    // store holding a dead connection.
+    store: new SqliteSessionStore(getDb),
     resave: false,
     saveUninitialized: false,
     cookie: {

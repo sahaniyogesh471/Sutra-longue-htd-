@@ -3,7 +3,7 @@ import path from 'node:path';
 import express, { type Request, type Response } from 'express';
 import compression from 'compression';
 import { ROOT, PORT, DATA_DIR, isProd } from './config.js';
-import { getDb, initSchema } from './db/index.js';
+import { getDb, initSchema, withDbRetry, isDeadConnectionError, resetConnection, invalidateConnection } from './db/index.js';
 import { seedAll } from './db/seed.js';
 import { ensureAdminUser, sessionMiddleware } from './auth.js';
 import { csrfProtect, securityHeaders } from './lib/security.js';
@@ -85,7 +85,9 @@ export function createApp() {
 
   // ---- Public pages (database-driven, published state only) ----
   const renderPublic = (view: 'index' | 'menu') => (req: Request, res: Response) => {
-    res.render(view, pageLocals(view, buildPublicContent(getDb()), {
+    // Read-only, so it is safe to replay if the remote connection expired.
+    const content = withDbRetry((db) => buildPublicContent(db));
+    res.render(view, pageLocals(view, content, {
       requestHost: res.locals.requestHost,
       assetsV: res.locals.assetsV,
     }));
@@ -122,7 +124,7 @@ export function createApp() {
     const urls = ['/', '/menu.html'];
     // lastmod reflects the real most-recent content/revision change rather than
     // claiming every page was modified today.
-    const row = getDb()
+    const row = withDbRetry((db) => db
       .prepare(
         `SELECT MAX(d) AS d FROM (
            SELECT MAX(updated_at) AS d FROM settings
@@ -133,7 +135,7 @@ export function createApp() {
            UNION ALL SELECT MAX(created_at) FROM revisions
          )`
       )
-      .get() as { d: string | null };
+      .get()) as { d: string | null };
     const lastmod = (row.d ? row.d.slice(0, 10) : new Date().toISOString().slice(0, 10));
     const body =
       `<?xml version="1.0" encoding="UTF-8"?>\n` +
@@ -146,8 +148,8 @@ export function createApp() {
 
   // ---- llms.txt (machine-readable business facts; verified repo data only) ----
   app.get('/llms.txt', (req, res) => {
-    const settings = loadSettings(getDb());
-    const hours = loadHours(getDb());
+    const settings = withDbRetry((db) => loadSettings(db));
+    const hours = withDbRetry((db) => loadHours(db));
     const s = (k: string, fb = ''): string => settings[k] ?? fb;
     const host = (req.get('host') ?? '').replace(/^www\./, '');
     const base = `https://${host}`;
@@ -218,10 +220,9 @@ export function createApp() {
   app.get('/api/ready', (_req, res) => {
     const started = Date.now();
     try {
-      const db = getDb();
-      const row = db.prepare('SELECT COUNT(*) AS c FROM settings').get() as
-        | { c: number }
-        | undefined;
+      const row = withDbRetry((db) =>
+        db.prepare('SELECT COUNT(*) AS c FROM settings').get()
+      ) as { c: number } | undefined;
       const settings = Number(row?.c ?? 0);
       // An empty settings table means the site would render without its name,
       // phone or address — broken in practice even though the query worked.
@@ -280,6 +281,14 @@ export function createApp() {
   // visitor gets the branded page and never sees internals.
   app.use((err: unknown, req: Request, res: Response, _next: express.NextFunction) => {
     console.error(`[error] ${req.method} ${req.originalUrl}:`, err);
+    // A request that died on a dead connection is a much better signal than any
+    // timer, so drop it now: the next request reconnects instead of repeating
+    // this failure until the probe interval elapses. This is what stops one
+    // expired Turso stream from turning into a site-wide outage.
+    if (isDeadConnectionError(err)) {
+      resetConnection();
+      invalidateConnection();
+    }
     if (res.headersSent) return;
     res.status(500);
     // The error page itself reads no database, so it still renders when the

@@ -9,6 +9,54 @@ export type DB = Database.Database;
 let _db: DB | null = null;
 
 /**
+ * Errors that mean the connection itself is dead rather than the query being
+ * wrong.
+ *
+ * A remote Turso connection is a Hrana stream held open over HTTP, and the
+ * server expires it after a while — a known libsql issue
+ * (tursodatabase/libsql#2083, "we keep a SQL over HTTP connection open for too
+ * long and it expires"). Because the connection was cached forever, once that
+ * happened every query failed with `stream not found` until someone redeployed:
+ * the site served 500s for hours with no way to recover on its own.
+ */
+const DEAD_CONNECTION_PATTERNS = [
+  'stream not found',
+  'stream expired',
+  'stream closed',
+  'connection is not open',
+  'connection closed',
+  'connection reset',
+  'not connected',
+  'broken pipe',
+  'socket hang up',
+  'econnreset',
+  'econnrefused',
+  'epipe',
+  'etimedout',
+  'hrana',
+];
+
+export function isDeadConnectionError(err: unknown): boolean {
+  const msg = String((err as Error)?.message ?? err ?? '');
+  return DEAD_CONNECTION_PATTERNS.some((p) => msg.toLowerCase().includes(p.toLowerCase()));
+}
+
+/**
+ * Drops the cached connection so the next getDb() dials a fresh one.
+ * Only meaningful for Turso; a local file handle never goes stale.
+ */
+export function resetConnection(): void {
+  const db = _db;
+  _db = null;
+  if (!db) return;
+  try {
+    db.close();
+  } catch {
+    // Closing a already-dead handle throws; nothing useful to do about it.
+  }
+}
+
+/**
  * Opens the database.
  *
  * Two modes, chosen by environment:
@@ -20,8 +68,45 @@ let _db: DB | null = null;
  * every existing `.prepare().get()/.all()/.run()` call and `db.transaction()`
  * keeps working unchanged.
  */
+/**
+ * How long a remote connection is trusted without re-checking. Short enough
+ * that an idle site (the free plan sleeps and wakes constantly) revalidates
+ * before serving, long enough that a busy page render does not pay for a probe
+ * on every single query.
+ */
+const PROBE_INTERVAL_MS = 30_000;
+let lastProbeAt = 0;
+
 export function getDb(): DB {
-  if (_db) return _db;
+  if (_db) {
+    // A closed handle can never serve anything, whatever the backend, so that
+    // check is free and always worth making. Only the network round trip is
+    // throttled, and only remote connections need it at all.
+    const closed = (_db as unknown as { open?: boolean }).open === false;
+
+    if (!closed) {
+      if (!TURSO_URL) return _db;
+      const now = Date.now();
+      if (now - lastProbeAt < PROBE_INTERVAL_MS) return _db;
+
+      // The server may have expired this stream while the instance was idle.
+      // Finding out here costs one cheap round trip; finding out mid-render
+      // used to take every page down until someone redeployed.
+      try {
+        _db.prepare('SELECT 1').get();
+        lastProbeAt = now;
+        return _db;
+      } catch (err) {
+        if (!isDeadConnectionError(err)) {
+          lastProbeAt = now;
+          return _db; // a real query error, not a dead connection
+        }
+        console.warn('[db] remote connection went stale, reconnecting:', (err as Error)?.message ?? err);
+      }
+    }
+
+    resetConnection();
+  }
 
   if (TURSO_URL) {
     // Remote Turso database. WAL/journal settings are managed server-side and
@@ -59,6 +144,7 @@ export function getDb(): DB {
     }
 
     _db = db;
+    lastProbeAt = Date.now();
     return db;
   }
 
@@ -70,6 +156,38 @@ export function getDb(): DB {
   db.pragma('foreign_keys = ON');
   _db = db;
   return db;
+}
+
+/**
+ * Runs `fn`, and if it fails only because the remote connection died, drops
+ * that connection and runs it once more against a fresh one.
+ *
+ * The probe in getDb() catches the common case, but a stream can also expire
+ * between two queries of the same request. Retrying makes that invisible
+ * instead of turning it into a 500.
+ *
+ * Read-only work only: a half-applied write must not be replayed blindly.
+ */
+export function withDbRetry<T>(fn: (db: DB) => T): T {
+  try {
+    return fn(getDb());
+  } catch (err) {
+    if (!isDeadConnectionError(err)) throw err;
+    console.warn('[db] connection died mid-request, retrying once:', (err as Error)?.message ?? err);
+    resetConnection();
+    return fn(getDb());
+  }
+}
+
+/**
+ * Marks the cached connection as untrusted so the next getDb() revalidates it.
+ *
+ * Used by the error handler: any request that failed on a dead connection is a
+ * far better signal than a timer, so the following request reconnects
+ * immediately rather than waiting out the probe interval.
+ */
+export function invalidateConnection(): void {
+  lastProbeAt = 0;
 }
 
 /** Adds columns that were introduced after the initial schema. */
