@@ -91,7 +91,10 @@
       <h3>Backup</h3>
       <p class="muted">Downloads all your content — dishes, prices, reviews, gallery and settings — as one file. Keep it in Google Drive or email it to yourself. Take one every month, and before any big change.</p>
       <p class="muted">The hosting only keeps <strong>one day</strong> of automatic history, so a mistake noticed later cannot be undone without your own copy. The file has no passwords in it, so it is safe to store.</p>
-      <a class="btn btn-gold btn-small" href="/admin/backup.sql" download>Download backup</a>
+      <button class="btn btn-gold btn-small" type="button" data-action="download-backup">Download backup</button>
+      <noscript>
+        <a class="btn btn-gold btn-small" href="/admin/backup.sql" download>Download backup</a>
+      </noscript>
     </div>
 
     <div class="card">

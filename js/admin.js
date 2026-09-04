@@ -993,6 +993,59 @@
     refreshAfterGlobalAction();
   }
 
+  /**
+   * Downloads the content backup without navigating.
+   *
+   * A plain <a download> made the browser treat the response as a navigation:
+   * the file saved, but the tab was left sitting on a dead page the user then
+   * had to back out of. Fetching the file and saving it from a blob keeps the
+   * admin page exactly where it was.
+   */
+  async function downloadBackup(btn) {
+    const original = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Preparing…'; }
+    try {
+      const res = await fetch('/admin/backup.sql', {
+        headers: { 'X-CSRF-Token': csrf() },
+        credentials: 'same-origin',
+      });
+
+      if (!res.ok) {
+        // The server refuses rather than hand back a half-written file, and it
+        // explains which table it could not read — show that, not a generic error.
+        const detail = await res.text().catch(function () { return ''; });
+        toast(detail.trim() || 'Could not build the backup.', 'error');
+        return;
+      }
+
+      const blob = await res.blob();
+      const name = filenameFrom(res.headers.get('Content-Disposition')) || 'sutra-backup.sql';
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      // Revoke a little later: some mobile browsers read the blob after click().
+      setTimeout(function () { URL.revokeObjectURL(url); }, 30000);
+
+      const kb = Math.max(1, Math.round(blob.size / 1024));
+      toast('Backup downloaded (' + name + ', ' + kb + ' KB). Keep it in Drive or email it to yourself.');
+    } catch (err) {
+      toast('Could not download the backup. Please check your connection and try again.', 'error');
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = original; }
+    }
+  }
+
+  /** Pulls the filename out of a Content-Disposition header. */
+  function filenameFrom(header) {
+    if (!header) return '';
+    const m = /filename\*?=(?:UTF-8''|")?([^";]+)/i.exec(header);
+    return m ? decodeURIComponent(m[1].replace(/"$/, '')) : '';
+  }
+
   async function undoNow() {
     const r = await api('/admin/api/undo', { body: {} });
     if (!r.ok) { toast(r.error || 'Nothing to undo.', 'error'); return; }
@@ -1079,6 +1132,7 @@
       else if (action === 'undo') undoNow();
       else if (action === 'redo') redoNow();
       else if (action === 'reset') resetFlow();
+      else if (action === 'download-backup') downloadBackup(actionBtn);
       return;
     }
 
